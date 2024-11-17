@@ -60,7 +60,7 @@ export default function CreateShopFormTest({ info }: { info: any }) {
       });
       const payload = await resToServer.json();
       if (resToServer.ok) {
-        const resToNextServer = await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth`, {
+        const resToNextServer = await fetch(`/api/auth`, {
           method: 'POST',
           body: JSON.stringify({ accessToken })
         })

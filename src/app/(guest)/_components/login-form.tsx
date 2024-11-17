@@ -36,7 +36,7 @@ export default function LoginForm() {
         if (loginRes.ok) {
           const res: { message: string, status: boolean, data: { token: string } } = await loginRes.json();
           const accessToken = res.data.token;
-          const a = await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth`, {
+          const a = await fetch(`/api/auth`, {
             method: "POST",
             body: JSON.stringify({ accessToken })
           });

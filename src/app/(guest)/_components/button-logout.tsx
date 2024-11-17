@@ -27,7 +27,7 @@ export default function ButtonLogout({ }) {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      const a = await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/logout`, {
+      const a = await fetch(`/api/auth/logout`, {
         method: 'POST',
         body: JSON.stringify({})
       });

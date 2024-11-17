@@ -141,7 +141,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       if (!res.ok) {
         throw 'Error'
       }
-      await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/del-cookie`, {
+      await fetch(`/api/auth/del-cookie`, {
         method: "POST",
       });
       dispatch(changeCheckoutState(""));

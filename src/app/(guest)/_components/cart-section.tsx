@@ -40,7 +40,7 @@ export default function CartSection() {
       return
     }
     let stateEncode = encodeData(selectedItems);
-    const res = await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/set-cookie`, {
+    const res = await fetch(`/api/auth/set-cookie`, {
       method: "POST",
       body: JSON.stringify({ stateCheckout: stateEncode })
     });
