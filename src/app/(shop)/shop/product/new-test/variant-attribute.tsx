@@ -14,8 +14,8 @@ import { useFieldArray, UseFieldArrayReturn, UseFormReturn, useWatch } from "rea
 
 function VariantAttribute({ attributeFormHandle, productFormHandle, index }:
   {
-    attributeFormHandle: UseFieldArrayReturn<Product>
-    productFormHandle: UseFormReturn<Product>
+    attributeFormHandle: any
+    productFormHandle: any
     index: number
   }) {
 
