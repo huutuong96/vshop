@@ -316,7 +316,7 @@ export default function NewProductVariantWithVariantPartTestV2({ handleVariant, 
                           )}
                         />
                       </div>
-                      {errors.variantItems?.[index]?.name && <span className='text-sm text-red-600'>{errors.variantItems[index].name.message}</span>}
+                      {errors?.variantItems?.[index]?.name && <span className='text-sm text-red-600'>{errors.variantItems[index].name.message}</span>}
                     </div>
                   </div>
                   <div className='mt-2'>
