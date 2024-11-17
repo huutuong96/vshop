@@ -70,7 +70,7 @@ export default function NewProductVariantTable({ variantProducts, variantItems, 
                     </div>
                   </div>
                   {(errros?.variantProducts && errros?.variantProducts[index]?.price?.message) && (
-                    <span className="text-sm text-red-500">{errros?.variantProducts[index]?.price.message}</span>
+                    <span className="text-sm text-red-500">{errros.variantProducts[index].price.message}</span>
                   )}
                 </td>
                 <td className="">
