@@ -85,7 +85,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
           {p.variants && (
             <>
               {p.variants.map((pv: any, index: number) => (
-                <div className="text-[14px] flex">
+                <div key={index} className="text-[14px] flex">
                   <div className="w-[364px] p-2 pl-4 flex items-center gap-4 bg-gray-50">
                     <div className="w-full">
                       <div className="flex items-center gap-4">

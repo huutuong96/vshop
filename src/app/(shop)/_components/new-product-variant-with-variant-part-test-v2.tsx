@@ -322,7 +322,7 @@ export default function NewProductVariantWithVariantPartTestV2({ handleVariant, 
                   <div className='mt-2'>
                     <div className='mb-2 text-sm'>Tổng số biến thể</div>
                     {item.values.map((_, subIndex) => (
-                      <div className='mb-2 p-3 bg-white'>
+                      <div key={subIndex} className='mb-2 p-3 bg-white'>
                         <div className=' w-full flex items-center justify-between'>
 
                           <Controller

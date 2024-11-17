@@ -94,11 +94,11 @@ const HistoryBuySection = ({ token }: { token: any }) => {
           <span className='border-b-2 border-b-blue-500 font-medium cursor-pointer'>Trả hàng/Hoàn tiền</span>
         </div>
         {
-          orders.map((item: any) => {
+          orders.map((item: any, index: number) => {
             const findShop = shops.find((fShop: any) => fShop.id == item.shop_id);
 
             return (
-              <div className='listProduct w-full h-[475px] mt-2 border rounded shadow flex flex-col gap-3'>
+              <div key={index} className='listProduct w-full h-[475px] mt-2 border rounded shadow flex flex-col gap-3'>
                 <div className='nav-list-product w-full h-[35px] flex justify-between mt-2 px-3'>
                   <div className='flex gap-3 items-end '>
                     <p className='font-semibold text-[16px]'>{findShop ? findShop.shop_name : 'Shop đã biến mất'}</p>
@@ -118,10 +118,10 @@ const HistoryBuySection = ({ token }: { token: any }) => {
                 </div>
                 <div className='w-full h-[350px] flex flex-col justify-between px-3'>
                   {
-                    item.order_details.map((detail: any) => {
+                    item.order_details.map((detail: any, subIndex: number) => {
                       const findProduct = products.find((fProduct: any) => fProduct.id == detail.product_id)
                       return (
-                        <div className='h-[165px] flex gap-3 pt-2'>
+                        <div key={subIndex} className='h-[165px] flex gap-3 pt-2'>
                           <img src={`${findProduct.image}`} className='w-[136px] h-full border object-cover' />
                           <div className='flex flex-col justify-center'>
                             <span >{findProduct ? findProduct.name : 'Sản phẩm không hoạt động'}</span>

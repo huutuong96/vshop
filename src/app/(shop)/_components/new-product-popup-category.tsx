@@ -59,7 +59,7 @@ function NewProductPopupCategory({ isShowPopupCategory, setIsShowPopupCategory, 
             {
               categoriesSelected.length > 0 && isConfirmCategories
                 ? categoriesSelected.map((item, index) => (
-                  <span className="text-black font-medium">
+                  <span key={index} className="text-black font-medium">
                     <span>{item.title}</span>
                     <span className="ml-1">{index !== categoriesSelected.length - 1 && ' > '}</span>
                   </span>

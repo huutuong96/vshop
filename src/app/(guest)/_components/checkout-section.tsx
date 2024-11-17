@@ -301,7 +301,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
               </div>
               <div className="footer mt-[10px] h-[100px] px-[30px] flex items-center justify-between border-t">
                 <div className="text pt-10 pb-8 pr-[25px]">
-                  <div className="text-sm">Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo <span>Điều khoản VNShop</span></div>
+                  <div className="text-sm">Nhấn Đặt hàng đồng nghĩa với việc bạn đồng ý tuân theo <span>Điều khoản VNShop</span></div>
                 </div>
                 <div className="btn">
                   <Button onClick={handleCheckout} className="bg-blue-700 w-[200px] h-[40px] text-[16px] text-white font-bold">Đặt hàng</Button>

@@ -100,7 +100,7 @@ export default function CategorySection() {
             )}
             {isValid && (
               categoriesSlected.map((c, index) => (
-                <span className="flex items-center gap-1 mr-1">
+                <span key={index} className="flex items-center gap-1 mr-1">
                   {c.title}
                   {index !== categoriesSlected.length - 1 && <ChevronRight size={16} strokeWidth={1.25} />}
                 </span>
