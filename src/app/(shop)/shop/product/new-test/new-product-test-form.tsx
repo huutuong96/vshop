@@ -199,7 +199,7 @@ export default function NewProductTestForm() {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            {variantFields.map((v, index) => (
+            {variantFields.map((v: any, index: number) => (
               <VariantAttribute
                 key={v.id}
                 attributeFormHandle={attributeFormHandle}
