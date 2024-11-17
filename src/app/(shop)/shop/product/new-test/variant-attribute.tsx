@@ -50,7 +50,7 @@ function VariantAttribute({ attributeFormHandle, productFormHandle, index }:
         </div>
         <input
           {...productFormHandle.register(`variant.variantAttributes.${index}.attribute`, {
-            onChange(event) {
+            onChange(event: React.ChangeEvent<HTMLInputElement>) {
               productFormHandle.setValue('isCreated', false);
             },
             // required: "Attribute value is required",
