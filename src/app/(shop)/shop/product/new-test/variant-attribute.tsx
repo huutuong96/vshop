@@ -70,7 +70,7 @@ function VariantAttribute({ attributeFormHandle, productFormHandle, index }:
       <div className="mt-6 text-sm">
         <p className="mt-4 text-sm font-semibold">Các giá trị biến thể: </p>
         <div className="mt-4 flex flex-col gap-3">
-          {productFormHandle.getValues(`variant.variantAttributes.${index}.values`).map((v, subIndex) => (
+          {productFormHandle.getValues(`variant.variantAttributes.${index}.values`).map((v: any, subIndex: number) => (
             <AttributeValue
               key={v.id}
               attributeFormHandle={attributeFormHandle}
