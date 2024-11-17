@@ -13,7 +13,7 @@ const courses = [
   // Thêm các khóa học khác vào đây
 ];
 
-const CourseCard = ({ course }) => (
+const CourseCard = ({ course }: { course: any }) => (
   <div className="bg-white rounded-lg shadow-md overflow-hidden">
     <img src={course.image} alt={course.title} className="w-full h-48 object-cover" />
     <div className="p-4">
@@ -52,7 +52,7 @@ const CoursesPage = () => {
             <CourseCard key={course.id} course={course} />
           ))}
         </div>
-        
+
         {/* Pagination */}
         <div className="mt-8 flex justify-center">
           <nav className="inline-flex rounded-md shadow">
