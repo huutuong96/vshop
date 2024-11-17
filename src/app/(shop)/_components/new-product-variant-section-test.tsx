@@ -17,7 +17,7 @@ export default function NewProductVariantSectionTest() {
       <div className={`text-[20px] font-semibold mb-6 ${!isConfirmCategories && 'text-gray-400'}`}>Thông tin bán hàng</div>
       {isConfirmCategories && (
         <div>
-          {!isChangeVariantMode && (<NewProductVariantWithoutVariantPart />)}
+          {/* {!isChangeVariantMode && (<NewProductVariantWithoutVariantPart />)} */}
           {isChangeVariantMode && (
             <NewProductVariantWithVariantPart />
           )}
