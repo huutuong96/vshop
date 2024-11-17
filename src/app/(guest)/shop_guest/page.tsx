@@ -238,11 +238,11 @@ const ShopPageGuest = () => {
           <p className='cursor-pointer hover:text-[#0B74E5] hover:underline underline-offset-8'>Giá cao đến thấp</p>
         </div>
         <div className='w-full grid grid-cols-5 mt-4 gap-2'>
-          {
+          {/* {
             Array.from({ length: 20 }, (_, i) => i + 1).map(item => (
               <CardProduct key={item} />
             ))
-          }
+          } */}
         </div>
         <Pagination className='mt-2'>
           <PaginationContent>
