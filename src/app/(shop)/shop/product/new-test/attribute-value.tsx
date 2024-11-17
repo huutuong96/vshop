@@ -93,7 +93,7 @@ function AttributeValue({ item, productFormHandle, attributeValuesFormHandle, in
           <div >
             <input
               {...productFormHandle.register(`variant.variantAttributes.${index}.values.${subIndex}.value`, {
-                onChange(event) {
+                onChange(event: React.ChangeEvent<HTMLInputElement>) {
                   productFormHandle.setValue('isCreated', false);
                 },
               })}
