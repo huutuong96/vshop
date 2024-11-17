@@ -280,178 +280,179 @@ export default function NewProductVariantWithVariantPartTest({ handleVariant, se
   };
 
   return (
-    <div className="">
-      <div className="w-full flex mb-6">
-        <div>
-          <div className="w-[144px] h-10 mr-6 flex justify-end items-center gap-1">
-            <span className="text-[12px] text-blue-700">*</span>
-            <div className="text-[14px] h-full font-medium flex items-center">
-              Phân loại hàng
-            </div>
-          </div>
-        </div>
-        <div className='w-full'>
-          {variantItems.map((item, index) => {
-            // const { fields: values, append: addValue, remove: removeValue } = useFieldArray({
-            //   control,
-            //   name: `variantItems.${index}.values`
-            // });
-            return (
-              <div key={index} className="w-full bg-[#f5f8fe] p-4 rounded-lg relative mb-4">
-                <div onClick={() => {
-                  remove(index);
-                  if (getValues('variantItems').length === 0) {
-                    remove();
-                    removeVariantProduct();
-                    dispatch(changeVariantMode1(false));
-                    handleVariant(null);
-                    setValueProduct('changeVariantMode', false);
-                    setErrorProduct('variant', { message: undefined })
-                  }
-                  console.log({ a: getValues('variantItems'), b: getValues('variantProducts') });
-                }} className='absolute top-4 right-4'><X /></div>
-                <div>
-                  <div>
-                    <div className='py-2 border-b text-[16px] font-medium'>Biến thể {index + 1}</div>
-                    <div className='py-2'>
-                      <div className='text-sm mb-1'>Tên biến thể</div>
-                      <div>
-                        <Controller
-                          control={control}
-                          name={`variantItems.${index}.name`}
-                          render={({ field }) => (
-                            <input {...field} placeholder="Input" className='border text-sm w-[300px] px-3 py-1' />
-                          )}
-                        />
-                      </div>
-                      {errors.variantItems?.[index]?.name && <span className='text-sm text-red-600'>{errors.variantItems[index].name.message}</span>}
-                    </div>
-                  </div>
-                  <div className='mt-2'>
-                    <div className='mb-2 text-sm'>Tổng số biến thể</div>
-                    {item.values.map((_, subIndex) => (
-                      <div key={subIndex} className='mb-2 p-3 bg-white'>
-                        <div className=' w-full flex items-center justify-between'>
+    // <div className="">
+    //   <div className="w-full flex mb-6">
+    //     <div>
+    //       <div className="w-[144px] h-10 mr-6 flex justify-end items-center gap-1">
+    //         <span className="text-[12px] text-blue-700">*</span>
+    //         <div className="text-[14px] h-full font-medium flex items-center">
+    //           Phân loại hàng
+    //         </div>
+    //       </div>
+    //     </div>
+    //     <div className='w-full'>
+    //       {variantItems.map((item, index) => {
+    //         // const { fields: values, append: addValue, remove: removeValue } = useFieldArray({
+    //         //   control,
+    //         //   name: `variantItems.${index}.values`
+    //         // });
+    //         return (
+    //           <div key={index} className="w-full bg-[#f5f8fe] p-4 rounded-lg relative mb-4">
+    //             <div onClick={() => {
+    //               remove(index);
+    //               if (getValues('variantItems').length === 0) {
+    //                 remove();
+    //                 removeVariantProduct();
+    //                 dispatch(changeVariantMode1(false));
+    //                 handleVariant(null);
+    //                 setValueProduct('changeVariantMode', false);
+    //                 setErrorProduct('variant', { message: undefined })
+    //               }
+    //               console.log({ a: getValues('variantItems'), b: getValues('variantProducts') });
+    //             }} className='absolute top-4 right-4'><X /></div>
+    //             <div>
+    //               <div>
+    //                 <div className='py-2 border-b text-[16px] font-medium'>Biến thể {index + 1}</div>
+    //                 <div className='py-2'>
+    //                   <div className='text-sm mb-1'>Tên biến thể</div>
+    //                   <div>
+    //                     <Controller
+    //                       control={control}
+    //                       name={`variantItems.${index}.name`}
+    //                       render={({ field }) => (
+    //                         <input {...field} placeholder="Input" className='border text-sm w-[300px] px-3 py-1' />
+    //                       )}
+    //                     />
+    //                   </div>
+    //                   {errors.variantItems?.[index]?.name && <span className='text-sm text-red-600'>{errors.variantItems[index].name.message}</span>}
+    //                 </div>
+    //               </div>
+    //               <div className='mt-2'>
+    //                 <div className='mb-2 text-sm'>Tổng số biến thể</div>
+    //                 {item.values.map((_, subIndex) => (
+    //                   <div key={subIndex} className='mb-2 p-3 bg-white'>
+    //                     <div className=' w-full flex items-center justify-between'>
 
-                          <Controller
-                            control={control}
-                            name={`variantItems.${index}.values.${subIndex}.value`}
-                            render={({ field }) => (
-                              <input {...field} placeholder="Value" className='w-[300px] border rounded px-2 py-1 text-sm' />
-                            )}
-                          />
-                          <div className='border border-dashed flex items-center'>
-                            <img className='size-10' src={variantItems[index].values[subIndex].image} alt="" />
-                            <input type="file" placeholder='Chọn ảnh' className='w-[400px]' onChange={async (e) => {
-                              const file = e.target.files;
-                              if (file && file.length > 0) {
-                                await handleUploadImage(index, subIndex, file[0], item);
-                              }
-                            }} />
-                          </div>
-                          <div className='cursor-pointer' onClick={() => {
-                            const a = { ...getValues(`variantItems.${index}`) };
-                            if (a.values.length > 1) {
-                              a.values.splice(subIndex, 1);
-                              setValue(`variantItems.${index}.values`, [...a.values]);
-                              update(index, a);
-                              // remove();
-                              trigger();
-                            }
-                          }}>
-                            <Trash2 strokeWidth={1.25} width={20} />
-                          </div>
-                        </div>
-                        {errors.variantItems?.[index]?.values?.[subIndex]?.value && (
-                          <span className='text-sm text-red-500 mt-1'>{errors.variantItems[index].values[subIndex].value.message}</span>
-                        )}
-                      </div>
-                    ))}
+    //                       <Controller
+    //                         control={control}
+    //                         name={`variantItems.${index}.values.${subIndex}.value`}
+    //                         render={({ field }) => (
+    //                           <input {...field} placeholder="Value" className='w-[300px] border rounded px-2 py-1 text-sm' />
+    //                         )}
+    //                       />
+    //                       <div className='border border-dashed flex items-center'>
+    //                         <img className='size-10' src={variantItems[index].values[subIndex].image} alt="" />
+    //                         <input type="file" placeholder='Chọn ảnh' className='w-[400px]' onChange={async (e) => {
+    //                           const file = e.target.files;
+    //                           if (file && file.length > 0) {
+    //                             await handleUploadImage(index, subIndex, file[0], item);
+    //                           }
+    //                         }} />
+    //                       </div>
+    //                       <div className='cursor-pointer' onClick={() => {
+    //                         const a = { ...getValues(`variantItems.${index}`) };
+    //                         if (a.values.length > 1) {
+    //                           a.values.splice(subIndex, 1);
+    //                           setValue(`variantItems.${index}.values`, [...a.values]);
+    //                           update(index, a);
+    //                           // remove();
+    //                           trigger();
+    //                         }
+    //                       }}>
+    //                         <Trash2 strokeWidth={1.25} width={20} />
+    //                       </div>
+    //                     </div>
+    //                     {errors.variantItems?.[index]?.values?.[subIndex]?.value && (
+    //                       <span className='text-sm text-red-500 mt-1'>{errors.variantItems[index].values[subIndex].value.message}</span>
+    //                     )}
+    //                   </div>
+    //                 ))}
 
-                  </div>
-                  <div className='border inline-block p-2 bg-white text-black rounded text-sm cursor-pointer' onClick={async () => {
-                    // clearErrors('variantItems')
-                    // update(index, newItem);
-                    // await trigger(`variantItems.${index}.values.${variantItems[index].values.length - 1}`);
-                    // console.log({ variantItems });
-                    const a = getValues(`variantItems.${index}`);
-                    a.values.push({ image: "", value: "" });
-                    update(index, a);
-                    const x = getValues('variantItems');
-                    const z = combineVariants(x);
-                    setValue('variantProducts', z);
-                    await trigger();
-                  }}>Thêm value</div>
-                </div>
-              </div>
-            )
-          })}
-          {variantItems.length < 2 && (
-            <div onClick={() => {
-              append({ name: "", values: [{ value: "", image: "" }] })
-              trigger();
-            }} className='inline-block border mt-4 p-2 rounded text-sm cursor-pointer'>Thêm biến thể</div>
-          )}
+    //               </div>
+    //               <div className='border inline-block p-2 bg-white text-black rounded text-sm cursor-pointer' onClick={async () => {
+    //                 // clearErrors('variantItems')
+    //                 // update(index, newItem);
+    //                 // await trigger(`variantItems.${index}.values.${variantItems[index].values.length - 1}`);
+    //                 // console.log({ variantItems });
+    //                 const a = getValues(`variantItems.${index}`);
+    //                 a.values.push({ image: "", value: "" });
+    //                 update(index, a);
+    //                 const x = getValues('variantItems');
+    //                 const z = combineVariants(x);
+    //                 setValue('variantProducts', z);
+    //                 await trigger();
+    //               }}>Thêm value</div>
+    //             </div>
+    //           </div>
+    //         )
+    //       })}
+    //       {variantItems.length < 2 && (
+    //         <div onClick={() => {
+    //           append({ name: "", values: [{ value: "", image: "" }] })
+    //           trigger();
+    //         }} className='inline-block border mt-4 p-2 rounded text-sm cursor-pointer'>Thêm biến thể</div>
+    //       )}
 
-        </div>
-      </div>
+    //     </div>
+    //   </div>
 
-      {/* <div onClick={async () => {
-        await createVariantProductsTable()
-      }} className='border inline-block p-4'>Tạo sản phẩm biến thể</div> */}
+    //   {/* <div onClick={async () => {
+    //     await createVariantProductsTable()
+    //   }} className='border inline-block p-4'>Tạo sản phẩm biến thể</div> */}
 
-      <div className="w-full flex mb-6">
-        <div>
-          <div className="w-[144px] h-10 mr-6 flex justify-end items-center gap-1">
-            <span className="text-[12px] text-blue-700">*</span>
-            <div className="text-[14px] h-full font-medium flex items-center">
-              Danh sách phân loại hàng
-            </div>
-          </div>
-        </div>
-        <div className="w-full mt-1 flex flex-wrap">
-          <div className="w-full flex mb-4">
-            <div className="flex h-8">
-              <div className="border border-r-0 w-56 h-full px-3 py-1 flex rounded-tl rounded-bl">
-                <div className="flex items-center text-[12px] pr-2">
-                  ₫
-                  <div className="ml-2 border-r h-full"></div>
-                </div>
-                <input type='number' value={price} onChange={(e) => setPrice(+e.target.value)} className="w-full h-full outline-none text-[14px]" placeholder="Giá" />
-              </div>
-              <div className="border border-r-0 w-56 h-full px-3 py-1 flex">
-                <input type='number' value={stock} onChange={(e) => setStock(+e.target.value)} className="w-full h-full outline-none text-[14px]" placeholder="Kho hàng" />
-              </div>
-              <div className="border w-56 h-full px-3 py-1 flex rounded-tr rounded-br">
-                <input value={sku} onChange={(e) => setSku(e.target.value)} type="text" className="w-full h-full outline-none text-[14px]" placeholder="SKU phân loại" />
-              </div>
-            </div>
-            <div onClick={(e) => {
-              e.preventDefault();
-              if (price && stock && sku) {
-                removeVariantProduct()
-                appendVariantProduct(variantProducts.map(p => ({ ...p, price: price, stock: stock, sku: sku })))
-              }
-            }} className={`w-full inline-flex items-center justify-center cursor-pointer h-8 ml-6 border text-[14px] bg-blue-500 text-white rounded hover:opacity-80 ${variantProducts.length === 0 && 'cursor-not-allowed opacity-80'}`}>
-              Áp dụng cho tất cả sản phẩm phân loại
-            </div>
-          </div>
-          {/* <NewProductVariantTable
-            variantProducts={getValues('variantProducts')}
-            variantItems={getValues('variantItems')}
-            control={control}
-            errros={errors}
-            register={register}
-          /> */}
-          <div onClick={() => {
-            console.log(getValues('variantProducts'));
-            console.log({ errors });
-          }} className='border inline-block p-2 bg-blue-500 text-white'>click</div>
-        </div>
-      </div>
-      <div>
-        <div onClick={handleSubmit(onSubmit)} className='border p-2'>click</div>
-      </div>
-    </div >
+    //   <div className="w-full flex mb-6">
+    //     <div>
+    //       <div className="w-[144px] h-10 mr-6 flex justify-end items-center gap-1">
+    //         <span className="text-[12px] text-blue-700">*</span>
+    //         <div className="text-[14px] h-full font-medium flex items-center">
+    //           Danh sách phân loại hàng
+    //         </div>
+    //       </div>
+    //     </div>
+    //     <div className="w-full mt-1 flex flex-wrap">
+    //       <div className="w-full flex mb-4">
+    //         <div className="flex h-8">
+    //           <div className="border border-r-0 w-56 h-full px-3 py-1 flex rounded-tl rounded-bl">
+    //             <div className="flex items-center text-[12px] pr-2">
+    //               ₫
+    //               <div className="ml-2 border-r h-full"></div>
+    //             </div>
+    //             <input type='number' value={price} onChange={(e) => setPrice(+e.target.value)} className="w-full h-full outline-none text-[14px]" placeholder="Giá" />
+    //           </div>
+    //           <div className="border border-r-0 w-56 h-full px-3 py-1 flex">
+    //             <input type='number' value={stock} onChange={(e) => setStock(+e.target.value)} className="w-full h-full outline-none text-[14px]" placeholder="Kho hàng" />
+    //           </div>
+    //           <div className="border w-56 h-full px-3 py-1 flex rounded-tr rounded-br">
+    //             <input value={sku} onChange={(e) => setSku(e.target.value)} type="text" className="w-full h-full outline-none text-[14px]" placeholder="SKU phân loại" />
+    //           </div>
+    //         </div>
+    //         <div onClick={(e) => {
+    //           e.preventDefault();
+    //           if (price && stock && sku) {
+    //             removeVariantProduct()
+    //             appendVariantProduct(variantProducts.map(p => ({ ...p, price: price, stock: stock, sku: sku })))
+    //           }
+    //         }} className={`w-full inline-flex items-center justify-center cursor-pointer h-8 ml-6 border text-[14px] bg-blue-500 text-white rounded hover:opacity-80 ${variantProducts.length === 0 && 'cursor-not-allowed opacity-80'}`}>
+    //           Áp dụng cho tất cả sản phẩm phân loại
+    //         </div>
+    //       </div>
+    //       {/* <NewProductVariantTable
+    //         variantProducts={getValues('variantProducts')}
+    //         variantItems={getValues('variantItems')}
+    //         control={control}
+    //         errros={errors}
+    //         register={register}
+    //       /> */}
+    //       <div onClick={() => {
+    //         console.log(getValues('variantProducts'));
+    //         console.log({ errors });
+    //       }} className='border inline-block p-2 bg-blue-500 text-white'>click</div>
+    //     </div>
+    //   </div>
+    //   <div>
+    //     <div onClick={handleSubmit(onSubmit)} className='border p-2'>click</div>
+    //   </div>
+    // </div >
+    null
   )
 }
