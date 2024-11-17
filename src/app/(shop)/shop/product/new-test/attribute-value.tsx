@@ -165,8 +165,9 @@ function AttributeValue({ item, productFormHandle, attributeValuesFormHandle, in
         )}
       </div>
       {
-        productFormHandle.formState.errors.variant?.variantAttributes?.[index]?.values?.[subIndex]?.value?.message && (
-          <p className="text-sm mt-2 text-red-500">{productFormHandle.formState.errors.variant.variantAttributes[index].values[subIndex].value.message}</p>
+        productFormHandle.formState.errors?.variant?.variantAttributes?.[index]?.values?.[subIndex]?.value?.message && (
+          // <p className="text-sm mt-2 text-red-500">{productFormHandle.formState.errors.variant.variantAttributes[index].values[subIndex].value.message}</p>
+          <p className="text-sm mt-2 text-red-500">error</p>
         )
       }
     </div>
