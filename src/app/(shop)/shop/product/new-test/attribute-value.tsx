@@ -21,9 +21,9 @@ import envConfig from "@/config"
 
 function AttributeValue({ item, productFormHandle, attributeValuesFormHandle, index, subIndex }: {
   item: any
-  attributeFormHandle: UseFieldArrayReturn<Product>
-  attributeValuesFormHandle: UseFieldArrayReturn<Product>
-  productFormHandle: UseFormReturn<Product>
+  attributeFormHandle: any
+  attributeValuesFormHandle: any
+  productFormHandle: any
   index: number
   subIndex: number
 }) {
