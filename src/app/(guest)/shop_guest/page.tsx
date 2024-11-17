@@ -58,11 +58,11 @@ const ShopPageGuest = () => {
       </div>
       <div className='voucher_list w-full flex justify-center py-3'>
         <div className='w-[1000px] grid grid-cols-3 gap-3'>
-          {
+          {/* {
             Array.from({ length: 3 }, (_, i) => i + 1).map(item => (
               <VoucherComponent key={item} />
             ))
-          }
+          } */}
         </div>
       </div>
       <div className='banner w-full h-[247px] flex gap-2'>
@@ -245,21 +245,21 @@ const ShopPageGuest = () => {
           }
         </div>
         <Pagination className='mt-2'>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">1</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#">2</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );
