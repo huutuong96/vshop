@@ -230,9 +230,9 @@ export default function CheckoutByshopItem({ s, index, setVoucherSelected, vouch
                     <TicketCheck size={20} color="#2969d1" strokeWidth={1.25} />
                     <span className="ml-1.5 text-sm">Voucher của shop</span>
                   </div>
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-4">
                     {voucherShop && (
-                      <div className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-5 p-1">- {voucherShop.ratio}%</div>
+                      <button className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-6 p-1 w-10">- {voucherShop.ratio}%</button>
                     )}
                     <DropdownMenu modal={false} >
                       <DropdownMenuTrigger>
@@ -268,6 +268,7 @@ export default function CheckoutByshopItem({ s, index, setVoucherSelected, vouch
                                     }}
                                     value={v.id}
                                     checked={voucherShop && voucherShop.id === v.id}
+                                    disabled={price < +v.min}
                                   />
                                 </div>
                               </div>
