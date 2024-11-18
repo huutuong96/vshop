@@ -38,6 +38,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   const [mainVouchers, setMainVouchers] = useState<any[]>([]);
   const [mainVoucherSelected, setMainVoucherSelected] = useState<any>(null);
   const [vouchersSelected, setVoucherSelected] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
+  const [paymentSelected, setPaymentSelected] = useState(11)
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -64,7 +66,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id) }));
 
       try {
-        const [calShipFeeRes, vouchersRes] = await Promise.all([
+        const [calShipFeeRes, vouchersRes, paymentsRes] = await Promise.all([
           fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
             method: "POST",
             headers: {
@@ -78,14 +80,19 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
             headers: {
               "Authorization": `Bearer ${clientAccessToken.value}`
             }, signal
+          }),
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/payments`, {
+            headers: {
+              "Authorization": `Bearer ${clientAccessToken.value}`
+            }, signal
           })
-
         ]);
-        if (!calShipFeeRes.ok || !vouchersRes.ok) {
+        if (!calShipFeeRes.ok || !vouchersRes.ok || !paymentsRes) {
           throw 'Error'
         }
         const calShipFeePayload = await calShipFeeRes.json();
         const vouchersPayload = await vouchersRes.json();
+        const paymentsPayload = await paymentsRes.json();
 
         setMainVouchers(vouchersPayload.data.filter((v: any) => v.type === 'main'))
 
@@ -97,6 +104,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
             voucherSelected: null
           }
         ))])
+        setPayments(paymentsPayload.data);
         setLoading(false);
       } catch (error: any) {
         if (error.name !== 'AbortError') {
@@ -128,7 +136,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         method: "POST",
         body: JSON.stringify({
           carts,
-          payment: 11,
+          payment: paymentSelected,
           voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
           voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
         }),
@@ -141,7 +149,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       if (!res.ok) {
         throw 'Error'
       }
-      await fetch(`/api/auth/del-cookie`, {
+      await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/del-cookie`, {
         method: "POST",
       });
       dispatch(changeCheckoutState(""));
@@ -211,7 +219,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
                   <Ticket color="#2969d1" strokeWidth={1.25} size={24} />
                   <div className="ml-3 text-[20px]">VNShop Voucher</div>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
                   {mainVoucherSelected && (
                     <div className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-5 p-1">- {mainVoucherSelected.ratio}%</div>
                   )}
@@ -267,9 +275,10 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
                 <div className="flex">
                   <div className="text-[20px] text-black">Phương thức thanh toán</div>
                 </div>
-                <div className="flex">
-                  <span className="text-sm">Thanh toán khi nhận hàng</span>
-                  <span className="text-blue-700 text-sm ml-[60px] uppercase">Thay đổi</span>
+                <div className="flex items-center gap-4">
+                  {payments.map((p, index) => (
+                    <button type="button" onClick={() => setPaymentSelected(p.id)} key={index} className={`text-sm border px-3 py-1 h-10 ${paymentSelected === p.id ? 'border-blue-700 text-blue-700' : ''}`}>{p.name}</button>
+                  ))}
                 </div>
               </div>
               <div className="content flex justify-end pt-[15px] bg-[#fffefb]">
