@@ -27,6 +27,14 @@ function AttributeValue({ item, productFormHandle, attributeValuesFormHandle, in
   index: number
   subIndex: number
 }) {
+  //   item: any
+  //   attributeFormHandle: UseFieldArrayReturn<Product>
+  //   attributeValuesFormHandle: UseFieldArrayReturn<Product>
+  //   productFormHandle: UseFormReturn<Product>
+  //   index: number
+  //   subIndex: number
+  // }) {
+
 
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const currentInputRef = useRef<HTMLInputElement | null>(null);
@@ -93,7 +101,7 @@ function AttributeValue({ item, productFormHandle, attributeValuesFormHandle, in
           <div >
             <input
               {...productFormHandle.register(`variant.variantAttributes.${index}.values.${subIndex}.value`, {
-                onChange(event: React.ChangeEvent<HTMLInputElement>) {
+                onChange(event: any) {
                   productFormHandle.setValue('isCreated', false);
                 },
               })}
@@ -165,9 +173,8 @@ function AttributeValue({ item, productFormHandle, attributeValuesFormHandle, in
         )}
       </div>
       {
-        productFormHandle.formState.errors?.variant?.variantAttributes?.[index]?.values?.[subIndex]?.value?.message && (
-          // <p className="text-sm mt-2 text-red-500">{productFormHandle.formState.errors.variant.variantAttributes[index].values[subIndex].value.message}</p>
-          <p className="text-sm mt-2 text-red-500">error</p>
+        productFormHandle.formState.errors.variant?.variantAttributes?.[index]?.values?.[subIndex]?.value?.message && (
+          <p className="text-sm mt-2 text-red-500">{productFormHandle.formState.errors.variant.variantAttributes[index].values[subIndex].value.message}</p>
         )
       }
     </div>

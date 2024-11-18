@@ -19,6 +19,13 @@ function VariantAttribute({ attributeFormHandle, productFormHandle, index }:
     index: number
   }) {
 
+  // {
+  //   attributeFormHandle: UseFieldArrayReturn<Product>
+  //   productFormHandle: UseFormReturn<Product>
+  //   index: number
+  // }) {
+
+
   const [imageLoading, setImageLoading] = useState<boolean>(false);
 
   const attributeValuesFormHandle = useFieldArray({
@@ -32,6 +39,15 @@ function VariantAttribute({ attributeFormHandle, productFormHandle, index }:
     // const variants = productFormHandle.getValues(`variant.variantAttributes`);
     // variants.splice(index, 1);
     // productFormHandle.setValue(`variant.variantAttributes`, variants);
+    const variantAttributes = productFormHandle.getValues('variant.variantAttributes');
+    if (!variantAttributes.length) {
+      productFormHandle.setValue('variant', null);
+      productFormHandle.setValue('variantMode', false);
+      productFormHandle.setValue('price', null);
+      productFormHandle.setValue('stock', null);
+      productFormHandle.setValue('sku', null);
+
+    }
     productFormHandle.setValue(`isCreated`, false);
   }
 
@@ -50,7 +66,7 @@ function VariantAttribute({ attributeFormHandle, productFormHandle, index }:
         </div>
         <input
           {...productFormHandle.register(`variant.variantAttributes.${index}.attribute`, {
-            onChange(event: React.ChangeEvent<HTMLInputElement>) {
+            onChange(event: any) {
               productFormHandle.setValue('isCreated', false);
             },
             // required: "Attribute value is required",
