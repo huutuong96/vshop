@@ -11,8 +11,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import ImageLoading from "@/app/(shop)/shop/product/new-test/image-loading"
-import { Product } from "@/app/(shop)/shop/product/new-test/new-product-test-form"
+import ImageLoading from "@/app/(shop)/shop/product/new/image-loading"
+import { Product } from "@/app/(shop)/shop/product/new/new-product-test-form"
 import { clientAccessToken } from "@/lib/http"
 import { PencilLine, Plus, Trash2 } from "lucide-react"
 import { ChangeEvent, memo, useRef, useState } from "react"
