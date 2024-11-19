@@ -102,7 +102,7 @@ export default function CategorySection({ productFormHandle, setShowMore }: { pr
             )} */}
             {(categoriesSlectedCopy.length > 0 ?
               categoriesSlectedCopy.map((c, index) => (
-                <span className="flex items-center gap-1 mr-1 ">
+                <span key={index} className="flex items-center gap-1 mr-1 ">
                   {c.title}
                   {index !== categoriesSlectedCopy.length - 1 && <ChevronRight size={16} strokeWidth={1.25} />}
                 </span>
