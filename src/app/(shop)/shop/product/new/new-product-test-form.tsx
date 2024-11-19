@@ -151,7 +151,8 @@ export default function NewProductTestForm() {
       variant: null,
       images: [],
       shop_id: info.shop_id,
-      isCreated: false
+      isCreated: false,
+      variantMode: false
     },
     // defaultValues: { ...JSON.parse(a), isCreated: true, variantMode: (JSON.parse(a) as any).variant ? true : false } as Product,
     mode: "all"
