@@ -42,6 +42,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
   const [errorMessage, setErrorMessage] = useState<string>('');
   const router = useRouter();
   const [success, setSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (variant) {
@@ -87,6 +88,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
     }
     try {
+      setLoading(true);
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts`, {
         method: "POST",
         headers: {
@@ -125,9 +127,11 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       console.log(error);
       toast({ title: "Error", variant: "destructive" })
     } finally {
+      setLoading(false);
       setTimeout(() => {
         setSuccess(false);
       }, 1000)
+
     }
   }
 
@@ -136,15 +140,16 @@ export default function ProductDetailSection({ product, variant, test }: { produ
   return (
     <>
       {success && (
-        <div className="fixed inset-0 p-4 flex flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full  overflow-auto font-[sans-serif]">
-          <div className="w-[300px] h-[180px]">
-            <div className="w-full h-full max-w-lg bg-[black] opacity-70 before:bg-[rgba(0,0,0,0.5)] shadow-lg rounded-lg p-6 relative"></div>
-            <div className="my-8 text-center absolute top-[250px] translate-x-7">
-              <div className="size-20 ml-[88px] bg-[#16d8a5] rounded-full flex items-center justify-center">
-                <Check color="#ffffff" size={48} />
-              </div>
-              <h4 className="text-sm text-white font-medium mt-4">Sản phẩm đã được thêm vào giỏ hàng</h4>
+        <div className="fixed inset-0 flex justify-center items-center z-[1000] font-[sans-serif]">
+          <div className="relative w-[300px] bg-black bg-opacity-70 shadow-lg rounded-lg p-6 flex flex-col items-center">
+            {/* Vòng tròn chứa icon */}
+            <div className="w-16 h-16 bg-[#16d8a5] rounded-full flex items-center justify-center shadow-md">
+              <Check color="#ffffff" size={36} />
             </div>
+            {/* Nội dung thông báo */}
+            <h4 className="text-center text-white text-sm font-medium mt-4">
+              Sản phẩm đã được thêm vào giỏ hàng
+            </h4>
           </div>
         </div>
       )}
@@ -306,7 +311,12 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
               <div className="w-full flex my-2">
                 <>
-                  <Button onClick={handleAddToCart} className={`bg-white h-12 w-60 font-semibold text-blue-500 border-blue-500 border-2 rounded hover:bg-white mr-4 ${selectedProduct.stock ? "cursor-pointer" : "cursor-not-allowed"}`}>Thêm vào giỏ</Button>
+                  <Button disabled={loading} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-500 border-blue-500 border-2 rounded hover:bg-white mr-4 ${selectedProduct.stock ? "cursor-pointer" : "cursor-not-allowed"}`}>
+                    {loading && (
+                      <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
+                    )}
+                    Thêm vào giỏ
+                  </Button>
                   <Button className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
                 </>
 

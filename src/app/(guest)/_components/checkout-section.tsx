@@ -39,7 +39,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   const [mainVoucherSelected, setMainVoucherSelected] = useState<any>(null);
   const [vouchersSelected, setVoucherSelected] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
-  const [paymentSelected, setPaymentSelected] = useState(11)
+  const [paymentSelected, setPaymentSelected] = useState(11);
+  const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false)
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -132,6 +133,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       }
     })
     try {
+      setLoadingCheckout(true);
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/purchase_to_cart`, {
         method: "POST",
         body: JSON.stringify({
@@ -146,19 +148,26 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         }
       });
       const payload = await res.json();
+      console.log(payload);
+
       if (!res.ok) {
+        console.log(payload);
+
         throw 'Error'
       }
-      await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/del-cookie`, {
-        method: "POST",
-      });
-      dispatch(changeCheckoutState(""));
-      // router.push('/');
-      // toast({ title: "Đặt hàng thành công!", variant: "success" })
-      location.href = '/'
+      console.log(payload);
+      // await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/del-cookie`, {
+      //   method: "POST",
+      // });
+      // dispatch(changeCheckoutState(""));
+      // // router.push('/');
+      // // toast({ title: "Đặt hàng thành công!", variant: "success" })
+      // location.href = '/'
 
     } catch (error) {
       toast({ title: "Lỗi", variant: "destructive" })
+    } finally {
+      setLoadingCheckout(false);
     }
 
   }
@@ -313,7 +322,17 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
                   <div className="text-sm">Nhấn Đặt hàng đồng nghĩa với việc bạn đồng ý tuân theo <span>Điều khoản VNShop</span></div>
                 </div>
                 <div className="btn">
-                  <Button onClick={handleCheckout} className="bg-blue-700 w-[200px] h-[40px] text-[16px] text-white font-bold">Đặt hàng</Button>
+                  {!loadingCheckout && (
+                    <Button onClick={handleCheckout} className="bg-blue-700 w-[160px] flex gap-4 h-[40px] text-sm text-white font-semibold">
+                      Đặt hàng
+                    </Button>
+                  )}
+                  {loadingCheckout && (
+                    <Button disabled={loadingCheckout} className={`bg-white h-[40px] w-[160px] flex gap-4 font-semibold text-blue-500 border-blue-500 border rounded hover:bg-white`}>
+                      <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
+                      Đặt hàng
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

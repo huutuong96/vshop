@@ -15,6 +15,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/slug/${slug}`, {
     cache: "no-cache"
   });
+  if (!res.ok) {
+    return notFound();
+  }
   const payload = await res.json();
 
   return {
