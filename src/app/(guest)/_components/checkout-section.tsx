@@ -155,13 +155,19 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
 
         throw 'Error'
       }
-      console.log(payload);
-      // await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/del-cookie`, {
-      //   method: "POST",
-      // });
-      // dispatch(changeCheckoutState(""));
-      // // router.push('/');
-      // // toast({ title: "Đặt hàng thành công!", variant: "success" })
+      await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/del-cookie`, {
+        method: "POST",
+      });
+      dispatch(changeCheckoutState(""));
+      if (paymentSelected === 12) {
+        window.location.href = payload.url;
+      } else {
+        // console.log(payload);
+        window.location.href = `http://localhost:3000/checkout/success?id=1`;
+      }
+
+      // router.push('/');
+      // toast({ title: "Đặt hàng thành công!", variant: "success" })
       // location.href = '/'
 
     } catch (error) {

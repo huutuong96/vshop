@@ -15,26 +15,22 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 export default function ProductDetailSection({ product, variant, test }: { product: any, variant: any, test?: any }) {
-  let show_price = (product.show_price as string).split(' - ').length > 1 ?
-    (product.show_price as string).split(' - ').map(p => formattedPrice(+p)).join(" - ") : formattedPrice(+product.show_price);
 
-  // const [attributes, setAttributes] = useState<any[]>(variantInfo.attribute);
-  // const [values, setValues] = useState<any[]>(variantInfo.value);
-  // const [variantProducts, setVariantProducts] = useState<any[]>(variantInfo.variant);
   const [variantSelected, setVariantSelected] = useState<any[]>(() => {
     if (variant) {
-      return variant.json.variantItems.map((a: any, index: number) => ({ index, id: "" }))
+      return variant.variantItems.map((a: any, index: number) => ({ index, id: "" }))
     }
     return []
   });
+
   const dispatch = useAppDispatch();
 
 
-  const [rootProduct, setRootProduct] = useState<any>({ ...product, show_price });
+  const [rootProduct, setRootProduct] = useState<any>({ ...product });
   const [selectedProduct, setSelectedProduct] = useState<any>(
     {
       ...rootProduct,
-      stock: variant ? variant.variantProducts.reduce((acc: number, cur: any) => acc + (+cur.stock), 0) : +rootProduct.quantity
+      stock: variant ? variant.variantProductsBE.reduce((acc: number, cur: any) => acc + (+cur.stock), 0) : +rootProduct.quantity
     }
   );
   const [imageHoverSelected, setImageHoverSelected] = useState<string>('');
@@ -46,10 +42,10 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
   useEffect(() => {
     if (variant) {
-      const variantProductsMe = variant.json.variantProducts;
-      const variantProductBE = variant.variantProducts;
+      // const variantProductsMe = variant.json.variantProducts;
+      const variantProductBE = variant.variantProductsBE;
 
-      const findProduct = variantProductsMe.find((p: { variants: { id: string }[] }) => {
+      const findProduct = variantProductBE.find((p: { variants: { id: string }[] }) => {
         if (variantSelected.length !== p.variants.length) return false;
         const setA = new Set(variantSelected.map(item => item.id));
         const setB = new Set(p.variants.map(item => item.id));
@@ -59,15 +55,16 @@ export default function ProductDetailSection({ product, variant, test }: { produ
         );
       });
       if (findProduct) {
-        const findProduct1 = variantProductBE.find((a: any) => a.id_fe === findProduct.id);
         setSelectedProduct((prev: any) => {
-          return { ...prev, image: findProduct1.images, show_price: formattedPrice(+findProduct1.price), variant_id: +findProduct1.id, stock: +findProduct1.stock }
+          return { ...prev, image: findProduct.images, show_price: formattedPrice(findProduct.price), variant_id: +findProduct.id, stock: +findProduct.stock }
         })
       }
     }
 
 
   }, [variantSelected])
+
+
 
   const handleAddToCart = async () => {
     if (!clientAccessToken.value) {
@@ -122,9 +119,8 @@ export default function ProductDetailSection({ product, variant, test }: { produ
         }
       })
       dispatch(addCart(newCart))
-      setSuccess(true);
+      setSuccess(true)
     } catch (error) {
-      console.log(error);
       toast({ title: "Error", variant: "destructive" })
     } finally {
       setLoading(false);
@@ -135,6 +131,14 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
+  if (typeof window !== 'undefined') {
+    // if (variant) {
+    //   const variantItems = variant.json.variantItems;
+    //   const variantProductsJson = variant.json.variantProducts;
+    //   const variantProductsBE = variant.variantProducts.map((v: any, index: number) => ({ ...v, variants: variantProductsJson[index].variants, stock: +v.stock, price: +v.price }));
+    //   console.log({ variantProductsBE, variantItems });
+    // }
+  }
 
 
   return (
@@ -215,7 +219,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
             <div className="w-full mt-4 py-[5px] border-t">
               <div className="w-full mt-2">
                 {
-                  variant ? variant.json.variantItems.map((va: any, index: number) => {
+                  variant ? variant.variantItems.map((va: any, index: number) => {
                     // const newVa = { ...va };
                     // if (index === 0) {
                     //   newVa.values.map((i: any) => {
@@ -246,9 +250,9 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                                 }}
                                 key={subIndex}
                                 className={`inline-flex items-center justify-center
-                                        hover:border-blue-400 hover:text-blue-600 min-w-[60px] border-2
+                                        hover:border-blue-700 hover:text-blue-700 min-w-[60px] border-2
                                         text-[14px] rounded p-2 mt-2 mr-2 relative cursor-pointer
-                                        ${variantSelected.some((x: any) => x.id === v.id) ? "border-blue-400 text-blue-600 " : "text-gray-500 "} 
+                                        ${variantSelected.some((x: any) => x.id === v.id) ? "border-blue-700 text-blue-700 " : "text-gray-500 "} 
                                         flex gap-3
                                         `
                                 }
@@ -311,7 +315,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
               <div className="w-full flex my-2">
                 <>
-                  <Button disabled={loading} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-500 border-blue-500 border-2 rounded hover:bg-white mr-4 ${selectedProduct.stock ? "cursor-pointer" : "cursor-not-allowed"}`}>
+                  <Button disabled={loading} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4 ${selectedProduct.stock ? "cursor-pointer" : "cursor-not-allowed"}`}>
                     {loading && (
                       <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
                     )}
@@ -355,7 +359,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
           </div>
         </div>
       </div>
-      <div className="w-full flex mt-6">
+      {/* <div className="w-full flex mt-6">
         <div className="w-2/5 pr-4 ">
           <div className="shadow border p-4 w-full">
             <div className="font-bold text-[16px]">Thông tin nhà cung cấp</div>
@@ -607,7 +611,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
         <Comment />
         <Comment />
         <Comment />
-      </div>
+      </div> */}
     </>
   )
 
