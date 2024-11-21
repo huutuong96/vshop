@@ -1,5 +1,6 @@
 'use client'
 
+import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
 import { MailPlus, Store, Truck } from "lucide-react";
@@ -27,13 +28,13 @@ export default function OrdersGuestSection() {
     const getData = async () => {
       try {
         const [ordersRes, shopsRes] = await Promise.all([
-          fetch('http://vnshop.top/api/order/user', {
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/order/user`, {
             headers: {
               "Authorization": `Bearer ${clientAccessToken.value}`
             },
             signal
           }),
-          fetch('http://vnshop.top/api/shops', {
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops`, {
             headers: {
               "Authorization": `Bearer ${clientAccessToken.value}`
             },
