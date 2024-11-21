@@ -156,7 +156,7 @@ export default function GuestHeader() {
                     {cart && (
                       <div className='absolute -top-4 -right-4 text-[10px] w-6 h-4 p-1 flex items-center justify-center bg-red-500 rounded-xl text-white'>
                         {cart.reduce((acc: number, cur: any) => {
-                          return acc + cur.items.reduce((a: number, c: any) => a + (+c.quantity), 0);
+                          return acc + cur.items.length;
                         }, 0)}
                       </div>
                     )}
@@ -216,11 +216,13 @@ export default function GuestHeader() {
                           <HoverCardContent className='p-0 w-[180px] rounded-sm'>
                             <ul className=' w-full'>
                               <li onClick={() => {
-                                router.push('/account')
+                                router.push('/account/profile')
                               }} className='p-3 text-[14px] transition-all hover:text-blue-700 hover:bg-gray-50 cursor-pointer'>
                                 Tài khoản của tôi
                               </li>
-                              <li className='p-3 text-[14px] transition-all hover:text-blue-700 hover:bg-gray-50 cursor-pointer'>
+                              <li onClick={() => {
+                                router.push('/account/orders')
+                              }} className='p-3 text-[14px] transition-all hover:text-blue-700 hover:bg-gray-50 cursor-pointer'>
                                 Đơn mua
                               </li>
                               <li onClick={handleLogout} className='p-3 text-[14px] transition-all hover:text-blue-700 hover:bg-gray-50 cursor-pointer'>

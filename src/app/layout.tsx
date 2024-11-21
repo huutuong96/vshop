@@ -28,7 +28,7 @@ export default async function RootLayout({
 
   const info = cookieStore.get('info')?.value;
   let cart = null;
-
+  let test = null;
   if (accessToken) {
     const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts`, {
       headers: {
@@ -49,8 +49,10 @@ export default async function RootLayout({
       }
     })
     cart = newCart
+    test = payload;
   }
 
+  // console.log();
 
   return (
     <html lang="en">
@@ -60,6 +62,7 @@ export default async function RootLayout({
           accessToken={accessToken ? accessToken : ''}
           info={accessToken ? JSON.parse(info as string) : null}
           cart={cart}
+          test={test}
         >
           {children}
         </ProfileProvider>

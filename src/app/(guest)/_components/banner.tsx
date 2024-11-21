@@ -6,21 +6,34 @@ import 'swiper/css/pagination';
 import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import envConfig from '@/config';
+import Link from 'next/link';
 
-const arrayBanner = [
-  { id: 1, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/d0/92/f9/fec2f5a2d44bef09a26ffbd8a65a47fa.png.webp', title: 'banner1' },
-  { id: 2, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/a6/09/ab/f9ef8f222038884c6387524a65f23525.png.webp', title: 'banner2' },
-  { id: 3, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/97/af/de/03c85cacdea94e2eee4d02dca29a4645.png.webp', title: 'banner3' },
-  { id: 4, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/98/e6/f0/04ef25bbbc11628e5bd9d55973163f92.jpg.webp', title: 'banner4' },
-];
+// const arrayBanner = [
+//   { id: 1, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/d0/92/f9/fec2f5a2d44bef09a26ffbd8a65a47fa.png.webp', title: 'banner1' },
+//   { id: 2, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/a6/09/ab/f9ef8f222038884c6387524a65f23525.png.webp', title: 'banner2' },
+//   { id: 3, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/97/af/de/03c85cacdea94e2eee4d02dca29a4645.png.webp', title: 'banner3' },
+//   { id: 4, image: 'https://salt.tikicdn.com/cache/w750/ts/tikimsp/98/e6/f0/04ef25bbbc11628e5bd9d55973163f92.jpg.webp', title: 'banner4' },
+// ];
 
 const BannerHomeGuest = () => {
-  const [banners, setBanners] = useState<{ id: number, image: string, title: string }[]>([]);
+  const [banners, setBanners] = useState<{ id: number, image: string, title: string, url: string }[]>([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setBanners([...arrayBanner]);
-    }, 500)
+    const getData = async () => {
+      try {
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/banners/client`);
+        if (!res.ok) {
+          throw 'Error';
+        }
+        const payload = await res.json();
+        const banners = payload.data.map((b: any) => ({ id: b.id, title: b.title, image: b.image, url: b.URL }));
+        setBanners([...banners])
+      } catch (error) {
+
+      }
+    }
+    getData();
   }, [])
 
   return (
@@ -38,7 +51,9 @@ const BannerHomeGuest = () => {
         >
           {banners.map((banner) => (
             <SwiperSlide key={banner.id}>
-              <img src={banner.image} className="rounded-[5px]" alt={banner.title} />
+              <Link href={banner.url ? banner.url : ''} className='size-full'>
+                <img src={banner.image} className="rounded-[5px] size-full" alt={banner.title} />
+              </Link>
             </SwiperSlide>
           ))}
         </Swiper>

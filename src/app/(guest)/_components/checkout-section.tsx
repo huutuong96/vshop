@@ -162,8 +162,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       if (paymentSelected === 12) {
         window.location.href = payload.url;
       } else {
-        // console.log(payload);
-        window.location.href = `http://localhost:3000/checkout/success?id=1`;
+        window.location.href = `http://localhost:3000/checkout/success?id=${payload.data}`;
       }
 
       // router.push('/');

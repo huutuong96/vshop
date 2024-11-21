@@ -64,19 +64,23 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
 
 
   return (
-    <div className='w-full p-4 px-6 pl-14'>
+    <div className={`w-full p-4 px-6 pl-14 ${item.quantity === 0 ? 'bg-gray-50' : ''}`}>
       <div className={`w-full flex items-center relative ${itemsLength !== subIndex + 1 ? "border-b" : ""}`}>
         <div className=' absolute top-8 -left-14'>
-          <Checkbox
-            checked={checked}
-            onCheckedChange={(c) => {
-              let checked = c as boolean;
-              dispatch(selectItem({ checked, id: item.id, shop_id: +item.shop_id }))
-            }}
-            className='size-4 ml-4 mr-2'
-          />
+          {item.quantity === 0 ? (
+            <div className="text-[12px] px-1 border rounded-xl ml-4 text-white bg-gray-400">Hết hàng</div>
+          ) : (
+            <Checkbox
+              checked={checked}
+              onCheckedChange={(c) => {
+                let checked = c as boolean;
+                dispatch(selectItem({ checked, id: item.id, shop_id: +item.shop_id }))
+              }}
+              className='size-4 ml-4 mr-2'
+            />
+          )}
         </div>
-        <div className='w-[317px] h-[109px] flex-col items-center'>
+        <div className={`w-[317px] h-[109px] flex-col items-center ${item.quantity === 0 ? 'pl-8' : ''}`}>
           <div className='w-full h-[83px] flex items-center gap-2'>
             <div className='w-[80px] h-[80px]'>
               <img src={item.product_image ? item.product_image : item.variant_image} className='w-full h-full object-cover' alt="" />
@@ -86,7 +90,11 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
             </div>
           </div>
           <div className='w-full h-[20px] flex items-center'>
-            <span className='text-[12px] text-blue-500'>Fash Sale kết thúc lúc 23:59:00</span>
+            {item.quantity === 0 ? (
+              <span className='text-[12px] text-red-500'>Sản phẩm này đã hết</span>
+            ) : (
+              <span className='text-[12px] text-blue-500'>Fash Sale kết thúc lúc 23:59:00</span>
+            )}
           </div>
         </div>
         <div className='w-[188px] h-[80px] flex flex-col justify-center text-[14px] text-[#0000008a]'>
@@ -97,18 +105,23 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
             </>
           )}
         </div>
-        <div className='w-[173px] h-[80px] flex items-center justify-center text-[14px]'>
-          <span>{item.variant_price ? formattedPrice(+item.variant_price) : formattedPrice(+item.product_price)}</span>
+        <div className={` w-[173px] h-[80px] flex items-center justify-center text-[14px] `}>
+          {item.quantity === 0 ? (
+            <span>{formattedPrice(0)}</span>
+          ) : (
+            <span>{item.variant_price ? formattedPrice(+item.variant_price) : formattedPrice(+item.product_price)}</span>
+          )}
         </div>
         <div className='w-[168px] h-[80px] flex justify-center items-center'>
-          {loading && (
+          {item.quantity === 0 ? (
+            <span className="text-sm">0</span>
+          ) : loading ? (
             <>
               <span className='px-1 border w-[30px] text-center text-gray-300'>-</span>
               <span className='text-sm text-gray-300 border-b border-t w-[40px] h-[25.6px] flex items-center justify-center'>{item.quantity}</span>
               <span className='px-1 border w-[30px] text-gray-300 text-center'>+</span>
             </>
-          )}
-          {!loading && (
+          ) : (
             <>
               <span
                 onClick={async (e) => handleChangeQty(+item.quantity - 1, index, subIndex, item.id).then((res) => {
@@ -129,6 +142,7 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
               <span onClick={async (e) => handleChangeQty(+item.quantity + 1, index, subIndex, item.id)} className='px-1 border w-[30px] text-center cursor-pointer'>+</span>
             </>
           )}
+
 
         </div>
         <div className='w-[113px] h-[80px] font-bold flex items-center justify-center text-[14px] text-[#ff424e]'>

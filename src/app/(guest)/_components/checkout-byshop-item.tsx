@@ -232,7 +232,7 @@ export default function CheckoutByshopItem({ s, index, setVoucherSelected, vouch
                   </div>
                   <div className="flex items-center gap-4">
                     {voucherShop && (
-                      <button className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-6 p-1 w-10">- {voucherShop.ratio}%</button>
+                      <button className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-6 p-1 w-12">- {voucherShop.ratio}%</button>
                     )}
                     <DropdownMenu modal={false} >
                       <DropdownMenuTrigger>

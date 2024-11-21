@@ -71,7 +71,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       router.push('/auth/login')
     }
     let data: any = { shop_id: +selectedProduct.shop_id, product_id: selectedProduct.id, quantity }
-
     if (variant) {
       const isValid = variantSelected.every(v => v.id);
       if (!isValid) {
@@ -84,6 +83,8 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       data = { ...data, variant_id: selectedProduct.variant_id };
 
     }
+
+    if (selectedProduct.stock <= 0) { return }
     try {
       setLoading(true);
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts`, {
@@ -315,7 +316,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
               <div className="w-full flex my-2">
                 <>
-                  <Button disabled={loading} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4 ${selectedProduct.stock ? "cursor-pointer" : "cursor-not-allowed"}`}>
+                  <Button disabled={loading || selectedProduct.stock <= 0} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
                     {loading && (
                       <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
                     )}

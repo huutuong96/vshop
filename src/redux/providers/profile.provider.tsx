@@ -12,12 +12,14 @@ export default function ProfileProvider({
   children,
   accessToken = '',
   info = null,
-  cart = null
+  cart = null,
+  test = null
 }: {
   children: React.ReactNode,
   accessToken?: string
   info?: any
-  cart?: any | null
+  cart?: any | null,
+  test?: any
 }) {
   const storeRef = useRef<ProfileStore>()
   if (!storeRef.current) {
@@ -28,6 +30,7 @@ export default function ProfileProvider({
     if (accessToken) {
       storeRef.current.dispatch(addInfo(info));
       storeRef.current.dispatch(addCart(cart));
+      console.log({ test });
       shop_id.value = info.shop_id;
     }
     // if (typeof window !== 'undefined') {

@@ -56,7 +56,7 @@ export default function CartSection() {
 
   return (
     <div className='w-full'>
-      {cartItemCount > 0 && (
+      {cartItemLength > 0 && (
         <>
           <section className='headerCart w-full h-[55px] border rounded mt-5 flex items-center gap-4 text-[14px] bg-white'>
             <Checkbox
