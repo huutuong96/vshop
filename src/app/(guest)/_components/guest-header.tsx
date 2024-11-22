@@ -86,6 +86,7 @@ export default function GuestHeader() {
         // dispatch(addInfo(null));
         // dispatch(addCart(null));
         // router.push('/');
+        localStorage.removeItem('historyPath')
         window.location.href = '/'
       }
     } catch (error) {
@@ -202,7 +203,14 @@ export default function GuestHeader() {
                       <div className='flex gap-2 items-center'>
                         <Link className='text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700' href={'/auth/register'}>Đăng ký</Link>
                         <span className='text-[14px] text-[#3a3a3a]'>|</span>
-                        <Link className='text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700' href={'/auth/login'}>Đăng nhập</Link>
+                        <div className='text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700 cursor-pointer' onClick={() => {
+                          if (pathname !== '/auth/login') {
+                            localStorage.setItem('historyPath', pathname);
+                            console.log(pathname);
+                            router.push('/auth/login');
+                          }
+
+                        }} >Đăng nhập</div>
                       </div>
                     )}
                 </div>

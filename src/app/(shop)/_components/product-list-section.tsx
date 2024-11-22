@@ -5,6 +5,7 @@ import EmptyProductList from "@/app/(shop)/_components/empty-product-list"
 import ListProductItem from "@/app/(shop)/_components/list-product-item"
 import ListProductPagination from "@/app/(shop)/_components/list-product-pagination"
 import ListProductPopupCategory from "@/app/(shop)/_components/list-product-popup-category"
+import ProductSekeleton from "@/app/(shop)/shop/product/list/product-sekeleton"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -123,8 +124,7 @@ export default function ProductListSection() {
   }
 
   return (
-    <>
-      <div>he</div>
+    <div className="w-full bg-white rounded">
       <div className="flex p-2 px-3 gap-2">
         {statusList.map((item => (
           <div key={item.value}
@@ -156,28 +156,34 @@ export default function ProductListSection() {
       <div className="px-4 py-2 text-[16px] font-semibold">{products.length} Sản phẩm</div>
       <div className="px-4 py-2">
         <div className="flex rounded-tl rounded-tr bg-[#F0F0F0] border border-b-0 items-center">
-          <div className="py-6 pl-4 pr-2">
+          {/* <div className="py-6 pl-4 pr-2">
             <Checkbox className="size-[14px]" />
-          </div>
-          <div className="w-full h-full  text-[14px] flex items-center  text-[#000000ba]">
-            <div className="w-[364px] p-2 pl-4 flex gap-4 items-center">
-              <span>Sản phẩm</span>
-            </div>
-            <div className="w-[200px] p-2">Doanh số</div>
-            <div className="w-[280px] p-2">Giá</div>
-            <div className="w-[200px] p-2">Kho hàng</div>
-            <div className="">Thao tác</div>
+          </div> */}
+          <div className="w-full h-full text-sm flex items-center  text-[#000000ba]">
+            <Checkbox className="ml-4 mr-2" />
+            <div className="flex-[2] p-2">Sản phẩm</div>
+            <div className="flex-1 p-2 py-4 text-right">Doanh số</div>
+            <div className="flex-1 p-2 text-right">Giá</div>
+            <div className="flex-1 p-2 text-right">Kho hàng</div>
+            <div className="flex-1 p-2 text-right">Thao tác</div>
           </div>
         </div>
         <div className="border border-t-0 rounded-br rounded-bl">
-          {products.length > 0 && products.map((p, index) => (
+          {loading && (
+            <>
+              <ProductSekeleton />
+              <ProductSekeleton />
+              <ProductSekeleton />
+            </>
+          )}
+
+          {!loading && products.length > 0 && products.map((p, index) => (
             <ListProductItem key={index} p={p} handleDeleteProduct={handleDeleteProduct} />
           ))}
-          {!products.length && <EmptyProductList />}
+          {!loading && !products.length && <EmptyProductList />}
           <ListProductPagination />
         </div>
       </div>
-      {loading && <LoadingScreen />}
-    </>
+    </div>
   )
 }

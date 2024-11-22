@@ -3,7 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import envConfig from "@/config";
 import { clientAccessToken, shop_id } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
-import { Image } from "lucide-react";
+import { ChevronDown, ChevronUp, Image } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -32,16 +32,15 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
   } else {
     show_price = formattedPrice(+p.show_price)
   }
+  const [showMore, setShowMore] = useState<boolean>(false);
 
   return (
     <>
       <div className="py-4 border-b flex">
-        <div className="py-6 pl-4 pr-2">
-          <Checkbox className="size-[14px]" />
-        </div>
-        <div className="">
+        <div className="w-full">
           <div className="w-full text-[14px] flex">
-            <div className="w-[364px] p-2 pl-4 flex items-center gap-4">
+            <Checkbox className="ml-4 mr-2 mt-4" />
+            <div className="flex-[2] p-2 flex items-center gap-4">
               <div className="w-full">
                 <div className="flex items-center gap-4">
                   <div className="size-14 border rounded-sm">
@@ -55,16 +54,16 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
                 </div>
               </div>
             </div>
-            <div className="w-[200px] p-2">
+            <div className="flex-1 p-2 text-right">
               <div className="text-black font-medium">0</div>
             </div>
-            <div className="w-[280px] p-2">
+            <div className="flex-1 p-2 text-right">
               <div className="text-black font-medium">{show_price}</div>
             </div>
-            <div className="w-[200px] p-2">
+            <div className="flex-1 p-2 text-right">
               <div className="text-black font-medium">{p.variants.length > 0 ? p.variants.reduce((init: number, cur: any) => init + (+cur.stock), 0) : p.quantity}</div>
             </div>
-            <div className="text-blue-500 flex flex-col gap-2">
+            <div className="text-blue-500 flex-1 items-end flex flex-col gap-2 p-2">
               <div className="cursor-pointer">Cập nhật</div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -83,13 +82,14 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
             </div>
           </div>
           {p.variants && (
-            <>
-              {p.variants.map((pv: any, index: number) => (
-                <div key={index} className="text-[14px] flex">
-                  <div className="w-[364px] p-2 pl-4 flex items-center gap-4 bg-gray-50">
+            <div className="w-full">
+              {p.variants.filter((pv: any, index: number) => showMore || index < 2).map((pv: any, index: number) => (
+                <div key={index} className="w-full flex">
+                  <div className="w-4 ml-4 mr-2"></div>
+                  <div className="flex-[2] p-2 flex items-center gap-4 bg-gray-50">
                     <div className="w-full">
                       <div className="flex items-center gap-4">
-                        <div className="size-14 pl-4 rounded-sm flex items-center justify-center">
+                        <div className="size-14 rounded-sm flex items-center justify-center">
                           {!pv.images && (<Image size={40} color="#a6a6a6" strokeWidth={1} />)}
                           {pv.images && (
                             <img
@@ -106,18 +106,46 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
                       </div>
                     </div>
                   </div>
-                  <div className="w-[200px] p-2 bg-gray-50">
+                  <div className="flex-1 p-2 bg-gray-50 text-right">
                     <div className="text-black font-medium">0</div>
                   </div>
-                  <div className="w-[280px] p-2 bg-gray-50">
+                  <div className="flex-1 p-2 bg-gray-50 text-right">
                     <div className="text-black font-medium">{formattedPrice(+pv.price)}</div>
                   </div>
-                  <div className="w-[200px] p-2 bg-gray-50">
+                  <div className="flex-1 p-2 bg-gray-50 text-right">
                     <div className="text-black font-medium">{pv.stock}</div>
                   </div>
+                  <div className="flex-1 p-2"></div>
                 </div>
               ))}
-            </>
+              {p.variants.length > 2 && (
+                !showMore ? (
+                  <div onClick={() => setShowMore(true)} className="flex hover:bg-[#a3c5ec60] hover:rounded">
+                    <div className="w-4 ml-4 mr-2"></div>
+                    <div className="w-full p-2">
+                      <div className="ml-[50px] text-sm mt-2 flex gap-2 items-center cursor-pointer text-blue-700">
+                        Xem thêm {p.variants.length - 2} biến thể
+                        <ChevronDown size={20} strokeWidth={1.25} />
+                      </div>
+
+
+                    </div>
+                  </div>
+                ) : (
+                  <div onClick={() => setShowMore(false)} className="flex hover:bg-[#a3c5ec60] hover:rounded">
+                    <div className="w-4 ml-4 mr-2"></div>
+                    <div className="w-full p-2">
+                      <div className="ml-[50px] text-sm mt-2 flex gap-2 items-center cursor-pointer text-blue-700">
+                        Ẩn {p.variants.length - 2} biến thể
+                        <ChevronUp size={20} strokeWidth={1.25} />
+                      </div>
+                    </div>
+                  </div>
+                )
+
+              )}
+
+            </div>
           )}
         </div>
       </div>

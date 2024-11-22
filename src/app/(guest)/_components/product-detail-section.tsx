@@ -15,6 +15,10 @@ import { Check, Heart, PhoneCall, ShoppingBasket, SquareCheckBig, Star, Store } 
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
+import { Label } from "@/components/ui/label";
+
+
+
 export default function ProductDetailSection({ product, variant, test }: { product: any, variant: any, test?: any }) {
 
   const [variantSelected, setVariantSelected] = useState<any[]>(() => {
