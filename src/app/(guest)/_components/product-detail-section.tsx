@@ -4,6 +4,7 @@ import AttributesTable from "@/app/(guest)/_components/attributes-table"
 import Comment from "@/app/(guest)/_components/comment"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/use-toast"
 import envConfig from "@/config"
 import { clientAccessToken } from "@/lib/http"
@@ -194,12 +195,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               <div className="w-full">
                 <span className="text-[24px] font-bold text-red-500">{selectedProduct.show_price}</span>
               </div>
-              {/* <div className="w-full">
-                <span className="text-[14px] font-normal">
-                  <del className="text-gray-400"></del>
-                  <span className="text-red-500 ml-1">Giảm 43%</span>
-                </span>
-              </div> */}
               <div className="absolute bottom-0 w-full left-0">
                 <div className="w-full flex gap-3 items-center">
                   <div className="flex gap-1">
@@ -221,17 +216,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               <div className="w-full mt-2">
                 {
                   variant ? variant.variantItems.map((va: any, index: number) => {
-                    // const newVa = { ...va };
-                    // if (index === 0) {
-                    //   newVa.values.map((i: any) => {
-                    //     const id = i.id;
-                    //     const valid = variant.json.variantProducts.filter((z: any) => {
-                    //       if (z.variants.some((x: any) => x.id === id)) return true;
-                    //       return false
-                    //     });
-                    //     console.log(valid);
-                    //   })
-                    // }
 
                     return (
                       <div key={index} className="flex w-full mb-6 mr-2 items-center">
@@ -360,6 +344,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
           </div>
         </div>
       </div>
+
       {/* <div className="w-full flex mt-6">
         <div className="w-2/5 pr-4 ">
           <div className="shadow border p-4 w-full">

@@ -13,9 +13,23 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const status = [
-  'Tất cả', 'Chờ xác nhận', 'Chờ Lấy hàng', 'Đang giao', 'Đã giao', 'Đơn hủy', 'Trả hàng/hoàn tiền', 'Giao không thành công'
-]
+type OrderStatus = { label: string; value: number };
+
+const orderStatuses: OrderStatus[] = [
+  { label: "Chờ xác nhận", value: 0 },
+  { label: "Đã xác nhận", value: 1 },
+  { label: "Đang chuẩn bị hàng", value: 2 },
+  { label: "Đã đóng gói", value: 3 },
+  { label: "Đã bàn giao vận chuyển", value: 4 },
+  { label: "Đang vận chuyển", value: 5 },
+  { label: "Giao hàng thất bại", value: 6 },
+  { label: "Đã giao hàng", value: 7 },
+  { label: "Hoàn thành", value: 8 },
+  { label: "Hoàn trả", value: 9 },
+  { label: "Đã hủy", value: 10 },
+  { label: "Chưa thanh toán", value: 11 },
+  { label: "Đã thanh toán", value: 12 },
+];
 
 const filters = [
   {
@@ -47,59 +61,60 @@ export default function ListOrderPage() {
           <Button variant={"outline"}>Lịch sử Xuất Báo Cáo</Button>
         </div>
       </div>
-      <div className="flex p-2 px-3 gap-2">
-        {status.map((item => (
-          <div key={item}
-            className={`
-                text-[14px] text-[#3e3e3e] font-semibold cursor-pointer px-5 border-b-white border-b-2
+      <div className="bg-white">
+        <div className="flex px-3 py-2 gap-2 w-full">
+          {orderStatuses.map((item => (
+            <div key={item.value}
+              className={`
+                text-[14px] text-[#3e3e3e] py-2 font-semibold cursor-pointer px-5 border-b-white border-b-2
                  hover:text-blue-500 hover:border-b-blue-500
             `}
-          >
-            {item}
+            >
+              {item.label}
+            </div>
+          )))}
+        </div>
+        <div className="flex items-center justify-between w-full p-4 px-3 bg-white">
+          <div className="flex">
+            <Select defaultValue={filters[0].id}>
+              <SelectTrigger className="w-[250px] rounded-none rounded-tl rounded-bl">
+                <SelectValue placeholder="Mã Đơn Hàng" className="text-[13px]" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {filters.map((item, index) => (
+                    <SelectItem key={index} className="text-[13px]" value={item.id}>{item.name}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <Input className="px-3 text-[14px] outline-none rounded-none rounded-tr rounded-br" placeholder="Nhập mã đơn hàng" />
           </div>
-        )))}
-      </div>
-      <div className="flex items-center justify-between w-full p-4 px-3">
-        <div className="flex">
-          <Select defaultValue={filters[0].id}>
-            <SelectTrigger className="w-[250px] rounded-none rounded-tl rounded-bl">
-              <SelectValue placeholder="Mã Đơn Hàng" className="text-[13px]" />
+          <Select>
+            <SelectTrigger className="w-[250px] outline-none">
+              <SelectValue placeholder="Đơn Vị Vận Chuyển" className="text-[13px]" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {filters.map((item, index) => (
-                  <SelectItem key={index} className="text-[13px]" value={item.id}>{item.name}</SelectItem>
-                ))}
+                <SelectItem className="text-[13px]" value={'test'}>test</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Input className="px-3 text-[14px] outline-none rounded-none rounded-tr rounded-br" placeholder="Nhập mã đơn hàng" />
+          <div className="flex gap-2">
+            <button className="border-blue-500 text-blue-500 hover:border-blue-500 border text-[14px] p-2 rounded">Áp dụng</button>
+            <Button variant={'default'}>Đặt lại</Button>
+          </div>
         </div>
-        <Select>
-          <SelectTrigger className="w-[250px] outline-none">
-            <SelectValue placeholder="Đơn Vị Vận Chuyển" className="text-[13px]" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem className="text-[13px]" value={'test'}>test</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <div className="flex gap-2">
-          <button className="border-blue-500 text-blue-500 hover:border-blue-500 border text-[14px] p-2 rounded">Áp dụng</button>
-          <Button variant={'default'}>Đặt lại</Button>
-        </div>
-      </div>
-      <div className="px-4 py-2 text-[16px] font-semibold">2 Đơn hàng</div>
-      <div className="px-4 py-2">
-        <div className="w-full h-full border text-[14px] flex items-center rounded bg-[#F0F0F0] text-[#000000ba]">
-          <div className="w-[364px] p-2">Sản phẩm</div>
-          <div className="w-[200px] p-2">Tổng đơn hàng</div>
-          <div className="w-[280px] p-2">Trạng thái</div>
-          <div className="w-[200px] p-2">Đơn vị vận chuyển</div>
-          <div className="">Thao tác</div>
-        </div>
-        {/* <div className="mt-4 border rounded-sm">
+        <div className="px-4 py-2 text-[16px] font-semibold">2 Đơn hàng</div>
+        <div className="px-4 py-2">
+          <div className="w-full h-full border text-[14px] flex items-center rounded bg-[#F0F0F0] text-[#000000ba]">
+            <div className="w-[364px] p-2">Sản phẩm</div>
+            <div className="w-[200px] p-2">Tổng đơn hàng</div>
+            <div className="w-[280px] p-2">Trạng thái</div>
+            <div className="w-[200px] p-2">Đơn vị vận chuyển</div>
+            <div className="">Thao tác</div>
+          </div>
+          {/* <div className="mt-4 border rounded-sm">
           <div className="p-2 flex items-center justify-between bg-[#F0F0F0] text-black text-[14px]">
             <span>Khách hàng: Test2</span>
             <span>Mã đơn hàng: 01234544ds5</span>
@@ -188,9 +203,10 @@ export default function ListOrderPage() {
             <div className="p-2 text-blue-500 cursor-pointer">Xem chi tiết</div>
           </div>
         </div> */}
-        {/* <OrderItem />
+          {/* <OrderItem />
         <OrderItem /> */}
-        <EmptyOrder />
+          <EmptyOrder />
+        </div>
       </div>
     </div>
   )

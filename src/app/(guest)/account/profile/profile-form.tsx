@@ -13,16 +13,29 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useRef, useState } from "react"
-import { useAppInfoSelector } from "@/redux/stores/profile.store"
+import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store"
 import envConfig from "@/config"
 import { clientAccessToken } from "@/lib/http"
+import { addInfo } from "@/redux/slices/profile.slice"
 
 
 const FormSchema = z.object({
   datebirth: z.date(),
-  phone: z.string(),
+  phone: z.string().regex(/^[0-9]{10}$/, "Số điện thoại không hợp lệ"),
   avatar: z.string(),
-  fullname: z.string()
+  fullname: z.string().min(1, { message: 'Vui lòng nhập tên' }),
+  genre: z.string()
+}).superRefine((data, ctx) => {
+  // if (!data.fullname) {
+  //   ctx.addIssue({
+  //     path: ['fullname'],
+  //     code: z.ZodIssueCode.custom,
+  //     message: 'Lĩnh vực này là bắt buộc'
+  //   })
+  // }
+  if (!data.datebirth) {
+
+  }
 })
 
 type FormData = z.infer<typeof FormSchema>;
@@ -48,32 +61,37 @@ const genres: { label: string, value: '1' | '2' }[] = [
 export default function ProfileForm() {
   let profile = useAppInfoSelector(state => state.profile.info);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [genre, setGenre] = useState(profile.genre || '1');
+  // const [genre, setGenre] = useState(profile.genre || '1');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const dispatch = useAppInfoDispatch();
 
-  const { register, handleSubmit, getValues, setValue, setError, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, getValues, setValue, setError, formState: { errors }, watch } = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     mode: 'all',
     defaultValues: {
       fullname: profile?.fullname,
       avatar: profile?.avatar,
-      datebirth: profile?.datebirth,
-      phone: profile?.phone
+      datebirth: profile?.datebirth ? new Date(profile?.datebirth) : undefined,
+      phone: profile?.phone,
+      genre: profile?.genre || '1'
     }
   });
+  const datebirth = watch("datebirth");
+  const genre = watch('genre');
 
   const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    console.log("Selected date:", date);
-    // Thực hiện logic khác nếu cần, ví dụ:
-    // Gửi dữ liệu lên server hoặc cập nhật state toàn cục.
+    console.log(date?.toISOString());
+    if (date) {
+      setValue('datebirth', date);
+      setError('datebirth', { message: undefined })
+    }
   };
   const handleImageClick = () => {
     fileInputRef.current?.click(); // Trigger sự kiện click của input file
   };
 
   function onSubmit(data: FormData) {
-    console.log(data);
+    dispatch(addInfo({ ...profile, ...data, datebirth: datebirth.toISOString() }))
   }
 
 
@@ -88,7 +106,7 @@ export default function ProfileForm() {
               <p className="text-sm font-semibold">{profile?.email || 'khang'}</p>
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center ">
             <div className="w-[100px] text-right pb-[30px] text-sm text-gray-500">Tên</div>
             <div className="w-full pb-[30px] pl-[20px] text-sm ">
               <div className="border rounded-sm">
@@ -99,6 +117,10 @@ export default function ProfileForm() {
               </div>
             </div>
           </div>
+          {errors?.fullname?.message && (
+            <div className="-mt-6 mb-4 text-sm ml-[105px] text-red-500">{errors.fullname.message}</div>
+          )}
+
           <div className="flex items-center">
             <div className="w-[100px] text-right pb-[30px] text-sm text-gray-500">Số điện thoại</div>
             <div className="w-full pb-[30px] pl-[20px] text-sm ">
@@ -110,12 +132,15 @@ export default function ProfileForm() {
               </div>
             </div>
           </div>
+          {errors?.phone?.message && (
+            <div className="-mt-6 mb-4 text-sm ml-[105px] text-red-500">{errors.phone.message}</div>
+          )}
           <div className="flex items-center">
             <div className="w-[100px] text-right pb-[30px] text-sm text-gray-500">Giới tính</div>
             <div className="w-full pb-[30px] pl-[20px] text-sm ">
               <RadioGroup
                 onValueChange={(value) => {
-                  setGenre(value);
+                  setValue('genre', value);
                 }}
                 value={genre}
                 className="flex gap-4"
@@ -132,7 +157,7 @@ export default function ProfileForm() {
           <div className="flex items-center">
             <div className="w-[100px] text-right pb-[30px] text-sm text-gray-500">Ngày sinh</div>
             <div className="w-full pb-[30px] pl-[20px] text-sm flex items-center gap-4">
-              {selectedDate && <span className="text-sm font-semibold">{formatDate(selectedDate)}</span>}
+              {datebirth && <span className="text-sm font-semibold">{formatDate(datebirth)}</span>}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -150,7 +175,7 @@ export default function ProfileForm() {
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
-                    selected={selectedDate}
+                    selected={getValues('datebirth')}
                     onSelect={handleDateSelect}
                   // initialFocus={false}
                   />
@@ -158,10 +183,16 @@ export default function ProfileForm() {
               </Popover>
             </div>
           </div>
+          {errors?.datebirth?.message && (
+            <div className="-mt-6 mb-4 text-sm ml-[105px] text-red-500">{errors.datebirth.message}</div>
+          )}
           <div className="flex items-center">
             <div className="w-[100px] text-right pb-[30px] text-sm"></div>
-            <div className="pl-5 pb-[30px] w-full">
-              <Button>Lưu</Button>
+            <div className="pl-5 pb-[30px] w-full flex justify-end">
+              <Button type="button" onClick={() => {
+                console.log(errors);
+              }}>log errors</Button>
+              <Button type="submit">Lưu</Button>
             </div>
           </div>
         </div>

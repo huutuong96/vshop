@@ -7,7 +7,7 @@ export default function ProfileGuestPage() {
       <div className="w-full px-[30px] pb-[10px] bg-white border">
         <div className="py-[18px] border-b">
           <div className="text-xl">Hồ Sơ Của Tôi</div>
-          <div className="text-sm mt-1">Quản lý thông tin hồ sơ để bảo mật tài khoản</div>
+          <div className="text-sm mt-1 text-gray-400">Quản lý thông tin hồ sơ để bảo mật tài khoản</div>
         </div>
         <div className="pt-[30px]">
           <ProfileSection />

@@ -39,7 +39,7 @@ export default function RegisterForm() {
   });
 
   const onSubmit = async (dt: RegisterFormData) => {
-    const data = { ...dt, role_id: 5 }
+    const data = { ...dt }
     try {
       setLoading(true);
       const registerUser = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/users/register`, {

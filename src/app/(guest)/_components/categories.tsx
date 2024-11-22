@@ -39,8 +39,8 @@ const CategoriesGuest = () => {
     <div className="categories-home w-full">
       <div className="top w-full flex justify-between py-2">
         {titleCates.map(tl => (
-          <div className="w-[180px] h-[46px] flex justify-center items-center border-b-4 border-b-blue-500" key={tl}>
-            <span className="font-semibold text-blue-600">{tl}</span>
+          <div className="w-[180px] h-[46px] flex justify-center items-center border-b-4 border-b-blue-700" key={tl}>
+            <span className="font-semibold text-blue-700">{tl}</span>
           </div>
         ))}
       </div>
