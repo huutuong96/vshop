@@ -227,6 +227,7 @@ export default function OrdersGuestSection() {
         <div className="nav-menu w-full flex items-center bg-white rounded sticky top-[130px]">
           {titles.map((item) => (
             <div
+              key={item.id}
               className={`h-full py-4 flex flex-1 items-center justify-center text-sm font-semibold cursor-pointer border-b-2 ${item.order_status === orderStatus
                 ? "border-blue-600 text-blue-700"
                 : ""
