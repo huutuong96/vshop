@@ -12,6 +12,24 @@ import { toast } from '@/components/ui/use-toast';
 import { encodeData } from '@/helpers';
 import CartEmptyItems from '@/app/(guest)/_components/cart-empty-items';
 import CartShopSection from '@/app/(guest)/_components/cart-shop-section';
+import SkeletonCartItem from '@/app/(guest)/_components/skeleton-cart-item';
+import { LoaderCircle } from "lucide-react";
+
+
+function ButtonLoading(
+) {
+  return (
+    <Button className='w-[160px] bg-blue-700 hover:bg-blue-700 hover:opacity-50 border flex items-center ' disabled>
+      <LoaderCircle
+        className="-ms-1 me-2 animate-spin"
+        size={16}
+        strokeWidth={2}
+        aria-hidden="true"
+      />
+      Mua hàng
+    </Button>
+  );
+}
 
 
 export default function CartSection() {
@@ -49,6 +67,7 @@ export default function CartSection() {
       console.log(payload);
     }
     dispatch(changeCheckoutState(stateEncode));
+    setLoading(true)
     window.location.href = `/checkout`;
   }
 
@@ -121,7 +140,12 @@ export default function CartSection() {
               <div className='h-full flex gap-4 justify-center items-center text-[16px]'>
                 <span>Tổng thanh toán ({selectedItems.length} Sản phẩm):</span>
                 <span className='text-[#ff424e] text-[24px] font-bold'>{formattedPrice(totalPriceSeltected)}</span>
-                <Button onClick={handleCheckout} className='px-10 bg-blue-500 hover:bg-white hover:text-blue-500 border'>Mua Hàng</Button>
+                {loading && (
+                  <ButtonLoading />
+                )}
+                {!loading && (
+                  <Button onClick={handleCheckout} className='w-[160px] bg-blue-700 hover:bg-blue-700 hover:opacity-50 border'>Mua Hàng</Button>
+                )}
               </div>
             </div>
           </section>
@@ -133,7 +157,7 @@ export default function CartSection() {
         )
       }
 
-      {loading && (<LoadingScreen />)}
+      {loading && (<SkeletonCartItem />)}
     </div>
   )
 }

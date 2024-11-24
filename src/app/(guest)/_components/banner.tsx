@@ -43,7 +43,7 @@ const BannerHomeGuest = () => {
           modules={[Autoplay, EffectFade, Pagination]}
           spaceBetween={10}
           slidesPerView={2}
-          slidesPerGroup={2}
+          // slidesPerGroup={2}
           pagination={{ clickable: true }}
           autoplay={{ delay: 1500, disableOnInteraction: false }}
           loop

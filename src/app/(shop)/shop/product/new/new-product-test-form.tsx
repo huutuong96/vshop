@@ -23,6 +23,8 @@ import { clientAccessToken } from "@/lib/http";
 import { toast } from "@/components/ui/use-toast";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import LoadingScreen from "@/app/(guest)/_components/loading-screen";
+import { Skeleton } from "@/components/ui/skeleton";
+import { notFound } from "next/navigation";
 
 // let a = `{"name":"","description":"","base_price":0,"variant":{"variantAttributes":[{"attribute":"Màu sắc","values":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","value":"Đỏ","id":"KHEe7uPH2xNn"},{"id":"UvmWW-PShcR7","image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","value":"xanh"}]}],"variantProducts":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"KHEe7uPH2xNn","attribute":"Màu sắc","value":"Đỏ"}]},{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"UvmWW-PShcR7","attribute":"Màu sắc","value":"xanh"}]}]}}`
 
@@ -136,7 +138,7 @@ function generateVariantProducts(attributes: Array<z.infer<typeof AttributeSchem
 
 
 
-export default function NewProductTestForm() {
+export default function NewProductTestForm({ id }: { id?: string }) {
   const info = useAppInfoSelector(state => state.profile.info);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [loadingImage, setLoadingImage] = useState<boolean>(false);
@@ -215,6 +217,26 @@ export default function NewProductTestForm() {
     }
   }
 
+  useEffect(() => {
+    const getData = async () => {
+      if (id) {
+        try {
+          const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/${id}`, {
+            cache: "no-cache"
+          });
+          // if (!res.ok) {
+          //   return notFound();
+          // }
+          const payload = await res.json();
+          console.log(payload);
+        } catch (error) {
+
+        }
+      }
+    }
+    getData()
+
+  }, [])
 
   useEffect(() => {
     if (watchedAttributes && !productFormHandle.formState.errors.variant?.variantAttributes) {
@@ -295,7 +317,6 @@ export default function NewProductTestForm() {
                   type="text"
                   placeholder="Ex. Nikon Coolpix A300 Máy Ảnh Kỹ Thuật Số"
                 />
-                {/* <span>he</span> */}
               </span>
               {productFormHandle.formState.errors?.name?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.name.message}</p>}
             </div>
@@ -337,11 +358,6 @@ export default function NewProductTestForm() {
                 Ảnh nền sản phẩm
               </div>
               <div className="w-1/2 p-4 bg-[#f5f8fd] rounded">
-                {/* <div className="w-1/2">
-                  <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-[60px] rounded flex items-center justify-center hover:border-blue-500">
-                    <Plus size={32} strokeWidth={1.5} className="group-hover:text-blue-500 text-[#858585]" />
-                  </div>
-                </div> */}
                 {productFormHandle.getValues('images').length > 0 && (
                   <div className="border size-20">
                     <img src={productFormHandle.getValues('images')[0]} className="size-full object-cover" alt="" />
@@ -365,6 +381,7 @@ export default function NewProductTestForm() {
           </div>
         </div>
       </div>
+
       {showMore && (
         <>
           <div className="w-full bg-white rounded">

@@ -30,7 +30,6 @@ export default function ProfileProvider({
     if (accessToken) {
       storeRef.current.dispatch(addInfo(info));
       storeRef.current.dispatch(addCart(cart));
-      console.log({ test });
       shop_id.value = info.shop_id;
     }
     // if (typeof window !== 'undefined') {

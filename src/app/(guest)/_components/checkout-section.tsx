@@ -11,7 +11,7 @@ import { clientAccessToken } from "@/lib/http"
 import { formattedPrice } from "@/lib/utils"
 import { changeCheckoutState } from "@/redux/slices/profile.slice"
 import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store"
-import { CircleAlert, CreditCard, MapPinIcon, MessageCircleMore, Plus, Store, Ticket, TicketCheck } from "lucide-react"
+import { Check, CircleAlert, CreditCard, Info, MapPinIcon, MessageCircleMore, Plus, Store, Ticket, TicketCheck } from "lucide-react"
 import { notFound, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Cross2Icon } from "@radix-ui/react-icons"
@@ -25,12 +25,76 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+
+const ranks = [
+  {
+    "id": 1,
+    "title": "Đồng",
+    "description": "Rank Thông thường",
+    "condition": 0,
+    "value": 0,
+    "limitValue": 0,
+    "status": 2,
+  },
+  {
+    "id": 2,
+    "title": "Bạc",
+    "description": "Rank Giảm 2% Tối đa 10k",
+    "condition": 1000,
+    "value": 0.02,
+    "limitValue": 10000,
+    "status": 2,
+  },
+  {
+    "id": 7,
+    "title": "Vàng",
+    "description": "Giảm 4% tối đa 20k",
+    "condition": 2000,
+    "value": 0.04,
+    "limitValue": 20000,
+    "status": 2,
+  },
+  {
+    "id": 8,
+    "title": "Bạch Kim",
+    "description": "Giảm 6% tối đa 40k",
+    "condition": 3000,
+    "value": 0.06,
+    "limitValue": 40000,
+    "status": 2,
+  },
+  {
+    "id": 9,
+    "title": "Kim cương",
+    "description": "Giảm 10% tối đa 100k",
+    "condition": 5000,
+    "value": 0.1,
+    "limitValue": 100000,
+    "status": 2,
+  },
+  {
+    "id": 10,
+    "title": "VIP",
+    "description": "Giảm 15% tối đa 130k",
+    "condition": 10000,
+    "value": 0.15,
+    "limitValue": 130000,
+    "status": 2,
+  }
+]
 
 export default function CheckoutSection({ stateCheckout }: { stateCheckout: string | undefined | null }) {
   const dispatch = useAppInfoDispatch();
   const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
   const stateCheckoutInProfle = useAppInfoSelector(state => state.profile.checkoutState);
+  const profile = useAppInfoSelector(state => state.profile.info);
   const [loading, setLoading] = useState<boolean>(true);
   const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
   const selectedItems = useAppInfoSelector(state => state.profile.cart?.selectedItems) as any[];
@@ -41,6 +105,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   const [payments, setPayments] = useState<any[]>([]);
   const [paymentSelected, setPaymentSelected] = useState(11);
   const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false)
+  console.log(profile);
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -122,7 +187,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
     return () => {
       controller.abort();
     };
-  }, [selectedItems.length])
+  }, [selectedItems.length]);
+
 
   const handleCheckout = async () => {
     const carts = checkoutItems.reduce((acc: any, s: any) => [...acc, ...s.items.map((i: any) => i.id)], []);
@@ -178,30 +244,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   }
 
 
-  // useEffect(() => {
-  //   const controller = new AbortController(); // Khởi tạo AbortController
-  //   const signal = controller.signal;
-  //   const getData = async () => {
-  //     try {
-  //       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/get/voucher`, {
-  //         headers: {
-  //           "Authorization": `Bearer ${clientAccessToken.value}`
-  //         }, signal
-  //       });
-  //       const payload = await res.json();
-  //       console.log(payload);
-  //     } catch (error) {
 
-  //     }
-  //   }
-
-  //   getData()
-
-  //   return () => {
-  //     controller.abort();
-  //   };
-
-  // }, [])
   let price = checkoutItems.reduce((acc: number, s: any) => acc + s.items.reduce((acc: number, i: any) => acc + (+i.quantity * (i.product_price ? (+i.product_price) : (+i.variant_price))), 0), 0);
   let ship_fee = checkoutItems.reduce((acc: number, s: any) => acc + s.ship_fee, 0);
   let priceWithVoucher = mainVoucherSelected ? ((+mainVoucherSelected.ratio * price) / 100 > +mainVoucherSelected.max ? +mainVoucherSelected.max : (+mainVoucherSelected.ratio * price) / 100) : 0;
@@ -211,7 +254,15 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
     let promotionPrice = voucherShop ? ((+voucherShop.ratio * price) / 100 > +voucherShop.max ? +voucherShop.max : (+voucherShop.ratio * price) / 100) : 0
     return acc + promotionPrice
   }, 0);
-  let totalPrice = price + ship_fee - priceWithVoucher - priceWithShopVouchers;
+  let discountRank = checkoutItems.reduce((acc: number, s: any) => {
+    let a = s.items.reduce((acc: number, i: any) => acc + (+i.quantity * (i.product_price ? (+i.product_price) : (+i.variant_price))), 0);
+    console.log({ a: a * (+profile.rank.value) > +profile.rank.limitValue });
+    return acc + (a * (+profile.rank.value) > +profile.rank.limitValue ? +profile.rank.limitValue : a * (+profile.rank.value))
+  }
+    , 0);
+  let totalPrice = price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+
+
 
   return (
 
@@ -291,7 +342,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
                 </div>
                 <div className="flex items-center gap-4">
                   {payments.map((p, index) => (
-                    <button type="button" onClick={() => setPaymentSelected(p.id)} key={index} className={`text-sm border px-3 py-1 h-10 ${paymentSelected === p.id ? 'border-blue-700 text-blue-700' : ''}`}>{p.name}</button>
+                    <button type="button" onClick={() => setPaymentSelected(p.id)} key={index} className={`text-sm border transition-all rounded font-medium px-3 py-1 h-10 ${paymentSelected === p.id ? 'border-blue-700 text-blue-700' : ''}`}>{p.name}</button>
                   ))}
                 </div>
               </div>
@@ -299,6 +350,33 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
                 <ul className="w-[230px] text-gray-500">
                   <li className="h-10 flex text-sm items-center">Tổng tiền hàng</li>
                   <li className="h-10 flex text-sm items-center">Tổng tiền phí vận chuyển</li>
+                  <li className="h-10 flex text-sm items-center">
+                    <div className="flex items-center gap-2">
+                      Giảm giá thành viên {profile.rank.title}
+                      <HoverCard openDelay={100} closeDelay={100}>
+                        <HoverCardTrigger asChild>
+                          <Info size={16} color="#6e6e6e" strokeWidth={1.25} className="cursor-pointer" />
+                        </HoverCardTrigger>
+                        <HoverCardContent className="w-auto">
+                          <div>
+                            {ranks.map((r) => (
+                              <div key={r.id} className={`flex gap-2 text-sm mb-1 ${r.id === +profile.rank.id ? 'text-blue-700 font-semibold' : ''}`}>
+                                <span>{r.title}</span>
+                                <span>-</span>
+                                <span>{r.description}</span>
+                                {r.id === +profile.rank.id && (
+                                  <div>
+                                    <Check size={16} strokeWidth={1.25} className="text-blue-700" />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
+
+                    </div>
+                  </li>
                   <li className="h-10 flex text-sm items-center">Tổng cộng voucher giảm giá</li>
                   <li className="h-10 flex text-sm items-center">Tổng thanh toán</li>
                 </ul>
@@ -310,6 +388,10 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
                   <li className="justify-end h-10 flex text-sm items-center text-black font-medium">
                     {
                       formattedPrice(ship_fee)
+                    }
+                  </li>
+                  <li className="justify-end h-10 flex text-sm items-center text-black font-medium">
+                    -{formattedPrice(discountRank)
                     }
                   </li>
                   <li className="justify-end h-10 flex text-sm items-center text-black font-medium">

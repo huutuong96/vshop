@@ -9,22 +9,22 @@ const iconProfile: { title: string, icon: any, path: string }[] = [
   {
     title: 'Tài Khoản Của Tôi ',
     icon: <UserRound size={20} color='blue' />,
-    path: 'profile'
+    path: '/account/profile'
   },
   {
     title: 'Đơn Mua',
     icon: <Calendar size={20} color='blue' />,
-    path: 'orders'
+    path: '/account/orders'
   },
   {
     title: 'Thông Báo',
     icon: <Bell size={20} color='orange' />,
-    path: 'notifications'
+    path: '/account/notifications'
   },
   {
     title: 'Kho Voucher',
     icon: <TicketIcon size={20} color='orange' />,
-    path: 'vouchers'
+    path: '/account/vouchers'
   }
 ]
 
@@ -45,9 +45,10 @@ export default function LeftSide() {
               {profile.fullname}
             </div>
           </div>
-          <div className='flex items-center gap-2 mt-1'>
-            <Pencil size={16} color='#888888' />
-            <span className='text-[#888888] cursor-pointer text-sm'>Sửa hồ sơ</span>
+          <div className='flex items-center gap-2 mt-1 text-sm'>
+            <span>Thành viên: </span>
+            {/* <span className='text-[#888888] cursor-pointer text-sm'>Sửa hồ sơ</span> */}
+            <span>{profile.rank.title}</span>
           </div>
         </div>
       </div>
@@ -57,7 +58,7 @@ export default function LeftSide() {
             <div className="pb-1">
               {it.icon}
             </div>
-            <Link className={`text-sm font-medium pb-1 transition-all border-b-gray-100 border-b hover:text-blue-800 hover:border-b-blue-800  ${pathname.endsWith(it.path) ? 'text-blue-800 border-b-blue-800 border-b' : ''}`} href={it.path}>{it.title}</Link>
+            <Link className={`text-sm font-medium pb-1 transition-all border-b-gray-100 border-b hover:text-blue-800 hover:border-b-blue-800  ${pathname.includes(it.path) ? 'text-blue-800 border-b-blue-800 border-b' : ''}`} href={it.path}>{it.title}</Link>
           </div>
         ))}
         {/* <div className='flex gap-3 w-full items-end cursor-pointer'>

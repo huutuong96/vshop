@@ -21,20 +21,20 @@ import CategorySection from '../_components/category-section';
 
 const CategoryPage = () => {
   return (
-    <>
-          <Breadcrumb className="pb-5">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className='font-semibold'>Danh mục sản phẩm</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <CategorySection/>
-        </>
+    <div className='w-content'>
+      <Breadcrumb className="pb-5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className='font-semibold'>Danh mục sản phẩm</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <CategorySection />
+    </div>
   );
 };
 

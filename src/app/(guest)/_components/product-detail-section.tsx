@@ -13,7 +13,7 @@ import { addCart } from "@/redux/slices/profile.slice"
 import { useAppDispatch } from "@/redux/store"
 import { Check, Heart, PhoneCall, ShoppingBasket, SquareCheckBig, Star, Store } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import { Label } from "@/components/ui/label";
 
@@ -137,14 +137,9 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
-  if (typeof window !== 'undefined') {
-    // if (variant) {
-    //   const variantItems = variant.json.variantItems;
-    //   const variantProductsJson = variant.json.variantProducts;
-    //   const variantProductsBE = variant.variantProducts.map((v: any, index: number) => ({ ...v, variants: variantProductsJson[index].variants, stock: +v.stock, price: +v.price }));
-    //   console.log({ variantProductsBE, variantItems });
-    // }
-  }
+
+
+
 
 
   return (

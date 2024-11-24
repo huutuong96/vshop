@@ -107,102 +107,102 @@ export default function ListOrderPage() {
         </div>
         <div className="px-4 py-2 text-[16px] font-semibold">2 Đơn hàng</div>
         <div className="px-4 py-2">
-          <div className="w-full h-full border text-[14px] flex items-center rounded bg-[#F0F0F0] text-[#000000ba]">
-            <div className="w-[364px] p-2">Sản phẩm</div>
-            <div className="w-[200px] p-2">Tổng đơn hàng</div>
-            <div className="w-[280px] p-2">Trạng thái</div>
-            <div className="w-[200px] p-2">Đơn vị vận chuyển</div>
-            <div className="">Thao tác</div>
+          <div className="w-full h-full border text-[14px] flex items-center rounded bg-[#f5f8fd]  text-[#000000ba]">
+            <div className="flex-[2] p-2">Sản phẩm</div>
+            <div className="flex-1 p-2 text-right">Tổng đơn hàng</div>
+            <div className="flex-1 p-2 text-right">Trạng thái</div>
+            <div className="flex-1 p-2 text-right">Đơn vị vận chuyển</div>
+            <div className="flex-[0.5] p-2 text-right">Thao tác</div>
           </div>
-          {/* <div className="mt-4 border rounded-sm">
-          <div className="p-2 flex items-center justify-between bg-[#F0F0F0] text-black text-[14px]">
-            <span>Khách hàng: Test2</span>
-            <span>Mã đơn hàng: 01234544ds5</span>
-          </div>
-          <div className="w-full h-full text-[14px] flex">
-            <div className="w-[364px] p-2 pr-6">
-              <div className="flex w-full justify-between mt-1">
-                <div className="flex gap-2 items-center">
-                  <div className="size-[92px]">
-                    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
-                  </div>
-                  <div className="">
-                    <button className="bg-[#FFE8E8] text-[#E12E2E] px-4 py-1 text-[12px] rounded-sm">Đã hủy đơn</button>
-                    <div className="flex flex-col mt-1 ml-2">
-                      <span className="font-bold">Áo màu vàng</span>
-                      <span>Phân loại: màu vàng, size XL</span>
+          <div className="mt-4 border rounded-sm">
+            <div className="p-2 flex items-center justify-between bg-[#f5f8fd]  text-black text-[14px]">
+              <span>Khách hàng: Test2</span>
+              <span>Mã đơn hàng: 01234544ds5</span>
+            </div>
+            <div className="w-full h-full text-[14px] flex">
+              <div className="flex-[2] p-2 pr-6">
+                <div className="flex w-full justify-between mt-1">
+                  <div className="flex gap-2 items-center">
+                    <div className="size-[92px]">
+                      <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
+                    </div>
+                    <div className="">
+                      <button className="bg-[#FFE8E8] text-[#E12E2E] px-4 py-1 text-[12px] rounded-sm">Đã hủy đơn</button>
+                      <div className="flex flex-col mt-1 ml-2">
+                        <span className="font-bold">Áo màu vàng</span>
+                        <span>Phân loại: màu vàng, size XL</span>
+                      </div>
                     </div>
                   </div>
+                  <div className="text-[12px]">x1</div>
                 </div>
-                <div className="text-[12px]">x1</div>
               </div>
+              <div className="flex-1 p-2 flex flex-col items-end">
+                <div className="text-black font-medium">120.000đ</div>
+                <div className="text-[#585858] mt-1">Thanh toán khi nhận hàng</div>
+              </div>
+              <div className="flex-1 p-2 flex flex-col items-end">
+                <div className="text-black font-medium">Đã hủy</div>
+                <div className="text-[#585858] mt-1">Đã hủy bởi người mua</div>
+              </div>
+              <div className="flex-1 p-2 flex flex-col items-end">
+                <div className="text-black font-medium">Nhanh</div>
+                <div className="text-[#585858] mt-1">GHTK</div>
+              </div>
+              <div className="p-2 flex-[0.5] text-blue-500 cursor-pointer flex flex-col items-end">Xem chi tiết</div>
             </div>
-            <div className="w-[200px] p-2">
-              <div className="text-black font-medium">120.000đ</div>
-              <div className="text-[#585858] mt-1">Thanh toán khi nhận hàng</div>
-            </div>
-            <div className="w-[280px] p-2">
-              <div className="text-black font-medium">Đã hủy</div>
-              <div className="text-[#585858] mt-1">Đã hủy bởi người mua</div>
-            </div>
-            <div className="w-[200px] p-2">
-              <div className="text-black font-medium">Nhanh</div>
-              <div className="text-[#585858] mt-1">GHTK</div>
-            </div>
-            <div className="p-2 text-blue-500 cursor-pointer">Xem chi tiết</div>
           </div>
-        </div>
-        <div className="mt-4 border rounded-sm">
-          <div className="p-2 flex items-center justify-between bg-[#F0F0F0] text-black text-[14px]">
-            <span>Khách hàng: Test2</span>
-            <span>Mã đơn hàng: 01234544ds5</span>
-          </div>
-          <div className="w-full h-full text-[14px] flex">
-            <div className="w-[364px] p-2 pr-6">
-              <div className="flex w-full justify-between mt-1">
-                <div className="flex gap-2 items-center">
-                  <div className="size-[92px]">
-                    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
-                  </div>
-                  <div className="">
-                    <div className="flex flex-col mt-1 ml-2">
-                      <span className="font-bold">Áo màu vàng</span>
-                      <span>Phân loại: màu vàng, size XL</span>
+          <div className="mt-4 border rounded-sm">
+            <div className="p-2 flex items-center justify-between bg-[#F0F0F0] text-black text-[14px]">
+              <span>Khách hàng: Test2</span>
+              <span>Mã đơn hàng: 01234544ds5</span>
+            </div>
+            <div className="w-full h-full text-[14px] flex">
+              <div className="w-[364px] p-2 pr-6">
+                <div className="flex w-full justify-between mt-1">
+                  <div className="flex gap-2 items-center">
+                    <div className="size-[92px]">
+                      <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
+                    </div>
+                    <div className="">
+                      <div className="flex flex-col mt-1 ml-2">
+                        <span className="font-bold">Áo màu vàng</span>
+                        <span>Phân loại: màu vàng, size XL</span>
+                      </div>
                     </div>
                   </div>
+                  <div className="text-[12px]">x1</div>
                 </div>
-                <div className="text-[12px]">x1</div>
-              </div>
-              <div className="flex w-full justify-between mt-1">
-                <div className="flex gap-2 items-center">
-                  <div className="size-[92px]">
-                    <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
-                  </div>
-                  <div className="">
-                    <div className="flex flex-col mt-1 ml-2">
-                      <span className="font-bold">Áo màu vàng</span>
-                      <span>Phân loại: màu vàng, size XL</span>
+                <div className="flex w-full justify-between mt-1">
+                  <div className="flex gap-2 items-center">
+                    <div className="size-[92px]">
+                      <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
+                    </div>
+                    <div className="">
+                      <div className="flex flex-col mt-1 ml-2">
+                        <span className="font-bold">Áo màu vàng</span>
+                        <span>Phân loại: màu vàng, size XL</span>
+                      </div>
                     </div>
                   </div>
+                  <div className="text-[12px]">x1</div>
                 </div>
-                <div className="text-[12px]">x1</div>
               </div>
+              <div className="w-[200px] p-2">
+                <div className="text-black font-medium">120.000đ</div>
+                <div className="text-[#585858] mt-1">Thanh toán khi nhận hàng</div>
+              </div>
+              <div className="w-[280px] p-2">
+                <div className="text-black font-medium">Đã giao</div>
+                <div className="text-[#585858] mt-1">Giao hàng thành công</div>
+              </div>
+              <div className="w-[200px] p-2">
+                <div className="text-black font-medium">Nhanh</div>
+                <div className="text-[#585858] mt-1">GHTK</div>
+              </div>
+              <div className="p-2 text-blue-500 cursor-pointer">Xem chi tiết</div>
             </div>
-            <div className="w-[200px] p-2">
-              <div className="text-black font-medium">120.000đ</div>
-              <div className="text-[#585858] mt-1">Thanh toán khi nhận hàng</div>
-            </div>
-            <div className="w-[280px] p-2">
-              <div className="text-black font-medium">Đã giao</div>
-              <div className="text-[#585858] mt-1">Giao hàng thành công</div>
-            </div>
-            <div className="w-[200px] p-2">
-              <div className="text-black font-medium">Nhanh</div>
-              <div className="text-[#585858] mt-1">GHTK</div>
-            </div>
-            <div className="p-2 text-blue-500 cursor-pointer">Xem chi tiết</div>
           </div>
-        </div> */}
           {/* <OrderItem />
         <OrderItem /> */}
           <EmptyOrder />

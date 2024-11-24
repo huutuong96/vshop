@@ -56,12 +56,14 @@ export default async function ProductDetailPage({ params: { slug } }: { params: 
 
     return (
 
-      <div className="w-full ">
-        <Head>
-          <title>{product.name}</title>
-        </Head>
-        <GuestBreadCrumb />
-        <ProductDetailSection product={{ ...productPayload.data, show_price }} variant={variant} />
+      <div className="w-content">
+        <div className="w-full ">
+          <Head>
+            <title>{product.name}</title>
+          </Head>
+          <GuestBreadCrumb />
+          <ProductDetailSection product={{ ...productPayload.data, show_price }} variant={variant} />
+        </div>
       </div>
     )
   } catch (error) {

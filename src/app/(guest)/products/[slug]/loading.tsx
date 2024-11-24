@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const LoadingProductDetailPage = () => {
   return (
-    <div className="w-full flex border shadow bg-white rounded animate-pulse">
+    <div className="w-content flex border shadow bg-white rounded animate-pulse">
       {/* Left Section */}
       <div className="w-2/5 p-4">
         <div className="w-full">

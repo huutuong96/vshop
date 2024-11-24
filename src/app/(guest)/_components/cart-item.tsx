@@ -8,41 +8,105 @@ import { formattedPrice } from "@/lib/utils";
 import { changeQuantity, selectItem } from "@/redux/slices/profile.slice";
 import { useAppDispatch } from "@/redux/store";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import debounce from 'lodash/debounce';
+
 
 export default function CartItem({ item, index, subIndex, itemsLength, checked }: { item: any, index: number, subIndex: number, itemsLength: number, checked: boolean }) {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [tempQuantity, setTempQuantity] = useState(+item.quantity);
 
 
-  const handleChangeQty = async (quantity: number, index: number, subIndex: number, id: number) => {
-    if (quantity) {
+  // const handleChangeQty = async (quantity: number, index: number, subIndex: number, id: number) => {
+  //   if (quantity) {
+  //     try {
+  //       setLoading(true);
+  //       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts/${id}`, {
+  //         method: "PUT",
+  //         body: JSON.stringify({ quantity }),
+  //         headers: {
+  //           'Authorization': `Bearer ${clientAccessToken.value}`,
+  //           "Content-Type": "application/json"
+  //         }
+  //       })
+  //       const payload = await res.json();
+  //       if (!res.ok) {
+  //         console.log(payload);
+  //         throw 'Error'
+  //       }
+  //       dispatch(changeQuantity({ index, quantity, subIndex }))
+  //     } catch (error) {
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+
+
+  // }
+
+
+  const debouncedUpdateQty = useCallback(
+    debounce(async (quantity) => {
       try {
         setLoading(true);
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts/${id}`, {
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts/${item.id}`, {
           method: "PUT",
           body: JSON.stringify({ quantity }),
           headers: {
-            'Authorization': `Bearer ${clientAccessToken.value}`,
-            "Content-Type": "application/json"
-          }
-        })
+            Authorization: `Bearer ${clientAccessToken.value}`,
+            "Content-Type": "application/json",
+          },
+        });
+
         const payload = await res.json();
         if (!res.ok) {
-          console.log(payload);
-          throw 'Error'
+          console.error(payload);
+          throw new Error("Failed to update quantity");
         }
-        dispatch(changeQuantity({ index, quantity, subIndex }))
+
+        // Dispatch action khi API thành công
+        dispatch(changeQuantity({ index, subIndex, quantity }));
       } catch (error) {
-        console.log(error);
+        console.error("API Error:", error);
       } finally {
         setLoading(false);
       }
-    }
+    }, 500),
+    [clientAccessToken, envConfig, item.id, index, subIndex, dispatch]
+  );
+
+  const handleChangeQty = (type: "increment" | "decrement") => {
+    const newQuantity = type === "increment" ? tempQuantity + 1 : tempQuantity - 1;
+
+    // Cập nhật state tạm
+    setTempQuantity(newQuantity);
+
+    // Gọi debounce để trì hoãn việc gọi API
+    debouncedUpdateQty(newQuantity);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuantity = Number(e.target.value);
+
+    // Cập nhật giá trị ngay lập tức cho giao diện
+    setTempQuantity(newQuantity);
+
+    // Gọi hàm debounce
+    debouncedUpdateQty(newQuantity);
+  };
+
+  // Hủy debounce khi component unmount
+  useEffect(() => {
+    return () => {
+      debouncedUpdateQty.cancel();
+    };
+  }, [debouncedUpdateQty]);
 
 
-  }
+
 
   const handleDeleteCartItem = async (index: number, subIndex: number, id: number) => {
     try {
@@ -118,31 +182,36 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
           ) : loading ? (
             <>
               <span className='px-1 border w-[30px] text-center text-gray-300'>-</span>
-              <span className='text-sm text-gray-300 border-b border-t w-[40px] h-[25.6px] flex items-center justify-center'>{item.quantity}</span>
+              <span className='text-sm text-gray-300 border-b border-t w-[40px] h-[25.6px] flex items-center justify-center'>{tempQuantity}</span>
               <span className='px-1 border w-[30px] text-gray-300 text-center'>+</span>
             </>
           ) : (
             <>
               <span
-                onClick={async (e) => handleChangeQty(+item.quantity - 1, index, subIndex, item.id).then((res) => {
-                  console.log(+item.quantity - 1);
-                })}
+                onClick={() => handleChangeQty("decrement")}
                 className='px-1 border w-[30px] text-center cursor-pointer'
               >
                 -
               </span>
               <input
                 ref={inputRef}
-                onChange={async (e) => handleChangeQty(+e.target.value, index, subIndex, item.id)}
+                // onChange={async (e) => handleChangeQty(+e.target.value, index, subIndex, item.id)}
                 type="number"
                 className='text-sm border-b border-t w-[40px] h-[25.6px] text-center'
-                value={item.quantity}
+                value={tempQuantity}
+                onChange={handleInputChange}
               // defaultValue={item.quantity}
               />
-              <span onClick={async (e) => handleChangeQty(+item.quantity + 1, index, subIndex, item.id)} className='px-1 border w-[30px] text-center cursor-pointer'>+</span>
+              <span onClick={() => handleChangeQty("increment")} className='px-1 border w-[30px] text-center cursor-pointer'>+</span>
             </>
           )}
-
+          {/* <button disabled={loading || tempQuantity <= 1} onClick={() => handleChangeQty("decrement")}>
+            -
+          </button>
+          <span>{tempQuantity}</span>
+          <button disabled={loading} onClick={() => handleChangeQty("increment")}>
+            +
+          </button> */}
 
         </div>
         <div className='w-[113px] h-[80px] font-bold flex items-center justify-center text-[14px] text-[#ff424e]'>

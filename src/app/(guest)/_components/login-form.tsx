@@ -179,9 +179,9 @@ export default function LoginForm() {
           if (a.ok) {
             const info = await a.json();
             const historyPath = localStorage.getItem('historyPath') ?? '/'
-            const e = await setTimeout(() => {
-              window.location.href = historyPath;
-            }, 500)
+            window.location.href = historyPath;
+            // const e = await setTimeout(() => {
+            // }, 500)
           } else {
             const resToNextServer = await a.json();
             throw resToNextServer.message;
@@ -196,7 +196,7 @@ export default function LoginForm() {
         // console.log({ error });
         setLoading(false);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     }
 

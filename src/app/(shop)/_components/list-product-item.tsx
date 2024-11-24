@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "@/components/ui/use-toast";
+import Link from "next/link";
 
 const apiurl = `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}`;
 
@@ -47,7 +48,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
                     <img className="size-full object-cover" src={p?.image ? p.image : "https://cf.shopee.vn/file/vn-11134207-7r98o-m0d4u3p2pckt0d_tn"} alt="" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[14px] font-bold cursor-pointer hover:text-blue-700">{p.name}</span>
+                    <Link href={`/shop/product/list/${p.slug}`} className="text-[14px] font-bold cursor-pointer hover:text-blue-700">{p.name}</Link>
                     <span className="text-[13px] text-gray-500">SKU sản phẩm: {p.sku}</span>
                     <span className="text-[13px] text-gray-600">ID sản phẩm: {p.id}</span>
                   </div>
@@ -86,7 +87,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
               {p.variants.filter((pv: any, index: number) => showMore || index < 2).map((pv: any, index: number) => (
                 <div key={index} className="w-full flex">
                   <div className="w-4 ml-4 mr-2"></div>
-                  <div className="flex-[2] p-2 flex items-center gap-4 bg-gray-50">
+                  <div className="flex-[2] p-2 flex items-center gap-4">
                     <div className="w-full">
                       <div className="flex items-center gap-4">
                         <div className="size-14 rounded-sm flex items-center justify-center">
@@ -106,13 +107,13 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
                       </div>
                     </div>
                   </div>
-                  <div className="flex-1 p-2 bg-gray-50 text-right">
-                    <div className="text-black font-medium">0</div>
+                  <div className="flex-1 p-2 text-right">
+                    <div className="text-black font-medium text-sm">0</div>
                   </div>
-                  <div className="flex-1 p-2 bg-gray-50 text-right">
-                    <div className="text-black font-medium">{formattedPrice(+pv.price)}</div>
+                  <div className="flex-1 p-2 text-right">
+                    <div className="text-black font-medium text-sm">{formattedPrice(+pv.price)}</div>
                   </div>
-                  <div className="flex-1 p-2 bg-gray-50 text-right">
+                  <div className="flex-1 p-2 text-right">
                     <div className="text-black font-medium">{pv.stock}</div>
                   </div>
                   <div className="flex-1 p-2"></div>

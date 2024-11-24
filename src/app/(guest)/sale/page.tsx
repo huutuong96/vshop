@@ -30,7 +30,7 @@ const SieuSalePage = () => {
           <img src="./images/banner2.webp" className="rounded-[5px] w-[587px] h-[247px]" />
         </div>
       </div>
-      <SaleProductSection/>
+      <SaleProductSection />
     </div>
   );
 };
