@@ -10,7 +10,7 @@ export default function TestABX() {
     fetch(`/api/auth/logout`, {
       method: 'POST',
       body: JSON.stringify({})
-    }).then(res => { router.push('/') })
+    }).then(res => { window.location.href = '/' })
   }, [])
   return (
     <LoadingScreen />
