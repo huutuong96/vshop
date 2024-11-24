@@ -7,6 +7,8 @@ import AppProvider from "@/redux/providers/app.provider";
 import ProfileProvider from "@/redux/providers/profile.provider";
 import envConfig from "@/config";
 import { nanoid } from "nanoid";
+import { redirect } from "next/navigation";
+import TestABX from "@/app/test";
 
 
 const nunito = Nunito({
@@ -35,10 +37,15 @@ export default async function RootLayout({
         "Authorization": `Bearer ${accessToken}`
       }
     });
-    if (!res.ok) {
-      return null;
-    }
+
     const payload = await res.json();
+
+    if (!res.ok) {
+      return (
+        <TestABX />
+      )
+
+    }
     const newCart = payload.shop.map((shop: any) => {
       const shop_id = shop.id;
       const items = payload.cart.filter((p: any) => +p.shop_id === shop_id).map((p: any) => ({ ...p }));
