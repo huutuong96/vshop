@@ -10,10 +10,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { notFound, useParams } from "next/navigation";
+import productApiRequest from "@/apiRequest/product";
+import CardProduct from "@/app/(guest)/_components/card-product";
 
-export default function ShopsGuestPage({ params: { id } }: { params: { id: string } }) {
-  const [open, setOpen] = useState<boolean>(false);
+export default function ShopDetailSection() {
+  const params = useParams();
+  const [open, setOpen] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!params.id) {
+      return notFound();
+    }
+  }, [])
+
+  useEffect(() => {
+    const getData = async () => {
+      const data = await productApiRequest.findAll();
+      setProducts(data.payload.data.data);
+    }
+    getData()
+  }, [])
 
   return (
     <>
@@ -112,7 +131,7 @@ export default function ShopsGuestPage({ params: { id } }: { params: { id: strin
               </div>
               <div className="flex-1">
                 <div className="w-full">
-                  <div className="mx-[2px] py-[13px] px-5 border">
+                  <div className="mx-[2px] py-[13px] px-5 shadow-sm bg-white rounded-sm">
                     <div className="w-full flex items-center h-[34px]">
                       <div className="text-sm mr-[5px]">Sắp xếp theo</div>
                       <div className="flex ml-[10px] gap-[10px]">
@@ -133,6 +152,15 @@ export default function ShopsGuestPage({ params: { id } }: { params: { id: strin
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className="w-full grid grid-cols-4 mt-2">
+                  {products.map((p: any) => (
+                    <div key={p.id} className="px-[5px] my-[5px]">
+                      <CardProduct p={p} />
+                    </div>
+
+                  ))}
+
                 </div>
               </div>
             </div>
