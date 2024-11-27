@@ -12,7 +12,6 @@ export async function middleware(request: NextRequest) {
   const info = request.cookies.get('info')?.value;
   const stateCheckout = request.cookies.get('stateCheckout')?.value;
 
-  console.log({ pathname });
 
   if (privatePaths.some(path => pathname.startsWith(path)) && !accessToken) {
     return NextResponse.redirect(new URL('/', request.url))
