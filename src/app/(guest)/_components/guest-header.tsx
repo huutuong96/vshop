@@ -113,7 +113,7 @@ export default function GuestHeader() {
             <div className="mid-nav w-full h-[70px] flex items-center ">
               <div className="logo w-40 h-[48px]">
                 <Link href={'/'}>
-                  <img className="size-full object-cover" src="./images/logo.png" alt="" />
+                  <img className="size-full object-cover" src="https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730653717/u6w1kdo3mlpd8cqn0jbz.jpg" alt="" />
                 </Link>
               </div>
               <div className="w-[calc(100%-10rem)] h-full flex items-center gap-5 justify-between pl-8">

@@ -45,7 +45,7 @@
     "input-otp": "^1.2.4",
     "json-server": "^1.0.0-beta.3",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.370.0",
+    "lucide-react": "^0.461.0",
     "nanoid": "^5.0.8",
     "next": "14.2.1",
     "react": "^18",

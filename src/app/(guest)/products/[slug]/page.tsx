@@ -58,10 +58,7 @@ export default async function ProductDetailPage({ params: { slug } }: { params: 
 
       <div className="w-content">
         <div className="w-full ">
-          <Head>
-            <title>{product.name}</title>
-          </Head>
-          <GuestBreadCrumb />
+          <GuestBreadCrumb name={product.name} />
           <ProductDetailSection product={{ ...productPayload.data, show_price }} variant={variant} />
         </div>
       </div>

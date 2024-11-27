@@ -66,6 +66,7 @@ export default function ProductListSection() {
         if (!b.ok) {
           throw 'loi'
         }
+        console.log(payload.data);
         setProducts([...payload.data.data]);
 
       } catch (error) {
@@ -155,7 +156,7 @@ export default function ProductListSection() {
       </div>
       <div className="px-4 py-2 text-[16px] font-semibold">{products.length} Sản phẩm</div>
       <div className="px-4 py-2">
-        <div className="flex rounded-tl rounded-tr bg-[#F0F0F0] border border-b-0 items-center">
+        <div className="flex rounded-tl rounded-tr bg-[#f5f8fd]  border items-center">
           {/* <div className="py-6 pl-4 pr-2">
             <Checkbox className="size-[14px]" />
           </div> */}

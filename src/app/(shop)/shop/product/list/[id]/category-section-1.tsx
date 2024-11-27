@@ -33,7 +33,7 @@ const ctx = (category: any, categories: any[]): any => {
   return [category, ...ctx(categoryParent, categories)]
 }
 
-export default function CategorySection({ productFormHandle, setShowMore, setLoading }: { productFormHandle: any, setShowMore: any, setLoading: any }) {
+export default function CategorySection1({ productFormHandle, setShowMore, setLoading }: { productFormHandle: any, setShowMore: any, setLoading: any }) {
   const [open, setOpen] = useState<boolean>(false);
   const [categories, setCategories] = useState<any[]>([]);
   const [showCategories, setShowCategories] = useState<{

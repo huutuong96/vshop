@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SkeletonCartItem() {
   return (
-    <div className="border p-4 rounded-lg flex gap-4">
+    <div className="border p-4 rounded-lg flex gap-4 bg-white mt-4">
       {/* Skeleton cho ảnh */}
       <Skeleton className="w-16 h-16 rounded" />
 

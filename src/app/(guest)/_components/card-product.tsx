@@ -13,19 +13,19 @@ export default function CardProduct({ p }: { p: any }) {
   }
 
   return (
-    <div className="card-product py-1 shadow rounded border bg-white">
+    <div className="card-product py-1 shadow rounded border bg-white hover:ring-blue-500 hover:-translate-y-1 transition-all">
       <div className="img w-full px-5 pt-2 h-[200px]">
         <Link href={`/products/${p.slug}`}>
           <img className="size-full object-contain " src={p.image ? p.image : 'https://images.unsplash.com/photo-1517037673086-5d09c5e1a537?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'} alt="" />
         </Link>
       </div>
-      <div className="p-2 flex flex-col gap-0.5">
+      <div className="p-2 px-4 flex flex-col gap-0.5">
         <span className="text-[16px] font-medium">{p.name}</span>
         <span className="text-[16px] font-semibold text-red-600">{show_price}</span>
-        <div className="inline">
+        {/* <div className="inline">
           <span className="text-[13px] bg-gray-100 rounded-sm px-2">Trả góp Muadee</span>
-        </div>
-        <div className="text-[12px]">Đã bán 128</div>
+        </div> */}
+        <div className="text-[12px]">Đã bán {p.sold_count}</div>
         <div className="flex justify-between items-center text-[12px]">
           <div className="flex gap-1 items-center">
             <div className="leading-4">5/5</div>

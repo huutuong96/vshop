@@ -75,22 +75,29 @@ const ProductSchema = z.object({
   isCreated: z.boolean(),
   variantMode: z.boolean(),
 },).superRefine((data, ctx) => {
-  // if (!data.price && data.price !== null) {
-  //   console.log({ anx: data.price });
-  //   ctx.addIssue({
-  //     path: ['price'],
-  //     message: "Price must be higher for bulk orders",
-  //     code: z.ZodIssueCode.custom,
-  //   });
-  //   return
-  // } else {
-  //   ctx.addIssue({
-  //     path: ['price'],
-  //     message: undefined,
-  //     code: z.ZodIssueCode.custom,
-  //   });
-  //   return
-  // }
+  if (!data.variantMode) {
+    if (!data.price) {
+      ctx.addIssue({
+        path: ['price'],
+        message: 'Lĩnh vực này là cần thiết',
+        code: z.ZodIssueCode.custom,
+      });
+    }
+    if (!data.stock) {
+      ctx.addIssue({
+        path: ['stock'],
+        message: 'Lĩnh vực này là cần thiết',
+        code: z.ZodIssueCode.custom,
+      });
+    }
+    if (!data.sku) {
+      ctx.addIssue({
+        path: ['sku'],
+        message: 'Lĩnh vực này là cần thiết',
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  }
 });
 
 export type Product = z.infer<typeof ProductSchema>;
@@ -296,6 +303,12 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     }
   };
 
+  useEffect(() => {
+    if (!productFormHandle.getValues('variantMode')) {
+      productFormHandle.setValue('variant', null)
+    }
+  }, [productFormHandle.getValues('variantMode')])
+
 
   return (
     <form className="flex flex-col gap-4" onSubmit={productFormHandle.handleSubmit(onSubmit)}>
@@ -320,7 +333,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
               </span>
               {productFormHandle.formState.errors?.name?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.name.message}</p>}
             </div>
-            <CategorySection productFormHandle={productFormHandle} setShowMore={setShowMore} />
+            <CategorySection setLoading={setLoading} productFormHandle={productFormHandle} setShowMore={setShowMore} />
             <div className="my-3">
               <div className="text-sm mb-2 font-semibold flex items-center gap-1">
                 Ảnh sản phẩm
@@ -641,6 +654,3 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
   )
 }
-
-
-

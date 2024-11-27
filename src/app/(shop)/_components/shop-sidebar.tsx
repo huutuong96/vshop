@@ -1,4 +1,4 @@
-import { CalendarCheck, ClipboardCheck, MessageSquare, SquareUser, Tag } from "lucide-react";
+import { CalendarCheck, ClipboardCheck, DollarSign, MessageSquare, SquareUser, Tag } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -44,6 +44,18 @@ const sidebarItems: SidebarItem[] = [
     }]
   },
   {
+    icon: <DollarSign strokeWidth={1.5} size={20} />,
+    title: 'Quản Lý Tài Chính',
+    path: 'finance',
+    subItems: [{
+      title: 'Doanh Thu',
+      href: 'income'
+    }, {
+      title: 'Số Dư Tài Khoản',
+      href: 'wallet'
+    }]
+  },
+  {
     icon: <Tag strokeWidth={1.5} size={20} />,
     title: 'Kênh Marketing',
     path: 'marketing',
@@ -56,7 +68,8 @@ const sidebarItems: SidebarItem[] = [
     path: 'customer',
     // subItems: ['Quản Lý Chat']
     subItems: []
-  }
+  },
+
 ];
 
 export default function ShopSidebar() {

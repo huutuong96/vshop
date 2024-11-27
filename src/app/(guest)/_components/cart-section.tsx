@@ -75,8 +75,8 @@ export default function CartSection() {
 
   return (
     <div className='w-full'>
-      {!loading && cartItemLength > 0 && (
-        <>
+      <>
+        {cartItemCount ? (
           <section className='headerCart w-full h-[55px] border rounded mt-5 flex items-center gap-4 text-[14px] bg-white'>
             <Checkbox
               checked={selectedItems.length > 0 && selectedItems.length === cartItemLength}
@@ -102,62 +102,70 @@ export default function CartSection() {
               Thao tác
             </div>
           </section>
-          {cart.map((c: any, index: number) => {
-            let checked = c.items.every((ci: any) => selectedItems.includes(ci.id));
-            return (
-              <CartShopSection key={c.id} checked={checked} index={index} shop={c} />
-            )
-          })}
+        ) : ''}
 
-          <section className="checkPrice w-full border sticky bottom-0 bg-white mt-4">
-            <div className='w-full h-[44px] py-3 flex justify-end border-dashed border-b-[1px]'>
-              <div className='w-[515px] h-5 flex justify-around mr-4'>
-                <div className='w-[300px] flex gap-4 text-[16px]'>
-                  <TicketPercent className='text-blue-500' />
-                  <span>VNShop Voucher</span>
+        {!loading && cart.map((c: any, index: number) => {
+          let checked = c.items.every((ci: any) => selectedItems.includes(ci.id));
+          return (
+            <CartShopSection key={c.id} checked={checked} index={index} shop={c} />
+          )
+        })}
+
+        {loading && Array.from({ length: cartItemLength }, (_, i) => i + 1).map(a => (<SkeletonCartItem />))}
+
+
+        {
+          cartItemCount ? (
+            <section className="checkPrice w-full border sticky bottom-0 bg-white mt-4">
+              <div className='w-full h-[44px] py-3 flex justify-end border-dashed border-b-[1px]'>
+                <div className='w-[515px] h-5 flex justify-around mr-4'>
+                  <div className='w-[300px] flex gap-4 text-[16px]'>
+                    <TicketPercent className='text-blue-500' />
+                    <span>VNShop Voucher</span>
+                  </div>
+                  <span className='text-blue-500'>Chọn thêm mã Voucher</span>
                 </div>
-                <span className='text-blue-500'>Chọn thêm mã Voucher</span>
               </div>
-            </div>
-            <div className='w-full h-[50px] py-4 flex justify-end border-dashed border-b-[1px] '>
-              <p className='mr-4'>Chưa xác định được mình có tích xu không ?</p>
-            </div>
-            <div className='w-full h-[64px] flex items-center justify-between py-3 px-5'>
-              <div className='h-full flex items-center gap-4 text-[16px]'>
-                <Checkbox
-                  checked={selectedItems.length > 0 && selectedItems.length === cartItemLength}
-                  onCheckedChange={(c) => {
-                    let checked = c as boolean;
-                    dispatch(selectAllProducts(checked))
-                  }}
-                  className='size-4 ml-4 mr-2'
-                />
-                <span>Chọn Tất Cả ({cartItemCount})
-                </span>
-                <span>Xóa</span>
-                <span>Bỏ sản phẩm không hoạt động</span>
+              <div className='w-full h-[50px] py-4 flex justify-end border-dashed border-b-[1px] '>
+                <p className='mr-4'>Chưa xác định được mình có tích xu không ?</p>
               </div>
-              <div className='h-full flex gap-4 justify-center items-center text-[16px]'>
-                <span>Tổng thanh toán ({selectedItems.length} Sản phẩm):</span>
-                <span className='text-[#ff424e] text-[24px] font-bold'>{formattedPrice(totalPriceSeltected)}</span>
-                {loading && (
-                  <ButtonLoading />
-                )}
-                {!loading && (
-                  <Button onClick={handleCheckout} className='w-[160px] bg-blue-700 hover:bg-blue-700 hover:opacity-50 border'>Mua Hàng</Button>
-                )}
+              <div className='w-full h-[64px] flex items-center justify-between py-3 px-5'>
+                <div className='h-full flex items-center gap-4 text-[16px]'>
+                  <Checkbox
+                    checked={selectedItems.length > 0 && selectedItems.length === cartItemLength}
+                    onCheckedChange={(c) => {
+                      let checked = c as boolean;
+                      dispatch(selectAllProducts(checked))
+                    }}
+                    className='size-4 ml-4 mr-2'
+                  />
+                  <span>Chọn Tất Cả ({cartItemCount})
+                  </span>
+                  <span>Xóa</span>
+                  <span>Bỏ sản phẩm không hoạt động</span>
+                </div>
+                <div className='h-full flex gap-4 justify-center items-center text-[16px]'>
+                  <span>Tổng thanh toán ({selectedItems.length} Sản phẩm):</span>
+                  <span className='text-[#ff424e] text-[24px] font-bold'>{formattedPrice(totalPriceSeltected)}</span>
+                  {loading && (
+                    <ButtonLoading />
+                  )}
+                  {!loading && (
+                    <Button onClick={handleCheckout} className='w-[160px] bg-blue-700 hover:bg-blue-700 hover:opacity-50 border'>Mua Hàng</Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </section>
-        </>
-      )}
+            </section>
+          ) : ''
+        }
+
+      </>
       {
         !cartItemCount && (
           <CartEmptyItems />
         )
       }
 
-      {loading && (<SkeletonCartItem />)}
     </div>
   )
 }

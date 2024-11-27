@@ -104,45 +104,7 @@ function InputPassword(
 // Dependencies: pnpm install @remixicon/react
 
 
-function ButtonDemo(
-) {
-  return (
-    <div className="flex flex-col gap-2">
-      <Button variant="outline">
-        <RiGoogleFill
-          className="me-3 text-[#DB4437] dark:text-white/60"
-          size={16}
-          aria-hidden="true"
-        />
-        Login with Google
-      </Button>
-      <Button variant="outline">
-        <RiTwitterXFill
-          className="me-3 text-[#14171a] dark:text-white/60"
-          size={16}
-          aria-hidden="true"
-        />
-        Login with X
-      </Button>
-      <Button variant="outline">
-        <RiFacebookFill
-          className="me-3 text-[#1877f2] dark:text-white/60"
-          size={16}
-          aria-hidden="true"
-        />
-        Login with Facebook
-      </Button>
-      <Button variant="outline">
-        <RiGithubFill
-          className="me-3 text-[#333333] dark:text-white/60"
-          size={16}
-          aria-hidden="true"
-        />
-        Login with GitHub
-      </Button>
-    </div>
-  );
-}
+
 
 
 
@@ -228,19 +190,34 @@ export default function LoginForm() {
               </div>
             )}
           </form>
-          <div className="mt-4 flex justify-between items-center">
+          <div className="mt-4 flex items-center">
             <Link href="/forgot-password" className="text-sm text-blue-600 hover:underline">
               Quên mật khẩu?
             </Link>
-            <Link href="/login-sms" className="text-sm text-blue-600 hover:underline">
-              Đăng nhập với SMS
-            </Link>
           </div>
           <div className="mt-6">
-            <ButtonDemo />
+            <div className="flex flex-col gap-2">
+              <Button variant="outline">
+                <RiGoogleFill
+                  className="me-3 text-[#DB4437] dark:text-white/60"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Đăng nhập với tài khoản Google
+              </Button>
+              <Button variant="outline">
+                <RiFacebookFill
+                  className="me-3 text-[#1877f2] dark:text-white/60"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Đăng nhập với tài khoản Facebook
+              </Button>
+
+            </div>
           </div>
           <p className="mt-6 text-center text-sm text-gray-600">
-            Bạn mới biết đến Shopee? <Link href="/seller-signup" className="text-blue-600 hover:underline">Đăng ký</Link>
+            Bạn mới biết đến VNShop? <Link href="/auth/register" className="text-blue-600 hover:underline">Đăng ký</Link>
           </p>
         </div>
       </div>

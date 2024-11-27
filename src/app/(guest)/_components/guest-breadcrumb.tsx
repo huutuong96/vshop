@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function GuestBreadCrumb() {
+export function GuestBreadCrumb({ name }: { name: string }) {
   return (
     <Breadcrumb className="pb-5">
       <BreadcrumbList>
@@ -27,7 +27,7 @@ export function GuestBreadCrumb() {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>Sản phẩm 1</BreadcrumbPage>
+          <BreadcrumbPage>{name}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

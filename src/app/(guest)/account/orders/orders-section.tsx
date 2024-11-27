@@ -193,8 +193,13 @@ export default function OrdersGuestSection() {
     setOrders([]);
     setHasMore(true);
     setPage(1);
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // Thêm smooth để tạo hiệu ứng cuộn mượt
+    });
     fetchOrders(1);
   }, [orderStatus]);
+
 
   useEffect(() => {
     if (page > 1) {

@@ -22,7 +22,7 @@ import CardProduct from './card-product';
 import Link from 'next/link';
 import envConfig from '@/config';
 
-const CategorySection = () => {
+const CategorySection = ({ slug }: { slug?: string }) => {
   const [products, setProducts] = useState<any>([]);
   const [categories, setCategories] = useState<any>([]);
   const [priceMin, setPriceMin] = useState<number>(0);
@@ -49,18 +49,20 @@ const CategorySection = () => {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const apiCategories = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/categories`).then(res => res.json());
-        if (apiCategories) {
-          setCategories([...apiCategories.data])
-        } else {
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/categories`);
+        if (!res.ok) {
           throw new Error('Lỗi lấy Api kìa')
         }
+        const payload = await res.json();
+        console.log(payload.data.map((p: any) => p.status));
+        setCategories([...payload.data])
+
       } catch (error) {
         console.log(error);
       }
     }
     getCategories();
-  }, [])
+  }, [slug])
 
   const handleFilter = () => {
 
@@ -77,17 +79,9 @@ const CategorySection = () => {
               <h2 className='font-bold text-[18px]'>Tất cả danh mục</h2>
             </div>
             <div className="section1-list-cate w-full flex flex-col gap-1 pl-[4px] mt-4">
-              <Accordion type="single" collapsible>
-                {
-                  categories.filter((cate: any) => cate.parent_id == 0).map((item: any, index: number) => (
-                    <AccordionItem value={item.id} key={index} >
-                      <AccordionTrigger className=' text-[16px] pb-2 '>
-                        <Link href={`/category/${item.slug}`}>{item.title}</Link>
-                      </AccordionTrigger>
-                    </AccordionItem>
-                  ))
-                }
-              </Accordion>
+              {categories.map((item: any, index: number) => (
+                <Link key={item.id} href={`/categories/${item.id}`}>{item.title}</Link>
+              ))}
             </div>
           </div>
           <div className="filter-cate flex flex-col w-full mt-2 border-b-2 ">

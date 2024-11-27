@@ -26,13 +26,18 @@ const apiurl = `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}`;
 
 
 export default function ListProductItem({ p, handleDeleteProduct }: { p: any, handleDeleteProduct: (id: number) => Promise<void> }) {
-  let length = (p.show_price as string).split(' - ').length;
+  let length = p.show_price ? (p.show_price as string).split(' - ').length : null;
   let show_price = ''
-  if (length > 1) {
-    show_price = (p.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
+  if (length) {
+    if (length > 1) {
+      show_price = (p.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
+    } else {
+      show_price = formattedPrice(+p.show_price)
+    }
   } else {
-    show_price = formattedPrice(+p.show_price)
+    show_price = formattedPrice(+p.price)
   }
+
   const [showMore, setShowMore] = useState<boolean>(false);
 
   return (
@@ -45,10 +50,10 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
               <div className="w-full">
                 <div className="flex items-center gap-4">
                   <div className="size-14 border rounded-sm">
-                    <img className="size-full object-cover" src={p?.image ? p.image : "https://cf.shopee.vn/file/vn-11134207-7r98o-m0d4u3p2pckt0d_tn"} alt="" />
+                    <img className="size-14" src={p?.image ? p.image : "https://cf.shopee.vn/file/vn-11134207-7r98o-m0d4u3p2pckt0d_tn"} alt="" />
                   </div>
                   <div className="flex flex-col gap-1">
-                    <Link href={`/shop/product/list/${p.slug}`} className="text-[14px] font-bold cursor-pointer hover:text-blue-700">{p.name}</Link>
+                    <Link href={`/shop/product/list/${p.id}`} className="text-[14px] font-bold cursor-pointer hover:text-blue-700">{p.name}</Link>
                     <span className="text-[13px] text-gray-500">SKU sản phẩm: {p.sku}</span>
                     <span className="text-[13px] text-gray-600">ID sản phẩm: {p.id}</span>
                   </div>
@@ -65,7 +70,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
               <div className="text-black font-medium">{p.variants.length > 0 ? p.variants.reduce((init: number, cur: any) => init + (+cur.stock), 0) : p.quantity}</div>
             </div>
             <div className="text-blue-500 flex-1 items-end flex flex-col gap-2 p-2">
-              <div className="cursor-pointer">Cập nhật</div>
+              <Link href={`/shop/product/list/${p.id}`} className="cursor-pointer">Cập nhật</Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className="cursor-pointer">Xem thêm</div>

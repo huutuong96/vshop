@@ -9,11 +9,41 @@ import HangXinSection from "@/app/(guest)/_components/hang-xin-section";
 export default function HomePage() {
   return (
     <>
-      <div className="w-content">
+
+      <div className="w-full -mt-5">
         <BannerHomeGuest />
         <CategoriesGuest />
       </div>
-      <div className="w-content">
+      <div className="w-full flex justify-center">
+        <div className="w-content mt-5 bg-white rounded-sm">
+          <div className="px-5 h-[60px] flex items-center text-lg text-gray-600">
+            DANH MỤC
+          </div>
+          <div className="w-full grid grid-cols-10">
+            {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+              <div key={n} className={`w-[120px] flex flex-col items-center border-r border-t border-b ${n === 1 ? 'border-l' : ''}`}>
+                <div className="w-[82px] h-[88px] mt-3">
+                  <img className="size-full" src="https://down-vn.img.susercontent.com/file/687f3967b7c2fe6a134a2c11894eea4b@resize_w320_nl.webp" alt="" />
+                </div>
+                <div className="mb-[10px] h-10">
+                  <div className="text-sm">Thời trang nam</div>
+                </div>
+              </div>
+            ))}
+            {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
+              <div key={n} className={`w-[120px] flex flex-col items-center border-r border-b ${n === 1 ? 'border-l' : ''}`}>
+                <div className="w-[82px] h-[88px] mt-3">
+                  <img className="size-full" src="https://down-vn.img.susercontent.com/file/687f3967b7c2fe6a134a2c11894eea4b@resize_w320_nl.webp" alt="" />
+                </div>
+                <div className="mb-[10px] h-10">
+                  <div className="text-sm">Thời trang nam</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="w-content mt-5">
         <HangXinSection />
         <Categories2 />
         <GoiYSection />

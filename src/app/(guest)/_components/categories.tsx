@@ -36,22 +36,24 @@ const cateItems: { title: string, img: string }[] = [
 ]
 const CategoriesGuest = () => {
   return (
-    <div className="categories-home w-full">
-      <div className="top w-full flex justify-between py-2">
+    <div className='w-full flex justify-center bg-white'>
+      <div className="categories-home w-content py-2 ">
+        {/* <div className="top w-full flex justify-between py-2">
         {titleCates.map(tl => (
           <div className="w-[180px] h-[46px] flex justify-center items-center border-b-4 border-b-blue-700" key={tl}>
             <span className="font-semibold text-blue-700">{tl}</span>
           </div>
         ))}
-      </div>
-      <div className="bottom flex justify-between w-full py-2">
-        {cateItems.map(tl => (
-          <div className="flex flex-col items-center w-[100px] gap-2" key={tl.title}>
-            <img src={tl.img} className="size-[44px]" />
-            <span className="text-[13px] text-center">{tl.title}</span>
-          </div>
-        ))}
+      </div> */}
+        <div className="bottom flex justify-between w-full py-2">
+          {cateItems.map(tl => (
+            <div className="flex flex-col items-center w-[100px] gap-2" key={tl.title}>
+              <img src={tl.img} className="size-[44px]" />
+              <span className="text-[13px] text-center">{tl.title}</span>
+            </div>
+          ))}
 
+        </div>
       </div>
     </div>
   );
