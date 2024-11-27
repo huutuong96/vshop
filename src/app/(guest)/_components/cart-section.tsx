@@ -111,7 +111,7 @@ export default function CartSection() {
           )
         })}
 
-        {loading && Array.from({ length: cartItemLength }, (_, i) => i + 1).map(a => (<SkeletonCartItem />))}
+        {loading && Array.from({ length: cartItemLength }, (_, i) => i + 1).map(a => (<SkeletonCartItem key={a} />))}
 
 
         {
