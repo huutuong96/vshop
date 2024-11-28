@@ -1,8 +1,9 @@
 import CategorySection from '@/app/(guest)/_components/category-section';
+import ProductsCategoryDetailSection from '@/app/(guest)/_components/products-category-detail-section';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 
-const CategorySlug = ({ params: { slug } }: { params: { slug: string } }) => {
+const CategoryDetailPage = ({ params: { slug } }: { params: { slug: string } }) => {
   return (
     <div className='w-content'>
       <Breadcrumb className="pb-5">
@@ -16,9 +17,9 @@ const CategorySlug = ({ params: { slug } }: { params: { slug: string } }) => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <CategorySection slug={slug} />
+      <ProductsCategoryDetailSection />
     </div>
   );
 };
 
-export default CategorySlug;
+export default CategoryDetailPage;

@@ -44,6 +44,7 @@ export default function CategorySection({ productFormHandle, setShowMore, setLoa
   const [categoriesSlectedCopy, setCategoriesSlectedCopy] = useState<any[]>([]);
   const [isValid, setIsValid] = useState<boolean>(false);
 
+
   useEffect(() => {
     if (productFormHandle.getValues('category') && categories.length > 0) {
       let category_id = productFormHandle.getValues('category');
@@ -80,8 +81,8 @@ export default function CategorySection({ productFormHandle, setShowMore, setLoa
           throw 'Error';
         }
         const payload = await res.json();
-        setCategories([...payload.data]);
-        setShowCategories([{ parent_id: 0, categories: payload.data.filter((c: any) => !c.parent_id) }])
+        setCategories([...payload.data.data.map((c: any) => ({ ...c, parent_id: +c.parent_id }))]);
+        setShowCategories([{ parent_id: 0, categories: payload.data.data.map((c: any) => ({ ...c, parent_id: +c.parent_id })).filter((c: any) => !+c.parent_id) }])
       } catch (error) {
         console.log(error);
       }

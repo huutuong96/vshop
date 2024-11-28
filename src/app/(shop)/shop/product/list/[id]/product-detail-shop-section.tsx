@@ -147,8 +147,9 @@ export default function ProductDetailShopSection({ product }: { product?: any })
       });
       const payload = await res.json();
       console.log(payload);
+      toast({ title: 'Thành công', description: payload.message, variant: 'success' })
     } catch (error) {
-
+      toast({ title: 'Error', variant: 'destructive' })
     }
   }
 

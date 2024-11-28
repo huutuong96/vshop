@@ -59,7 +59,7 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
                 <MailPlus size={12} />
                 <p className="text-[12px]">Chat</p>
               </button>
-              <Link href={`/shops/${o.shop.id}`}>
+              <Link href={`/vendors/${o.shop.id}`}>
                 <button className='p-1 flex items-center justify-center gap-1 border rounded-sm text-gray-500 font-semibold'>
                   <Store size={12} />
                   <p className="text-[12px]">Xem Shop</p>

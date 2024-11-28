@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, BadgeDollarSign, LayoutGrid, Package, Search, ShoppingBag, Tag, Truck, Bell } from "lucide-react";
+import { BadgeCheck, BadgeDollarSign, LayoutGrid, Package, Search, ShoppingBag, Tag, Truck, Bell, LogIn, User } from "lucide-react";
 import Link from 'next/link';
 import MiniCart from './MiniCart';
 import Notifications from './MiniNotifications';
@@ -122,7 +122,7 @@ export default function GuestHeader() {
                     <LayoutGrid />
                   </div>
                   <div className="input-nav h-10 flex">
-                    <input type="text" placeholder="Tìm trên VNShop" className="w-[600px] h-full px-5 border rounded-tl-[16px] rounded-bl-[16px] outline-none text-[13px] bg-gray-50" />
+                    <input type="text" placeholder="Tìm trên VNShop" className="w-[550px] h-full px-5 border rounded-tl-[16px] rounded-bl-[16px] outline-none text-[13px] bg-gray-50" />
                     <div className="icon-input flex items-center justify-center w-[42px] h-full border-b border-t border-r  rounded-tr-[16px] rounded-br-[16px] bg-gray-50">
                       <Search size={20} />
                     </div>
@@ -201,9 +201,9 @@ export default function GuestHeader() {
                     ) :
                     (
                       <div className='flex gap-2 items-center'>
-                        <Link className='text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700' href={'/auth/register'}>Đăng ký</Link>
+                        <Link className='flex items-center gap-2 text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700' href={'/auth/register'}> Đăng ký</Link>
                         <span className='text-[14px] text-[#3a3a3a]'>|</span>
-                        <div className='text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700 cursor-pointer' onClick={() => {
+                        <div className='flex gap-2 items-center text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700 cursor-pointer' onClick={() => {
                           if (pathname !== '/auth/login') {
                             localStorage.setItem('historyPath', pathname);
                             console.log(pathname);

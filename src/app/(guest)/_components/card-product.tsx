@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+
 export default function CardProduct({ p }: { p: any }) {
   let length = (p.show_price as string).split(' - ').length;
   let show_price = ''
@@ -31,7 +32,7 @@ export default function CardProduct({ p }: { p: any }) {
             <div className="leading-4">5/5</div>
             <Star size={12} className="text-yellow-500" />
           </div>
-          <span>Đồng Nai</span>
+          <span>{p?.shop?.province ? p?.shop?.province : 'Đồng Nai'}</span>
         </div>
       </div>
     </div>
