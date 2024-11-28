@@ -383,7 +383,7 @@ export default function ShopDetailSection() {
                         )}
 
                         {pages.slice(1, pages.length - 1).map((p: any, index: number) => (
-                          <PaginationItem onClick={() => setPage(p.label)} className="cursor-pointer">
+                          <PaginationItem key={index} onClick={() => setPage(p.label)} className="cursor-pointer">
                             <PaginationLink isActive={+p.label === +page}>{p.label}</PaginationLink>
                           </PaginationItem>
                         ))}
