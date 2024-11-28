@@ -25,7 +25,7 @@ function ButtonLoading(
         strokeWidth={2}
         aria-hidden="true"
       />
-      Đăng nhập
+      Đăng ký
     </Button>
   );
 }
@@ -185,7 +185,7 @@ export default function RegisterForm() {
                 type="submit"
                 className={`w-full bg-blue-700 text-white py-5 text-[14px] px-4 flex items-center justify-center gap-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50`}
               >
-                Đăng nhập
+                Đăng ký
               </Button>
             )}
             {errors.root && <p className="text-sm text-red-500">{errors.root.message}</p>}

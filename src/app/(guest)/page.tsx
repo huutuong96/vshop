@@ -4,6 +4,7 @@ import CategoriesGuest from "./_components/categories";
 import Categories2 from "@/app/(guest)/_components/categories2";
 import HangXinSection from "@/app/(guest)/_components/hang-xin-section";
 import envConfig from "@/config";
+import Link from "next/link";
 
 
 
@@ -29,14 +30,17 @@ export default async function HomePage() {
             </div>
             <div className="w-full grid grid-cols-10">
               {categories.map((c: any, index: number) => (
-                <div key={c.id} className={`w-[120px] flex flex-col items-center border-r border-t border-b `}>
-                  <div className="w-[82px] h-[88px] mt-3">
-                    <img className="size-full" src={c.image} alt="" />
+                <Link key={c.id} href={`categories/${c.id}`}>
+                  <div className={`w-[120px] flex flex-col items-center border-r border-t border-b `}>
+                    <div className="w-[82px] h-[88px] mt-3">
+                      <img className="size-full" src={c.image} alt="" />
+                    </div>
+                    <div className="mb-[10px] h-10 px-1">
+                      <div className="text-sm text-center">{c.title}</div>
+                    </div>
                   </div>
-                  <div className="mb-[10px] h-10">
-                    <div className="text-sm text-center">{c.title}</div>
-                  </div>
-                </div>
+                </Link>
+
               ))}
               {/* {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
                 <div key={n} className={`w-[120px] flex flex-col items-center border-r border-b ${n === 1 ? 'border-l' : ''}`}>

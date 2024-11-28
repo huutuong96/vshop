@@ -140,9 +140,8 @@ export default function ProductsCategoryDetailSection() {
           setProducts([...productsPayload.data]);
           setPages([...productsPayload.links]);
         } catch (error) {
-          console.log('check error: ', error);
-          toast({ title: 'Error', variant: 'destructive' })
           setProducts([]);
+          setPages([]);
         } finally {
           setLoading(false);
         }

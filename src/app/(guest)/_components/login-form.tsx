@@ -165,7 +165,7 @@ export default function LoginForm() {
   }
   return (
     <>
-      <div className="w-1/2 bg-gray-100 p-12 flex flex-col justify-center">
+      <div className="w-1/2 bg-white p-12 flex flex-col justify-center">
         <div className="max-w-md w-full mx-auto">
           <h2 className="text-2xl font-semibold mb-6">Đăng nhập</h2>
           <form onSubmit={handleSubmit}>
