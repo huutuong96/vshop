@@ -2,12 +2,13 @@
 import { Button } from "@/components/ui/button";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
+import { formattedPrice } from "@/lib/utils";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import { useEffect, useState } from "react";
 
 
 export default function WalletSection() {
-  const [wallet, setWallet] = useState();
+  const [wallet, setWallet] = useState<any>();
   const shopInfo = useAppInfoSelector(state => state.profile.info);
 
   useEffect(() => {
@@ -37,8 +38,8 @@ export default function WalletSection() {
           <div className="w-full border rounded-sm p-5 flex items-center gap-2 justify-between">
             <div className="">
               <div className="w-full flex gap-2 items-center">
-                <div className="text-xl font-semibold">Số dư</div>
-                <div className="text-3xl font-bold">0</div>
+                <div className="text-xl font-semibold">Số dư:</div>
+                <div className="text-3xl font-bold">{wallet?.wallet && formattedPrice(wallet.wallet)}</div>
               </div>
               <div className="mt-2">
                 <Button className="bg-red-500 text-white">Yêu cầu thanh toán</Button>

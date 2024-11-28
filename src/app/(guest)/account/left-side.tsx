@@ -48,7 +48,7 @@ export default function LeftSide() {
           <div className='flex items-center gap-2 mt-1 text-sm'>
             <span>Thành viên: </span>
             {/* <span className='text-[#888888] cursor-pointer text-sm'>Sửa hồ sơ</span> */}
-            <span>{profile.rank.title}</span>
+            <span>{profile.rank?.title}</span>
           </div>
         </div>
       </div>
