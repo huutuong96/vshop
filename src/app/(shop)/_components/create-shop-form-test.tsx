@@ -72,8 +72,7 @@ export default function CreateShopFormTest({ info }: { info: any }) {
           title: "success",
           description: "Tạo shop thành công"
         })
-        window.location.href = '/shop';
-        setLoading(false);
+        window.location.href = 'https://vnshop.top/register/shipping/view';
       } else {
         throw 'Có lỗi xãy ra, xin vui lòng liên hệ admin VNShop!'
       }
