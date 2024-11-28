@@ -146,7 +146,9 @@ export default function ProductDetailShopSection({ product }: { product?: any })
         body: JSON.stringify(newData)
       });
       const payload = await res.json();
-      console.log(payload);
+      if (!res.ok) {
+        throw 'Error'
+      }
       toast({ title: 'Thành công', description: payload.message, variant: 'success' })
     } catch (error) {
       toast({ title: 'Error', variant: 'destructive' })

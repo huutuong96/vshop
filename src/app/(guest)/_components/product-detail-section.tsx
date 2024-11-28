@@ -344,7 +344,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
         </div>
       </div>
 
-      {/* <div className="w-full flex mt-6">
+      <div className="w-full flex mt-6">
         <div className="w-2/5 pr-4 ">
           <div className="shadow border p-4 w-full">
             <div className="font-bold text-[16px]">Thông tin nhà cung cấp</div>
@@ -596,7 +596,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
         <Comment />
         <Comment />
         <Comment />
-      </div> */}
+      </div>
     </>
   )
 

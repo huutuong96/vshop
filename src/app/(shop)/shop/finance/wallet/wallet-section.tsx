@@ -1,5 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
@@ -21,6 +22,7 @@ export default function WalletSection() {
             }
           });
           const payload = await res.json();
+
           setWallet(payload.data);
         } catch (error) {
         }
@@ -29,6 +31,21 @@ export default function WalletSection() {
     }
 
   }, [])
+  const handleWallet = async () => {
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/shop_request_get_cash/${shopInfo.shop_id}`, {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${clientAccessToken.value}`
+        }
+      })
+      if (!res.ok) {
+        throw 'Error'
+      }
+    } catch (error) {
+      toast({})
+    }
+  }
 
   return (
     <div className="w-full p-4 bg-white border rounded-sm">
@@ -42,7 +59,7 @@ export default function WalletSection() {
                 <div className="text-3xl font-bold">{wallet?.wallet && formattedPrice(wallet.wallet)}</div>
               </div>
               <div className="mt-2">
-                <Button className="bg-red-500 text-white">Yêu cầu thanh toán</Button>
+                <Button disabled={!wallet || wallet.wallet === 0} onClick={() => handleWallet()} className="bg-red-500 text-white">Yêu cầu thanh toán</Button>
               </div>
             </div>
             <div className="pr-4">

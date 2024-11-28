@@ -1,4 +1,5 @@
 'use client'
+import envConfig from "@/config";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import { Bell, Calendar, Pencil, TicketIcon, UserRound } from "lucide-react"
 import Link from "next/link";
@@ -31,6 +32,17 @@ const iconProfile: { title: string, icon: any, path: string }[] = [
 export default function LeftSide() {
   const profile = useAppInfoSelector(state => state.profile.info);
   const pathname = usePathname();
+
+  const handleWallet = async () => {
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/wallet/shop_request_get_cash`, {
+        method: 'POST',
+        body: JSON.stringify({})
+      })
+    } catch (error) {
+
+    }
+  }
   return (
     <div className='left-body flex flex-col items-center pt-4'>
       <div className='w-[240px] h-[80px] flex gap-5 items-center'>

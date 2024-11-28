@@ -205,9 +205,9 @@ export default function NewProductTestForm({ id }: { id?: string }) {
         }
       })
       const payload = await res.json();
-      if (!res.ok && res.status === 408) {
-        window.location.href = payload.message
-      }
+      // if (!res.ok && res.status === 408) {
+      //   window.location.href = payload.message
+      // }
       if (!res.ok) {
         throw 'ERror'
       }

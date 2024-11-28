@@ -57,6 +57,7 @@ const filters = [
 
 export default function ListOrderPage() {
   const [showAll, setShowAll] = useState(false);
+  const [orders, setOrder] = useState<any>([]);
 
   const MAX_ITEMS = 6;
   const visibleItems = showAll ? orderStatuses : orderStatuses.slice(0, MAX_ITEMS);
