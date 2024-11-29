@@ -123,7 +123,7 @@ export default function ShopDetailSection() {
         try {
           setLoading(true);
           const [productsRes, shopInfoRes] = await Promise.all([
-            fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/filter?limit=2&shop_id=${params.id}${handleChangeSearchParams(page, filter, sort, categoryId)}`),
+            fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/filter?limit=12&shop_id=${params.id}${handleChangeSearchParams(page, filter, sort, categoryId)}`),
             fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/${params.id}`)
           ])
           const shopInfoPayload = await shopInfoRes.json();
@@ -240,7 +240,10 @@ export default function ShopDetailSection() {
                   <span>Danh Mục</span>
                 </div>
                 <div className="w-full">
-                  <div onClick={() => setCategoryId(0)} className="w-full px-3 py-2 pr-[10px] transition-all relative cursor-pointer hover:text-blue-700">
+                  <div onClick={() => {
+                    setCategoryId(0);
+                    setPage('1')
+                  }} className="w-full px-3 py-2 pr-[10px] transition-all relative cursor-pointer hover:text-blue-700">
                     <div className={`text-sm font-medium h-4 ${categoryId === 0 ? 'text-blue-700' : ''}`}>
                       Tất cả sản phẩm
                     </div>
@@ -249,7 +252,10 @@ export default function ShopDetailSection() {
                     )}
                   </div>
                   {shopInfo && shopInfo.categories.map((c: any) => (
-                    <div key={c.id} onClick={() => setCategoryId(+c.id)} className="w-full px-3 py-2 pr-[10px] relative transition-all cursor-pointer hover:text-blue-700">
+                    <div key={c.id} onClick={() => {
+                      setCategoryId(+c.id)
+                      setPage('1');
+                    }} className="w-full px-3 py-2 pr-[10px] relative transition-all cursor-pointer hover:text-blue-700">
                       <div className={`text-sm font-medium h-4 ${+c.id === categoryId ? 'text-blue-700' : ''}`}>
                         {c.title}
                       </div>

@@ -151,6 +151,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
   const [loadingImage, setLoadingImage] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [imageBlobs, setImageBlobs] = useState<string[]>([]);
 
   const productFormHandle = useForm<Product>({
     resolver: zodResolver(ProductSchema),
@@ -171,6 +172,11 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     control: productFormHandle.control,
     name: "variant.variantAttributes",
   });
+
+  const watchedImages = useWatch({
+    control: productFormHandle.control,
+    name: 'images'
+  })
 
   const variantProducts = productFormHandle.watch("variant.variantProducts")
   const attributeFormHandle = useFieldArray({
@@ -252,10 +258,16 @@ export default function NewProductTestForm({ id }: { id?: string }) {
       if (!productFormHandle.getValues('isCreated')) {
 
         setTimeout(() => {
-          const a = generateVariantProducts(productFormHandle.getValues('variant.variantAttributes'));
+          const after = generateVariantProducts(productFormHandle.getValues('variant.variantAttributes'));
+          const before = productFormHandle.getValues(`variant.variantProducts`);
+
           // productFormHandle.setValue('variantMode', true);
-          productFormHandle.setValue('variantMode', a.length > 0 ? true : false);
-          productFormHandle.setValue('variant.variantProducts', a);
+          productFormHandle.setValue('variantMode', after.length > 0 ? true : false);
+          if (after.length === before.length) {
+            productFormHandle.setValue('variant.variantProducts', before.map((p, index) => ({ ...p, attributes: after[index].attributes, image: after[index].image })));
+          } else {
+            productFormHandle.setValue('variant.variantProducts', after);
+          }
           productFormHandle.trigger('variant.variantProducts');
 
         }, 100)
@@ -276,34 +288,60 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     if (files) {
       try {
         setLoadingImage(true);
-        let length = productFormHandle.getValues('images').length;
+
         const formData = new FormData();
         for (let i = 0; i < files.length; i++) {
-          formData.append('images[]', files[i])
+          formData.append("images[]", files[i]);
         }
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/product/uploadImage`, {
-          method: "POST",
-          body: formData,
-          headers: {
-            "Authorization": `Bearer ${clientAccessToken.value}`
-          }
-        });
-        if (!res.ok) {
-          throw 'Error'
-        }
-        const payload: { status: boolean, message: string, images: string[] } = await res.json();
-        const productImages = productFormHandle.getValues('images')
-        productFormHandle.setValue('images', [...productImages, ...payload.images]);
-        productFormHandle.setError('images', { message: undefined })
 
+        // Tạo blob URL cho preview
+        const newBlobs = Array.from(files).map((file) =>
+          URL.createObjectURL(file)
+        );
+        setImageBlobs((prevBlobs) => [...prevBlobs, ...newBlobs]);
+
+        // Gửi request upload ảnh
+        const res = await fetch(
+          `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/product/uploadImage`,
+          {
+            method: "POST",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${clientAccessToken.value}`,
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error("Failed to upload images");
+        }
+
+        const payload: { status: boolean; message: string; images: string[] } = await res.json();
+
+        // Cập nhật ảnh vào form
+        const productImages = productFormHandle.getValues("images");
+        productFormHandle.setValue("images", [
+          ...productImages,
+          ...payload.images,
+        ]);
+        productFormHandle.setError("images", { message: undefined });
+
+        // Dọn dẹp blob URLs khi upload thành công
+        setImageBlobs([]);
       } catch (error) {
-        // setLoading(false);
-        toast({ title: 'Error', variant: 'destructive' })
+        toast({ title: "Error uploading images", variant: "destructive" });
       } finally {
         setLoadingImage(false);
+        event.target.value = ""; // Reset input file
       }
     }
   };
+
+  const handleDeleteImage = (index: number) => {
+    let images = productFormHandle.getValues('images');
+    images.splice(index, 1);
+    productFormHandle.setValue('images', [...images])
+  }
 
   useEffect(() => {
     if (!productFormHandle.getValues('variantMode')) {
@@ -311,6 +349,11 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     }
   }, [productFormHandle.getValues('variantMode')])
 
+  useEffect(() => {
+    return () => {
+      imageBlobs.forEach((blobUrl) => URL.revokeObjectURL(blobUrl));
+    };
+  }, [imageBlobs]);
 
   return (
     <form className="flex flex-col gap-4" onSubmit={productFormHandle.handleSubmit(onSubmit)}>
@@ -341,41 +384,81 @@ export default function NewProductTestForm({ id }: { id?: string }) {
                 Ảnh sản phẩm
               </div>
               <div className="w-full p-4 bg-[#f5f8fd] rounded flex gap-2">
-                {productFormHandle.getValues('images').map((img, index) => (
-                  <div key={index} className="border size-20">
-                    <img src={img} className="size-full object-cover" alt="" />
+                {/* Ảnh đã upload thành công */}
+                {watchedImages.map((img, index) => (
+                  <div key={index} className="border size-20 rounded-sm relative">
+                    <img
+                      src={img}
+                      className="size-full object-cover rounded-sm"
+                      alt={`Uploaded ${index}`}
+                    />
+                    <Button
+                      type="button"
+                      onClick={() => handleDeleteImage(index)}
+                      className="size-4 absolute text-[8px] top-0 right-0"
+                    >
+                      Xóa
+                    </Button>
                   </div>
                 ))}
-                {loadingImage ? (
-                  <div className="">
-                    <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-20 rounded flex items-center justify-center hover:border-blue-500">
-                      <img className="size-4 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
 
+                {/* Ảnh đang tải */}
+                {loadingImage &&
+                  imageBlobs.map((blob, index) => (
+                    <div key={index} className="border size-20 rounded-sm relative">
+                      <img
+                        src={blob}
+                        className="size-full object-cover rounded-sm"
+                        alt={`Loading ${index}`}
+                      />
+                      <div className="size-full bg-black opacity-10 rounded-sm absolute top-0 left-0 flex items-center justify-center">
+                        <img
+                          className="size-4 animate-spin"
+                          src="https://www.svgrepo.com/show/199956/loading-loader.svg"
+                          alt="Loading icon"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  ))}
 
-                ) : (
-                  <div onClick={handleImageClick} className="">
+                {/* Nút thêm ảnh */}
+                {!loadingImage && (
+                  <div onClick={handleImageClick}>
                     <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-20 rounded flex items-center justify-center hover:border-blue-500">
-                      <Plus size={32} strokeWidth={1.5} className="group-hover:text-blue-500 text-[#858585]" />
+                      <Plus
+                        size={32}
+                        strokeWidth={1.5}
+                        className="group-hover:text-blue-500 text-[#858585]"
+                      />
                     </div>
                   </div>
                 )}
-
               </div>
-              <input ref={fileInputRef} accept=".jpg, .jpeg, .png, .webp" onChange={handleFileChange} type="file" multiple hidden />
-              {productFormHandle.formState.errors?.images?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.images.message}</p>}
 
+              {/* Input file */}
+              <input
+                ref={fileInputRef}
+                accept=".jpg, .jpeg, .png, .webp"
+                onChange={handleFileChange}
+                type="file"
+                multiple
+                hidden
+              />
+              {productFormHandle.formState.errors?.images?.message && (
+                <p className="text-sm text-red-500 mt-1">
+                  {productFormHandle.formState.errors.images.message}
+                </p>
+              )}
             </div>
 
             <div className="mt-0">
               <div className="text-sm mb-2 font-semibold flex items-center gap-1">
                 Ảnh nền sản phẩm
               </div>
-              <div className="w-1/2 p-4 bg-[#f5f8fd] rounded">
+              <div className="w-1/2 p-4 bg-[#f5f8fd] ">
                 {productFormHandle.getValues('images').length > 0 && (
-                  <div className="border size-20">
-                    <img src={productFormHandle.getValues('images')[0]} className="size-full object-cover" alt="" />
+                  <div className="border size-20 rounded-sm">
+                    <img src={productFormHandle.getValues('images')[0]} className="size-full rounded-sm object-cover" alt="" />
                   </div>
                 )}
                 {productFormHandle.getValues('images').length === 0 && (
