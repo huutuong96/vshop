@@ -80,8 +80,8 @@ export default function CategorySection1({ productFormHandle, setShowMore, setLo
           throw 'Error';
         }
         const payload = await res.json();
-        setCategories([...payload.data.data.map((c: any) => ({ ...c, parent_id: +c.parent_id }))]);
-        setShowCategories([{ parent_id: 0, categories: payload.data.data.map((c: any) => ({ ...c, parent_id: +c.parent_id })).filter((c: any) => !+c.parent_id) }])
+        setCategories([...payload.data.map((c: any) => ({ ...c, parent_id: +c.parent_id }))]);
+        setShowCategories([{ parent_id: 0, categories: payload.data.map((c: any) => ({ ...c, parent_id: +c.parent_id })).filter((c: any) => !+c.parent_id) }])
       } catch (error) {
         console.log(error);
       }
