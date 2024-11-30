@@ -5,6 +5,7 @@ import Link from "next/link";
 
 
 export default function CardProduct({ p }: { p: any }) {
+  console.log(p);
   let length = (p.show_price as string).split(' - ').length;
   let show_price = ''
   if (length > 1) {
@@ -20,8 +21,8 @@ export default function CardProduct({ p }: { p: any }) {
           <img className="size-full object-contain " src={p.image ? p.image : 'https://images.unsplash.com/photo-1517037673086-5d09c5e1a537?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'} alt="" />
         </Link>
       </div>
-      <div className="p-2 px-4 flex flex-col gap-0.5">
-        <span className="text-[16px] font-medium">{p.name}</span>
+      <div className="p-2 px-4 flex flex-col gap-1">
+        <span className="text-[16px] font-medium h-12 line-clamp-2 overflow-hidden">{p.name}</span>
         <span className="text-[16px] font-semibold text-red-600">{show_price}</span>
         {/* <div className="inline">
           <span className="text-[13px] bg-gray-100 rounded-sm px-2">Trả góp Muadee</span>
