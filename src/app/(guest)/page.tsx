@@ -26,7 +26,7 @@ export default async function HomePage() {
         <div className="w-full flex justify-center">
           <div className="w-content mt-5 bg-white rounded-tl-sm rounded-tr-sm">
             <div className="px-5 h-[60px] flex items-center text-lg text-gray-600">
-              DANH MỤC
+              DANH MỤC production
             </div>
             <div className="w-full grid grid-cols-10">
               {categories.map((c: any, index: number) => (
