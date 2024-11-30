@@ -5,7 +5,6 @@ import Link from "next/link";
 
 
 export default function CardProduct({ p }: { p: any }) {
-  console.log(p);
   let length = (p.show_price as string).split(' - ').length;
   let show_price = ''
   if (length > 1) {

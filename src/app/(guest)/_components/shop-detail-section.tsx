@@ -160,7 +160,7 @@ export default function ShopDetailSection() {
       <div className="w-full -mt-5">
         <div className="py-5 w-full bg-white flex items-center justify-center">
           <div className="w-content flex">
-            <div className="flex-1 p-5 border rounded-sm shadow-sm">
+            <div className="flex-1 p-5 border rounded-sm shadow-sm" style={{ backgroundImage: `url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/shopmicrofe/dc2a8ae5803b2531c9a5.jpg)` }}>
               <div className="flex">
                 <div className="p-1">
                   <div className="size-[72px] ">

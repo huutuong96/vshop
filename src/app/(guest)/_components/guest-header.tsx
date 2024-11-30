@@ -106,7 +106,7 @@ export default function GuestHeader() {
         <div className="w-full flex justify-center border-b sticky top-0 bg-white z-50 shadow-sm">
           <div className="w-content bg-white">
             <div className="top-nav w-full flex gap-4 pt-2 text-[13px] text-[#8E8181] font-normal">
-              <Link href={'/shop'}>Kênh người bán</Link>
+              <Link href={'/shop'} target='_blank' rel="noopener noreferrer">Kênh người bán</Link>
               <span>Chăm sóc khách hàng</span>
               <span>Nhà cung cấp</span>
             </div>

@@ -20,7 +20,7 @@ import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { toast } from "@/components/ui/use-toast";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
-import { Truck, UserRoundCheck } from "lucide-react";
+import { CircleUserRound, Truck, UserRoundCheck } from "lucide-react";
 import { formattedPrice } from "@/lib/utils";
 import OrderSkeleton from "@/app/(shop)/shop/order/list/order-skeleton";
 import {
@@ -32,6 +32,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
 
 type OrderStatus = { label: string; value: number, valueString: any };
@@ -89,8 +90,8 @@ export default function OrderListSection() {
   const [page, setPage] = useState<number>(1);
   const [sort, setSort] = useState<string>('');
   const [limit, setLimit] = useState<string>('10');
-  const [countOrder, setCountOrder] = useState<number>(0);
   const [pages, setPages] = useState<any[]>([]);
+  const [countOrder, setCountOrder] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const handleChangeStatus = (value: number) => {
     setStatus(value)
@@ -207,16 +208,15 @@ export default function OrderListSection() {
           </div>
           {!loading && orders.map((o: any, index: number) => (
             <div key={index} className="mt-4 ">
-              <div className="px-4 h-10 flex rounded-tl-sm border border-blue-50 rounded-tr-sm items-center justify-between bg-[#f5f8fd]  text-black text-[14px]">
-                <div className="h-6 flex items-center text-black gap-2 font-semibold">
-                  <div>
-                    <UserRoundCheck size={20} strokeWidth={1.25} />
+              <div className="px-4 h-10 flex rounded-tl-sm border  rounded-tr-sm items-center justify-between bg-[#f5f8fd]  text-black text-[14px]">
+                <div className="h-full flex items-center text-black gap-2 font-semibold">
+                  <div className="h-full flex items-center">
+                    <CircleUserRound size={20} strokeWidth={1.5} />
                   </div>
-                  {o?.to_name || 'User'}
+                  <div className="flex h-full items-center">Mã đơn hàng: {o.id}</div>
                 </div>
-                <span>Mã đơn hàng: {o.id}</span>
               </div>
-              <div className="w-full h-full text-[14px] flex p-4 border-t-0 border border-blue-50 rounded-bl-sm rounded-br-sm">
+              <div className="w-full h-full text-[14px] flex p-4 border-t-0 border rounded-bl-sm rounded-br-sm">
                 <div className="w-full flex -mx-2">
                   <div className="flex-[2] px-2">
                     {o.order_details.map((od: any, subIndex: number) => (
@@ -255,7 +255,7 @@ export default function OrderListSection() {
                     {/* <div className="text-black font-medium">Nhanh</div> */}
                     <div className="text-black mt-1">GHN</div>
                   </div>
-                  <div className="px-2 flex-[0.5] text-blue-500 cursor-pointer flex flex-col">Xem chi tiết</div>
+                  <Link href={`/shop/order/list/${o.id}`} className="px-2 flex-[0.5] text-blue-500 cursor-pointer flex flex-col">Xem chi tiết</Link>
                 </div>
               </div>
             </div>

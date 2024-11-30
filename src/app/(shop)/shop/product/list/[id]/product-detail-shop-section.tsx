@@ -125,9 +125,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
     name: "variant.variantProducts",
   });
 
-  useEffect(() => {
-    console.log(product);
-  }, [])
+
 
 
 

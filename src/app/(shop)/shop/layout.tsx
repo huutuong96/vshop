@@ -1,9 +1,14 @@
-'use client'
 import ShopHeader from "@/app/(shop)/_components/shop-header";
 import ShopSidebar from "@/app/(shop)/_components/shop-sidebar";
 import { toast } from "@/components/ui/use-toast";
 import { clientAccessToken } from "@/lib/http";
+import { Metadata } from "next";
 import { useRouter } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Kênh Người Bán - VNShop",
+  description: "Kênh Người Bán VNShop",
+};
 
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
