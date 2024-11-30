@@ -32,6 +32,7 @@ export default async function RootLayout({
   let cart = null;
   let test = null;
   if (accessToken) {
+    let z = 1;
     const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts`, {
       headers: {
         "Authorization": `Bearer ${accessToken}`
