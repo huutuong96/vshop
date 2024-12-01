@@ -124,7 +124,7 @@ export default function ProductsCategoryDetailSection() {
         try {
           setLoading(true);
           const [productsRes, categoryRes] = await Promise.all([
-            fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/filter?limit=2&category_id=${params.id}${handleChangeSearchParams(page, filter, sort)}`),
+            fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/filter?limit=20&category_id=${params.id}${handleChangeSearchParams(page, filter, sort)}`),
             fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/categories?category_id=${params.id}`),
 
           ])

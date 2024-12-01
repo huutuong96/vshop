@@ -103,7 +103,7 @@ export default function ProductListSection() {
       }
     }
     a();
-  }, [handleChangeSearchParams(page, sort, status, limit)])
+  }, [handleChangeSearchParams(page, sort, status, limit), products.length])
 
 
   const handleChangeStatus = (s: number) => {
@@ -121,17 +121,10 @@ export default function ProductListSection() {
       if (!res.ok) {
         throw 'Xoa that bai!'
       }
-      const b = await fetch(`${apiurl}/api/shop/get_product_to_shop/${shop_id.value}?status=${status}`, {
-        headers: {
-          "Authorization": `Bearer ${clientAccessToken.value}`
-        },
-        cache: 'no-cache'
+      setProducts(prev => {
+        const a = prev.filter(p => p.id !== id);
+        return [...a]
       })
-      const payload = await b.json();
-      if (!b.ok) {
-        throw 'loi'
-      }
-      setProducts([...payload.data.data]);
       toast({
         variant: 'success',
         title: "Thành công",
@@ -174,7 +167,7 @@ export default function ProductListSection() {
           </div>
           <Input className="px-3 w-[300px] text-[14px] border-l-0 outline-none rounded-none rounded-tr rounded-br" placeholder="Tìm tên sản phẩm, SKU sản phẩm" />
         </div>
-        <ListProductPopupCategory />
+        {/* <ListProductPopupCategory /> */}
         <div className="flex gap-2">
           <button className="border-blue-500 text-blue-500 hover:border-blue-500 border text-[14px] p-2 rounded">Áp dụng</button>
           <Button variant={'default'}>Đặt lại</Button>

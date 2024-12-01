@@ -5,12 +5,16 @@ import Link from "next/link";
 
 
 export default function CardProduct({ p }: { p: any }) {
-  let length = (p.show_price as string).split(' - ').length;
+  let length = p.show_price ? (p.show_price as string).split(' - ').length : null;
   let show_price = ''
-  if (length > 1) {
-    show_price = (p.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
+  if (length) {
+    if (length > 1) {
+      show_price = (p.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
+    } else {
+      show_price = formattedPrice(+p.show_price)
+    }
   } else {
-    show_price = formattedPrice(+p.show_price)
+    show_price = formattedPrice(+p.price)
   }
 
   return (
