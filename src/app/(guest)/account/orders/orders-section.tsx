@@ -22,7 +22,7 @@ import OrderDetailItem from "@/app/(guest)/account/orders/[id]/order-detail-item
 
 
 const titles: { id: number, title: string, order_status: number, valueString: any }[] = [
-  { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#d2b510] font-medium">Chờ xác nhận</div>) },
+  { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#f3ff09] font-medium">Chờ xác nhận</div>) },
   { id: 2, title: "Đã xác nhận", order_status: 1, valueString: (<div className="text-blue-700 font-medium">Đã xác nhận</div>) },
   { id: 3, title: "Chờ giao hàng", order_status: 5, valueString: (<div className="text-[#16b9ae] font-medium flex gap-2"><Truck className="text-[#16b9ae]" size={20} strokeWidth={1.25} /> Đang vận chuyển</div>) },
   { id: 4, title: "Hoàn thành", order_status: 8, valueString: (<div className="text-green-500 font-medium">Hoàn thành</div>) },

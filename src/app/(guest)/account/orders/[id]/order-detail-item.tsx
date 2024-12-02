@@ -18,7 +18,7 @@ import { toast } from "@/components/ui/use-toast"
 import { clientAccessToken } from "@/lib/http"
 
 const titles: { id: number, title: string, order_status: number, valueString: any }[] = [
-  { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#d2b510] font-medium">Chờ xác nhận</div>) },
+  { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#ebb726] font-medium">Chờ xác nhận</div>) },
   { id: 2, title: "Đã xác nhận", order_status: 1, valueString: (<div className="text-blue-700 font-medium">Đã xác nhận</div>) },
   { id: 3, title: "Chờ giao hàng", order_status: 5, valueString: (<div className="text-[#16b9ae] font-medium flex gap-2"><Truck className="text-[#16b9ae]" size={20} strokeWidth={1.25} /> Đang vận chuyển</div>) },
   { id: 4, title: "Hoàn thành", order_status: 8, valueString: (<div className="text-green-500 font-medium">Hoàn thành</div>) },
@@ -71,9 +71,10 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
               {+o.order_status !== 10 && (
                 <>
                   {titles.find(t => t.order_status === +o.order_status)?.valueString}
+                  <span>|</span>
                   {+o.status === 2 ? (
-                    <div>Đã thanh toán</div>
-                  ) : (<div>Chưa thanh toán</div>)}
+                    <div className="text-green-700 font-medium">Đã thanh toán</div>
+                  ) : (<div className="text-red-500 font-medium">Chưa thanh toán</div>)}
                 </>
               )}
               {+o.order_status === 10 && (

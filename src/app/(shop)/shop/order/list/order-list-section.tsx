@@ -20,7 +20,7 @@ import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { toast } from "@/components/ui/use-toast";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
-import { CircleUserRound, Truck, UserRoundCheck } from "lucide-react";
+import { CircleUserRound, EllipsisVertical, Truck, UserRoundCheck } from "lucide-react";
 import { formattedPrice } from "@/lib/utils";
 import OrderSkeleton from "@/app/(shop)/shop/order/list/order-skeleton";
 import {
@@ -33,6 +33,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Link from "next/link";
+import OrderShopItem from "@/app/(shop)/shop/order/list/order-shop-item";
 
 
 type OrderStatus = { label: string; value: number, valueString: any };
@@ -48,17 +49,51 @@ const orderStatuses: OrderStatus[] = [
   { valueString: (<div className="text-[#f3a322] font-medium">Đã đóng gói</div>), value: 3, label: 'Đã đóng gói' },
   { valueString: (<div className="text-[#f3a322] font-medium">Đã bàn giao vận chuyển</div>), value: 4, label: 'Đã bàn giao vận chuyển' },
   { valueString: (<div className="text-[#16b9ae] font-medium flex gap-2"><Truck className="text-[#16b9ae]" size={20} strokeWidth={1.25} /> Đang vận chuyển</div>), value: 5, label: 'Đang vận chuyển' },
-  { valueString: (<div className="text-red-500 font-medium">Giao hàng thất bại</div>), value: 6, label: 'Giao hàng thất bại' },
+  { valueString: (<div className="text-red-500 font-medium flex gap-2"><Truck className="text-red-500" size={20} strokeWidth={1.25} /> Giao hàng thất bại</div>), value: 6, label: 'Giao hàng thất bại' },
   { valueString: (<div className="text-green-500 font-medium">Đã giao hàng</div>), value: 7, label: 'Đã giao hàng' },
   { valueString: (<div className="text-green-500 font-medium">Hoàn thành</div>), value: 8, label: 'Hoàn thành' },
-  // { valueString: "Hoàn trả", value: 9 },
+  { valueString: (<div className="text-purple-600 font-medium">Hoàn trả</div>), value: 9, label: 'Hoàn trả' },
   { valueString: (<div className="text-red-500 font-medium">Đã hủy</div>), value: 10, label: 'Đã hủy' },
   // { label: "Chưa thanh toán", value: 11 },
   // { label: "Đã thanh toán", value: 12 },
 ];
+
+const nextActionOrders: { label: string, currValue: number, nextValue: number }[] = [
+  {
+    label: "Xác nhận đơn hàng",
+    currValue: 0,
+    nextValue: 1
+  }, {
+    label: 'Chuẩn bị đơn hàng',
+    currValue: 1,
+    nextValue: 2
+  }, {
+    label: 'Xác nhận đóng gói',
+    currValue: 2,
+    nextValue: 3
+  }, {
+    label: "Xác nhận bàn giao GHN",
+    currValue: 3,
+    nextValue: 4
+  }, {
+    label: "Xác nhận đang vận chuyển",
+    currValue: 4,
+    nextValue: 5
+  }, {
+    label: "Xác nhận hoàn thành",
+    currValue: 7,
+    nextValue: 8
+  }, {
+    label: "Xác nhận hoàn trả",
+    currValue: 8,
+    nextValue: 9
+  }
+]
+
 const handleChangeSearchParams = (page: number, sort: string, order_status: number, limit: string) => {
   return `${page ? `&page=${page}` : ''}&limit=${limit}&order_status=${order_status}`
 }
+
 
 const filters = [
   {
@@ -202,69 +237,22 @@ export default function OrderListSection() {
               <div className="flex-[2] px-2 font-semibold">Sản phẩm</div>
               <div className="flex-1 px-2 font-semibold  ">Tổng đơn hàng</div>
               <div className="flex-1 px-2 font-semibold ">Trạng thái</div>
-              <div className="flex-1 px-2 font-semibold ">Đơn vị vận chuyển</div>
+              <div className="w-[160px] px-2 font-semibold items-center">Thanh toán</div>
+              <div className="flex-[0.5] px-2 font-semibold ">Vận chuyển</div>
               <div className="flex-[0.5] px-2 font-semibold ">Thao tác</div>
             </div>
           </div>
           {!loading && orders.map((o: any, index: number) => (
-            <div key={index} className="mt-4 ">
-              <div className="px-4 h-10 flex rounded-tl-sm border  rounded-tr-sm items-center justify-between bg-[#f5f8fd]  text-black text-[14px]">
-                <div className="h-full flex items-center text-black gap-2 font-semibold">
-                  <div className="h-full flex items-center">
-                    <CircleUserRound size={20} strokeWidth={1.5} />
-                  </div>
-                  <div className="flex h-full items-center">Mã đơn hàng: {o.id}</div>
-                </div>
-              </div>
-              <div className="w-full h-full text-[14px] flex p-4 border-t-0 border rounded-bl-sm rounded-br-sm">
-                <div className="w-full flex -mx-2">
-                  <div className="flex-[2] px-2">
-                    {o.order_details.map((od: any, subIndex: number) => (
-                      <div key={subIndex} className="-mx-2 mb-2">
-                        <div className="flex w-full justify-between px-2">
-                          <div className="flex gap-2 items-center">
-                            <div className="size-[56px] mr-2">
-                              <img src={od?.variant ? od.variant.images : od.product.image} className="size-full object-cover border rounded-sm" alt="" />
-                            </div>
-                            <div className="h-full">
-                              <div className="font-bold">{od?.product?.name || "Tên sản phẩm"}</div>
-                              {od?.variant && (
-                                <div>Phân loại: {od.variant.name}</div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-[12px] mr-4">x{od.quantity}</div>
-                        </div>
-                      </div>
-                    ))}
-
-                  </div>
-                  <div className="flex-1 px-2 flex flex-col">
-                    <div className="text-black font-medium">{formattedPrice(+o.total_amount)}</div>
-                    <div className="text-[#585858] mt-1">
-                      {o?.payment?.name ? o?.payment?.name : "Thanh toán khi nhận hàng"}
-                    </div>
-                  </div>
-                  <div className="flex-1 px-2 flex flex-col ">
-                    {orderStatuses.find(od => od.value === +o.order_status)?.valueString}
-                    {+o.order_status === +10 && (
-                      <div className="text-[#585858] mt-1">{+o.updated_by === +o.user_id ? "Đã hủy bởi người mua" : "Đã hủy bởi người bán"}</div>
-                    )}
-                  </div>
-                  <div className="flex-1 px-2 flex flex-col">
-                    {/* <div className="text-black font-medium">Nhanh</div> */}
-                    <div className="text-black mt-1">GHN</div>
-                  </div>
-                  <Link href={`/shop/order/list/${o.id}`} className="px-2 flex-[0.5] text-blue-500 cursor-pointer flex flex-col">Xem chi tiết</Link>
-                </div>
-              </div>
-            </div>
+            <OrderShopItem key={index} o={o} />
           ))}
           {loading && <OrderSkeleton />}
           <div className="flex justify-between items-center mt-6">
             <div className="flex gap-2 items-center">
               Chọn
-              <Select value={limit} onValueChange={(v) => setLimit(v)}>
+              <Select value={limit} onValueChange={(v) => {
+                setLimit(v);
+                setPage(1);
+              }}>
                 <SelectTrigger className="w-[60px]">
                   <SelectValue placeholder={limit} />
                 </SelectTrigger>

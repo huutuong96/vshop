@@ -1,6 +1,8 @@
+import OrderDetailShopSection from "@/app/(shop)/shop/order/list/[id]/order-detail-shop-section";
 
-export default function OrderDetailShopPage() {
+
+export default function OrderDetailShopPage({ params }: { params: { id: string } }) {
   return (
-    <div>page</div>
+    <OrderDetailShopSection id={params.id} />
   )
 }

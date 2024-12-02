@@ -104,8 +104,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   const [vouchersSelected, setVoucherSelected] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [paymentSelected, setPaymentSelected] = useState(11);
-  const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false)
-  console.log(profile);
+  const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false);
+
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -132,6 +132,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id) }));
 
       try {
+
         const [calShipFeeRes, vouchersRes, paymentsRes] = await Promise.all([
           fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
             method: "POST",
@@ -153,30 +154,34 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
             }, signal
           })
         ]);
-        if (!calShipFeeRes.ok || !vouchersRes.ok || !paymentsRes) {
+        if (!calShipFeeRes.ok || !paymentsRes) {
           throw 'Error'
+        }
+        let checkVoucher = true;
+        if (!vouchersRes.ok && vouchersRes.status === 400) {
+          checkVoucher = false;
         }
         const calShipFeePayload = await calShipFeeRes.json();
         const vouchersPayload = await vouchersRes.json();
         const paymentsPayload = await paymentsRes.json();
 
-        setMainVouchers(vouchersPayload.data.filter((v: any) => v.type === 'main'))
+        const abxVouchers = checkVoucher ? vouchersPayload.data : []
+
+        setMainVouchers(abxVouchers.filter((v: any) => v.type === 'main'))
 
         setCheckoutItems([...a.map((s, index: number) => (
           {
             ...s,
             ship_fee: calShipFeePayload[index].ship_fee,
-            vouchers: vouchersPayload.data.filter((v: any) => +v.shop_id === s.id),
+            vouchers: abxVouchers.filter((v: any) => +v.shop_id === s.id),
             voucherSelected: null
           }
         ))])
         setPayments(paymentsPayload.data);
-        setLoading(false);
       } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error("Fetch error: ", error); // Xử lý lỗi khác ngoài AbortError
-          toast({ title: "Error", variant: "destructive" })
-        }
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 

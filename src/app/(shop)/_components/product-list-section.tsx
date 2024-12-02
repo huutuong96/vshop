@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import FilterCategoryProductSection from "@/app/(shop)/shop/product/list/filter-category-product-section"
 
 // const status = [
 //   'Tất cả', 'Đang hoạt động', 'Vi phạm', 'Chờ duyệt', 'Chưa đăng được'
@@ -167,7 +168,7 @@ export default function ProductListSection() {
           </div>
           <Input className="px-3 w-[300px] text-[14px] border-l-0 outline-none rounded-none rounded-tr rounded-br" placeholder="Tìm tên sản phẩm, SKU sản phẩm" />
         </div>
-        {/* <ListProductPopupCategory /> */}
+        <FilterCategoryProductSection />
         <div className="flex gap-2">
           <button className="border-blue-500 text-blue-500 hover:border-blue-500 border text-[14px] p-2 rounded">Áp dụng</button>
           <Button variant={'default'}>Đặt lại</Button>

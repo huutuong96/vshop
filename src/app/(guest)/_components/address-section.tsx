@@ -34,16 +34,13 @@ import CreateAddressForm from "@/app/(guest)/_components/create-address-form"
 import { Skeleton } from "@/components/ui/skeleton"
 
 
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
-)
-
 export default function AddressSection() {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [isShowListAddress, setIsShowListAddress] = useState<boolean>(false);
   const [isShowUpdateAddress, setIsShowUpdateAddress] = useState<boolean>(false);
   const [address, setAddress] = useState<any>();
   const [address1, setAddress1] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -51,6 +48,7 @@ export default function AddressSection() {
 
     const getData = async () => {
       try {
+        setLoading(true)
         const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
           headers: {
             "Authorization": `Bearer ${clientAccessToken.value}`,
@@ -59,6 +57,8 @@ export default function AddressSection() {
           signal // Thêm signal để có thể hủy yêu cầu khi cần thiết
         });
         if (!res.ok) {
+          const payload = await res.json();
+          console.log({ error: payload });
           throw 'Error';
         }
         const payload = await res.json();
@@ -71,6 +71,8 @@ export default function AddressSection() {
 
       } catch (error) {
 
+      } finally {
+        setLoading(false);
       }
     }
     getData()
@@ -103,7 +105,7 @@ export default function AddressSection() {
             <div className="header-content flex items-center justify-between mt-4">
               <div className="flex items-center">
                 <div className="text-[16px] font-bold">
-                  {address.name} {address.phone}
+                  {address?.name || 'khnag'} {address?.phone || '123'}
                 </div>
                 <div className="ml-4 text-[16px]">{addresses.length > 0 ? addresses[0].address : "null"}</div>
               </div>
@@ -124,7 +126,7 @@ export default function AddressSection() {
                         <div className="text-[16px] font-semibold">Địa chỉ của tôi</div>
                       </DialogHeader>
                       <div className="w-full h-[456px] px-6 pb-[88px] overflow-scroll scrollbar-hidden">
-                        <RadioGroup value={address1 || address.default} onValueChange={(v) => {
+                        <RadioGroup value={address1 || address?.default} onValueChange={(v) => {
                           setAddress1(v);
                         }} className="w-full" defaultValue="option-one">
                           {addresses.map((a, index) => (
