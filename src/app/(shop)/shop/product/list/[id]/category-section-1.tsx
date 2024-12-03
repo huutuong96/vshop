@@ -44,6 +44,8 @@ export default function CategorySection1({ productFormHandle, setShowMore, setLo
   const [categoriesSlectedCopy, setCategoriesSlectedCopy] = useState<any[]>([]);
   const [isValid, setIsValid] = useState<boolean>(false);
 
+  console.log({ product: productFormHandle.getValues() });
+
   useEffect(() => {
     if (productFormHandle.getValues('category') && categories.length > 0) {
       let category_id = productFormHandle.getValues('category');
