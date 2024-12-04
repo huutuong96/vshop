@@ -17,7 +17,7 @@ export default async function HomePage() {
       throw 'Error'
     }
     const categoriesPayload = await categoriesRes.json();
-    // const categories = categoriesPayload.data;
+    const categories = categoriesPayload.data;
     return (
       <>
 
@@ -25,7 +25,7 @@ export default async function HomePage() {
           <BannerHomeGuest />
           <CategoriesGuest />
         </div>
-        {/* <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center">
           <div className="w-content mt-5 bg-white rounded-tl-sm rounded-tr-sm">
             <div className="px-5 h-[60px] flex items-center text-lg text-gray-600">
               DANH MỤC
@@ -46,7 +46,7 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
-        </div> */}
+        </div>
         <div className="w-content mt-5">
           <HangXinSection />
           <Categories2 />
