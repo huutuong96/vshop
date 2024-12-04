@@ -31,6 +31,7 @@ export default async function HangXinSection() {
     )
 
   } catch (error) {
+    console.log(error);
     return (
       <div className="w-full">
         OK

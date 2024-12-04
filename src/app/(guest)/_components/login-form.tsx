@@ -101,14 +101,6 @@ function InputPassword(
   );
 }
 
-// Dependencies: pnpm install @remixicon/react
-
-
-
-
-
-
-
 export default function LoginForm() {
   const [email, setEmail] = useState<string>('khangnd1806@gmail.com');
   const [password, setPassword] = useState<string>('123456');
@@ -120,46 +112,46 @@ export default function LoginForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const data = { email, password }
-    if (!loading) {
-      try {
-        setLoading(true);
-        const loginRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/users/login`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json"
-          },
-          cache: 'no-cache'
-        });
-        if (loginRes.ok) {
-          const res: { message: string, status: boolean, data: { token: string } } = await loginRes.json();
-          const accessToken = res.data.token;
-          const a = await fetch(`/api/auth`, {
-            method: "POST",
-            body: JSON.stringify({ accessToken })
-          });
-          if (a.ok) {
-            const info = await a.json();
-            const historyPath = localStorage.getItem('historyPath') ?? '/'
-            window.location.href = historyPath;
-            // const e = await setTimeout(() => {
-            // }, 500)
-          } else {
-            const resToNextServer = await a.json();
-            throw resToNextServer.message;
-          }
+    try {
+      setLoading(true);
+      const loginRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/users/login`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        cache: 'no-cache'
+      });
 
+      if (loginRes.ok) {
+        const res: { message: string, status: boolean, data: { token: string } } = await loginRes.json();
+        const accessToken = res.data.token;
+        const a = await fetch(`/api/auth`, {
+          method: "POST",
+          body: JSON.stringify({ accessToken })
+        });
+        if (a.ok) {
+          const info = await a.json();
+          const historyPath = localStorage.getItem('historyPath') ?? '/'
+          window.location.href = historyPath;
+          // const e = await setTimeout(() => {
+          // }, 500)
         } else {
-          const res = await loginRes.json();
-          throw res.error;
+          const resToNextServer = await a.json();
+          throw resToNextServer.message;
         }
-      } catch (error) {
-        setErrorMessage(error as string);
-        // console.log({ error });
-        setLoading(false);
-      } finally {
-        // setLoading(false);
+
+      } else {
+        const res = await loginRes.json();
+        throw res.error;
       }
+    } catch (error) {
+      console.log(error);
+      // setErrorMessage(error as string);
+      // console.log({ error });
+      setLoading(false);
+    } finally {
+      // setLoading(false);
     }
 
   }

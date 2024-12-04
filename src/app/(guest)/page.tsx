@@ -13,9 +13,10 @@ export default async function HomePage() {
     const categoriesRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/categories?limit=10`);
     const categoriesPayload = await categoriesRes.json();
     if (!categoriesRes.ok) {
+      console.log(categoriesPayload);
       throw 'Error'
     }
-    const categories = categoriesPayload.data.data;
+    const categories = categoriesPayload.data;
     return (
       <>
 
@@ -53,6 +54,7 @@ export default async function HomePage() {
       </>
     )
   } catch (error) {
+    console.log({ error });
     return (
       <div>he</div>
     )
