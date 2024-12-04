@@ -10,13 +10,14 @@ import Link from "next/link";
 
 export default async function HomePage() {
   try {
-    const categoriesRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/categories?limit=10`);
-    const categoriesPayload = await categoriesRes.json();
+    const categoriesRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/categories?limit=10`, {
+      cache: 'no-cache'
+    });
     if (!categoriesRes.ok) {
-      console.log(categoriesPayload);
       throw 'Error'
     }
-    const categories = categoriesPayload.data;
+    const categoriesPayload = await categoriesRes.json();
+    // const categories = categoriesPayload.data;
     return (
       <>
 
@@ -24,7 +25,7 @@ export default async function HomePage() {
           <BannerHomeGuest />
           <CategoriesGuest />
         </div>
-        <div className="w-full flex justify-center">
+        {/* <div className="w-full flex justify-center">
           <div className="w-content mt-5 bg-white rounded-tl-sm rounded-tr-sm">
             <div className="px-5 h-[60px] flex items-center text-lg text-gray-600">
               DANH MỤC
@@ -45,7 +46,7 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="w-content mt-5">
           <HangXinSection />
           <Categories2 />
