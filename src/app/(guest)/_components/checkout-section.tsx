@@ -13,7 +13,7 @@ import { changeCheckoutState } from "@/redux/slices/profile.slice"
 import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store"
 import { Check, CircleAlert, CreditCard, Info, MapPinIcon, MessageCircleMore, Plus, Store, Ticket, TicketCheck } from "lucide-react"
 import { notFound, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import AddressSection from "@/app/(guest)/_components/address-section"
 import CheckoutByshopItem from "@/app/(guest)/_components/checkout-byshop-item"
@@ -105,7 +105,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   const [payments, setPayments] = useState<any[]>([]);
   const [paymentSelected, setPaymentSelected] = useState(11);
   const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false);
-
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [address, setAddress] = useState<any>();
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -132,8 +133,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id) }));
 
       try {
-
-        const [calShipFeeRes, vouchersRes, paymentsRes] = await Promise.all([
+        setLoading(true);
+        const [calShipFeeRes, vouchersRes, paymentsRes, addressesRes] = await Promise.all([
           fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
             method: "POST",
             headers: {
@@ -152,9 +153,16 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
             headers: {
               "Authorization": `Bearer ${clientAccessToken.value}`
             }, signal
+          }),
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
+            headers: {
+              "Authorization": `Bearer ${clientAccessToken.value}`,
+              "Content-Type": "application/json"
+            },
+            signal // Thêm signal để có thể hủy yêu cầu khi cần thiết
           })
         ]);
-        if (!calShipFeeRes.ok || !paymentsRes) {
+        if (!calShipFeeRes.ok || !paymentsRes.ok || !addressesRes.ok) {
           throw 'Error'
         }
         let checkVoucher = true;
@@ -164,6 +172,15 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         const calShipFeePayload = await calShipFeeRes.json();
         const vouchersPayload = await vouchersRes.json();
         const paymentsPayload = await paymentsRes.json();
+        const addressesPayload = await addressesRes.json();
+
+        console.log({ addressesPayload });
+        setAddress((prev: any) => {
+          const a = addressesPayload.data.find((a: any) => a.default === 1);
+          return a;
+        })
+        setAddresses(addressesPayload.data);
+
 
         const abxVouchers = checkVoucher ? vouchersPayload.data : []
 
@@ -179,7 +196,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         ))])
         setPayments(paymentsPayload.data);
       } catch (error: any) {
-        setLoading(false);
+        // setLoading(false);
       } finally {
         setLoading(false);
       }
@@ -193,6 +210,12 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       controller.abort();
     };
   }, [selectedItems.length]);
+
+
+  useEffect(() => {
+
+  }, [])
+
 
 
   const handleCheckout = async () => {
@@ -261,22 +284,24 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   }, 0);
   let discountRank = checkoutItems.reduce((acc: number, s: any) => {
     let a = s.items.reduce((acc: number, i: any) => acc + (+i.quantity * (i.product_price ? (+i.product_price) : (+i.variant_price))), 0);
-    console.log({ a: a * (+profile.rank.value) > +profile.rank.limitValue });
     return acc + (a * (+profile.rank.value) > +profile.rank.limitValue ? +profile.rank.limitValue : a * (+profile.rank.value))
   }
     , 0);
-  let totalPrice = price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+  // let totalPrice = price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+  const totalPrice = useMemo(() => {
+    return price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+  }, [price, ship_fee, priceWithVoucher, priceWithShopVouchers, discountRank]);
 
 
 
   return (
 
     <>
-      {loading && <CheckoutSekeleton />}
-      {!loading && (
+      {totalPrice === 0 && <CheckoutSekeleton />}
+      {totalPrice > 0 && (
         <div className="w-full flex justify-center">
           <div className="w-full">
-            <AddressSection />
+            <AddressSection address={address} addresses={addresses} setAddress={setAddress} />
 
             {checkoutItems.map((s: any, index) => (
               <CheckoutByshopItem key={s.id} s={s} setCheckoutItems={setCheckoutItems} index={index} vouchersSelected={vouchersSelected} setVoucherSelected={setVoucherSelected} />

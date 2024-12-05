@@ -164,7 +164,7 @@ export default function GuestHeader() {
                             <div className="flex gap-1 cursor-pointer items-center">
                               <div className="size-8">
                                 <img
-                                  className="size-full rounded-full border"
+                                  className="size-full rounded-full border object-cover"
                                   src={info.avatar || 'https://images.unsplash.com/photo-1702478553542-3aa3c0148543?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
                                   alt="User avatar"
                                 />

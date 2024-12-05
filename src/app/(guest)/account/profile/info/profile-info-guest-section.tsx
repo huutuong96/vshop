@@ -1,12 +1,12 @@
 'use client'
 
-import ProfileForm from "@/app/(guest)/account/profile/profile-form";
+import ProfileInfoGuestForm from "@/app/(guest)/account/profile/info/profile-info-guest-form";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import { useEffect, useState } from "react";
 
-export default function ProfileSection() {
+export default function ProfileInfoGuestSection() {
   const [profile, setProfile] = useState<any>(null);
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -36,6 +36,6 @@ export default function ProfileSection() {
     };
   }, [])
   return (
-    <ProfileForm />
+    <ProfileInfoGuestForm />
   )
 }

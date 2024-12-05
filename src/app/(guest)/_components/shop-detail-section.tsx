@@ -406,7 +406,6 @@ export default function ShopDetailSection() {
                       </PaginationContent>
                     </Pagination>
                   )}
-
                 </div>
               </div>
             </div>

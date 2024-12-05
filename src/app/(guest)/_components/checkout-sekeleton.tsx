@@ -124,6 +124,7 @@ export default function CheckoutSekeleton() {
               <div className="bg-[#fafdff] w-full py-[15px] flex justify-end px-[25px]">
                 <Skeleton className="w-[200px] h-6 rounded" />
               </div>
+
             </div>
           </div>
         </div>

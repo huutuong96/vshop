@@ -49,27 +49,15 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const initialValues: FormData = {
-  district_id: 0,
-  province_id: 0,
-  ward_id: '0',
-  district: '',
-  province: "",
-  ward: "",
-  address: '',
-  name: '',
-  phone: '',
-  default: 1,
-  type: 'Nhà Riêng'
-}
+
 
 const typeOfAddress = [{ label: 'Nhà Riêng' }, { label: 'Văn Phòng' }]
 
-export default function CreateAddressForm({ handleCloseCreateAddressForm }: { handleCloseCreateAddressForm: () => void }) {
+export default function UpdateAddressForm({ address, setIsShowUpdateAddress }: { address: any, setIsShowUpdateAddress: any }) {
   const { control, register, handleSubmit, getValues, setValue, setError, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'all',
-    defaultValues: initialValues
+    defaultValues: address
   });
 
   const typeWatched = useWatch({
@@ -81,7 +69,8 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
     control,
     name: 'default',
     defaultValue: 1
-  })
+  });
+
 
   const [provinces, setProvinces] = useState<{ province_id: number, name: string }[]>([]);
   const [districts, setDistricts] = useState<{ district_id: number, name: string }[]>([]);
@@ -152,7 +141,7 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
     }
   }
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = (data: FormData) => {
     console.log(data);
   };
 
@@ -354,7 +343,7 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
 
       </div>
       <DialogFooter className="px-6 bg-white w-full h-16 flex items-center border-t left-0 absolute right-0 bottom-0">
-        <Button className="w-[120px]" onClick={handleCloseCreateAddressForm} type="button">Trở lại</Button>
+        <Button onClick={() => setIsShowUpdateAddress(false)} className="w-[120px]" type="button">Trở lại</Button>
         <Button className="w-[120px]" type="submit">Hoàn thành</Button>
       </DialogFooter>
     </form>

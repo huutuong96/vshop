@@ -168,7 +168,7 @@ export default function NewDiscountSection() {
   const handleRandomCode = () => {
     let code = randomCode();
     setValue('code', code);
-    trigger();
+    trigger('code');
   }
 
   return (

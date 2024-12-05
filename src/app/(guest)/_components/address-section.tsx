@@ -9,80 +9,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { MapPinIcon, Plus } from "lucide-react"
-import { useEffect, useState } from "react"
-import envConfig from "@/config"
-import { clientAccessToken } from "@/lib/http"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { RadioGroup } from "@/components/ui/radio-group"
 import CreateAddressForm from "@/app/(guest)/_components/create-address-form"
 import { Skeleton } from "@/components/ui/skeleton"
+import AddressItem from "@/app/(guest)/_components/address-item"
 
 
-export default function AddressSection() {
-  const [addresses, setAddresses] = useState<any[]>([]);
+export default function AddressSection({ address, addresses, setAddress }: { address: any, setAddress: any, addresses: any[] }) {
   const [isShowListAddress, setIsShowListAddress] = useState<boolean>(false);
   const [isShowUpdateAddress, setIsShowUpdateAddress] = useState<boolean>(false);
-  const [address, setAddress] = useState<any>();
+  const [isShowCreateAddress, setIsShowCreateAdress] = useState<boolean>(false);
   const [address1, setAddress1] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true)
+  const [valueAdressSelected, setValueAdressSelected] = useState(() => {
+    if (address) return address.id.toString();
+    else return null
+  })
 
-  useEffect(() => {
-    const controller = new AbortController(); // Khởi tạo AbortController
-    const signal = controller.signal;
 
-    const getData = async () => {
-      try {
-        setLoading(true)
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
-          headers: {
-            "Authorization": `Bearer ${clientAccessToken.value}`,
-            "Content-Type": "application/json"
-          },
-          signal // Thêm signal để có thể hủy yêu cầu khi cần thiết
-        });
-        if (!res.ok) {
-          const payload = await res.json();
-          console.log({ error: payload });
-          throw 'Error';
-        }
-        const payload = await res.json();
-        const data = payload.data;
-        setAddress((prev: any) => {
-          const a = data.find((a: any) => a.default === '1');
-          return a;
-        })
-        setAddresses(data);
-
-      } catch (error) {
-
-      } finally {
-        setLoading(false);
-      }
-    }
-    getData()
-    return () => {
-      controller.abort();
-    };
-  }, []);
 
   const handleCloseCreateAddressForm = () => {
-    setIsShowUpdateAddress(false);
+    setIsShowCreateAdress(false);
   }
 
 
@@ -117,64 +67,39 @@ export default function AddressSection() {
                   </div>
                 </DialogTrigger>
                 <DialogContent onInteractOutside={(e) => e.preventDefault()} className="w-[500px] p-0">
-                  {isShowUpdateAddress && (
+                  {isShowCreateAddress && (
                     <CreateAddressForm handleCloseCreateAddressForm={handleCloseCreateAddressForm} />
                   )}
-                  {!isShowUpdateAddress && (
+                  {!isShowCreateAddress && (
                     <>
                       <DialogHeader className="border-b px-6 py-4">
                         <div className="text-[16px] font-semibold">Địa chỉ của tôi</div>
                       </DialogHeader>
                       <div className="w-full h-[456px] px-6 pb-[88px] overflow-scroll scrollbar-hidden">
-                        <RadioGroup value={address1 || address?.default} onValueChange={(v) => {
-                          setAddress1(v);
-                        }} className="w-full" defaultValue="option-one">
+                        <RadioGroup
+                          value={valueAdressSelected}
+                          onValueChange={(v) => setValueAdressSelected(v)}
+                          className="w-full"
+                        >
                           {addresses.map((a, index) => (
-                            <div key={a.id} className={`w-full py-4 flex ${addresses.length - 1 === index ? "" : "border-b"}`}>
-                              <div className="w-[26px] pr-1">
-                                <RadioGroupItem checked={address1 ? address1 === a.id : address.default === a.default} value={a.id} />
-                              </div>
-                              <div className="w-full">
-                                <div className="w-full flex justify-between items-center mb-1">
-                                  <div className="flex items-center">
-                                    <span className="text-black">{a.name}</span>
-                                    <div className="border-l border-gray-300 h-[24.8px] mx-2"></div>
-                                    <div className="text-sm font-normal text-gray-500">{a.phone}</div>
-                                  </div>
-                                  <div>
-                                    <button className="text-blue-600 text-sm p-1">Cập nhật</button>
-                                  </div>
-                                </div>
-                                <div className="w-full mb-1">
-                                  <div className="text-sm text-gray-500">{a.address}</div>
-                                  <div className="text-sm text-gray-500">{a.ward}, {a.district}, {a.province}</div>
-                                </div>
-                                {a.default === '1' && (
-                                  <div className="mt-2">
-                                    <span className="px-1 py-[2px] border border-blue-700 text-blue-700 text-sm">Mặc định</span>
-                                  </div>
-                                )}
-
-                              </div>
-                            </div>
+                            <AddressItem setIsShowListAddress={setIsShowListAddress} a={a} index={index} addresses={addresses} key={index} />
                           ))}
 
                         </RadioGroup>
-                        <button onClick={() => setIsShowUpdateAddress(true)} className="flex gap-2 p-[10px] border-[#8b8b8b] border text-sm text-gray-500 items-center">
-                          <Plus size={24} color="#a3a3a3" strokeWidth={1.5} />
+                        <button onClick={() => setIsShowCreateAdress(true)} className="flex gap-2 p-[10px] rounded-sm border-[#8b8b8b] border text-sm text-gray-500 items-center">
+                          <Plus size={24} className="flex items-center" color="#a3a3a3" strokeWidth={1.5} />
                           Thêm Địa chỉ Mới
                         </button>
                       </div>
                       <DialogFooter className="px-6 bg-white w-full h-16 flex items-center border-t left-0 absolute right-0 bottom-0">
-                        <Button className="w-[120px]" onClick={() => setIsShowListAddress(false)} type="submit">Hủy</Button>
                         <Button className="w-[120px]" onClick={() => {
-                          const ad = addresses.find((a: any) => address1 === a.id);
-                          if (ad) {
-                            setAddress(() => {
-                              return ad;
-                            });
-                            setIsShowListAddress(false);
-                          }
+                          setValueAdressSelected(address.id.toString())
+                          setIsShowListAddress(false);
+                        }} type="submit">Hủy</Button>
+                        <Button className="w-[120px]" onClick={() => {
+                          const ad = addresses.find((a: any) => +valueAdressSelected === a.id);
+                          setAddress(ad);
+                          setIsShowListAddress(false);
                         }} type="button">Xác nhận</Button>
                       </DialogFooter>
                     </>

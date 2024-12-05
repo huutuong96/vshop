@@ -98,7 +98,7 @@ export default function ShopSidebar() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pl-10">
-                  {item.subItems.length && item.subItems.map((i, index) => (
+                  {item.subItems.length > 0 && item.subItems.map((i, index) => (
                     <Link href={`/shop/${item.path}/${i.href}`} key={index} className="py-1.5 block">{i.title}</Link>
                   ))}
                 </AccordionContent>

@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { selectAllShopProducts } from "@/redux/slices/profile.slice";
 import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store";
 import { Car, MessageCircleMore, Store, TicketPercent } from "lucide-react";
+import Link from "next/link";
 
 
 export default function CartShopSection({ shop, checked, index }: { shop: any, checked: boolean, index: number }) {
@@ -23,9 +24,9 @@ export default function CartShopSection({ shop, checked, index }: { shop: any, c
           className='size-4 ml-4 mr-2'
         />
         <Store color="#545454" size={18} />
-        <div className='h-[20px] text-[14px] text-center'>
+        <Link href={`/vendors/${shop.id}`} className='h-[20px] text-[14px] text-center'>
           {shop.shop_name}
-        </div>
+        </Link>
         <MessageCircleMore className='text-blue-500' />
       </div>
       <div className='w-full '>
