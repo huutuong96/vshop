@@ -1,4 +1,5 @@
 import ProductDetailShopSection from "@/app/(shop)/shop/product/list/[id]/product-detail-shop-section";
+import Test12335 from "@/app/(shop)/shop/product/list/[id]/test";
 import NewProductTestForm from "@/app/(shop)/shop/product/new/new-product-test-form";
 import envConfig from "@/config";
 import { notFound } from "next/navigation";
@@ -19,8 +20,11 @@ export default async function ProductDetailShopPage({ params: { id } }: { params
       category: payload.data.category_id,
     }
 
+    console.log(payload.data);
+
 
     let variant = product.variants.length > 0 ? JSON.parse(product.json_variants) : null;
+
     let a = {
       ...product, variant: (product.variants && product.variants.length > 0) ? {
         variantAttributes: variant.variantItems.map((v: any) => ({ ...v, attribute: v.name, name: undefined })),
@@ -34,10 +38,11 @@ export default async function ProductDetailShopPage({ params: { id } }: { params
       sku: (!product.variants || product.variants.length === 0) ? product.sku : null,
     }
 
-
+    // console.log('check:', );
     return (
       <ProductDetailShopSection product={{ ...a }} />
     )
+    // return <Test12335 variant={variant} product={product} />
   } catch (error) {
     console.log(error);
     return notFound()

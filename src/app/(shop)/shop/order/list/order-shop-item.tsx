@@ -17,6 +17,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import envConfig from "@/config";
+import { clientAccessToken } from "@/lib/http";
+import { toast } from "@/components/ui/use-toast";
 
 
 type OrderStatus = { label: string; value: number, valueString: any };
@@ -91,45 +94,82 @@ const orderStatuses: OrderStatus[] = [
   },
 ];
 
-const nextActionOrders: { label: any, currValue: number, nextValue: number }[] = [
+const nextActionOrders: { label: any, currValue: number, nextValue: number, style: string }[] = [
   {
-    label: <div className="px-2 text-orange-500 cursor-pointer flex flex-col hover:underline">Xác nhận đơn hàng</div>,
+    label: 'Xác nhận đơn hàng',
     currValue: 0,
     nextValue: 1,
+    style: 'px-2 text-orange-500 cursor-pointer flex flex-col hover:underline'
   },
   {
-    label: <div className="px-2 text-orange-500 cursor-pointer flex flex-col hover:underline">Chuẩn bị đơn hàng</div>,
+    label: 'Chuẩn bị đơn hàng',
     currValue: 1,
     nextValue: 2,
+    style: 'px-2 text-orange-500 cursor-pointer flex flex-col hover:underline'
   },
   {
-    label: <div className="px-2 text-orange-500 cursor-pointer flex flex-col hover:underline">Xác nhận đóng gói</div>,
+    label: 'Xác nhận đóng gói',
     currValue: 2,
     nextValue: 3,
+    style: 'px-2 text-orange-500 cursor-pointer flex flex-col hover:underline'
   },
   {
-    label: <div className="px-2 text-orange-500 cursor-pointer flex flex-col hover:underline">Xác nhận bàn giao GHN</div>,
+    label: 'Xác nhận bàn giao GHN',
     currValue: 3,
     nextValue: 4,
+    style: 'px-2 text-orange-500 cursor-pointer flex flex-col hover:underline'
   },
   {
-    label: <div className="px-2 text-[#0fa8a6] cursor-pointer flex flex-col hover:underline">Xác nhận đang vận chuyển</div>,
+    label: 'Xác nhận đang vận chuyển',
     currValue: 4,
     nextValue: 5,
+    style: 'px-2 text-[#0fa8a6] cursor-pointer flex flex-col hover:underline'
   },
   {
-    label: <div className="px-2 text-green-600 cursor-pointer flex flex-col hover:underline">Xác nhận hoàn thành</div>,
+    label: 'Xác nhận hoàn thành',
     currValue: 7,
     nextValue: 8,
+    style: 'px-2 text-green-600 cursor-pointer flex flex-col hover:underline'
   },
   {
-    label: <div className="px-2 text-purple-600 cursor-pointer flex flex-col hover:underline">Xác nhận hoàn trả</div>,
+    label: 'Xác nhận hoàn trả',
     currValue: 8,
     nextValue: 9,
+    style: 'px-2 text-purple-600 cursor-pointer flex flex-col hover:underline'
   },
 ];
 
-export default function OrderShopItem({ o }: { o: any }) {
+
+
+export default function OrderShopItem({ o, setStatus }: { o: any, setStatus: any }) {
+
+  const handleChangeStatus = async (status: number) => {
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/orders/update/${o.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${clientAccessToken.value}`
+        },
+        body: JSON.stringify({ order_status: status })
+      });
+
+      if (!res.ok) {
+        throw 'Error';
+      }
+      setStatus(status)
+      toast({
+        title: "Success",
+        variant: 'success'
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        variant: 'destructive'
+      })
+    }
+  }
+
   return (
     <div className="mt-4 ">
       <div className="px-4 h-10 flex rounded-tl-sm border  rounded-tr-sm items-center justify-between bg-[#f5f8fd]  text-black text-[14px]">
@@ -196,15 +236,17 @@ export default function OrderShopItem({ o }: { o: any }) {
               <DropdownMenuContent align="end" className="p-0">
                 <DropdownMenuLabel className="p-2 font-normal flex flex-col gap-2">
                   <Link href={`/shop/order/list/${o.id}`} className="px-2 text-blue-700 hover:underline cursor-pointer flex flex-col">Xem chi tiết</Link>
-                  {nextActionOrders.find(n => n.currValue === +o.order_status)?.label || ""}
+                  <div onClick={() => handleChangeStatus((nextActionOrders.find(n => n.currValue === +o.order_status)?.nextValue as number))} className={`${nextActionOrders.find(n => n.currValue === +o.order_status)?.style}`}>
+                    {nextActionOrders.find(n => n.currValue === +o.order_status)?.label || ""}
+                  </div>
                   {+o.order_status === 5 && (
                     <>
-                      <div className="px-2 text-red-500 cursor-pointer flex flex-col hover:underline">Xác nhận giao hàng thất bại</div>
-                      <div className="px-2 text-[#0fa59e] cursor-pointer flex flex-col hover:underline">Xác nhận giao hàng thành công</div>
+                      <div onClick={() => handleChangeStatus(6)} className="px-2 text-red-500 cursor-pointer flex flex-col hover:underline">Xác nhận giao hàng thất bại</div>
+                      <div onClick={() => handleChangeStatus(7)} className="px-2 text-[#0fa59e] cursor-pointer flex flex-col hover:underline">Xác nhận giao hàng thành công</div>
                     </>
                   )}
                   {+o.order_status === 0 && (
-                    <div className="px-2 text-red-500 cursor-pointer flex flex-col hover:underline">Xác nhận hủy đơn hàng</div>
+                    <div onClick={() => handleChangeStatus(1)} className="px-2 text-red-500 cursor-pointer flex flex-col hover:underline">Xác nhận hủy đơn hàng</div>
                   )}
                 </DropdownMenuLabel>
               </DropdownMenuContent>

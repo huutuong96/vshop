@@ -243,7 +243,7 @@ export default function OrderListSection() {
             </div>
           </div>
           {!loading && orders.map((o: any, index: number) => (
-            <OrderShopItem key={index} o={o} />
+            <OrderShopItem setStatus={setStatus} key={index} o={o} />
           ))}
           {loading && <OrderSkeleton />}
           <div className="flex justify-between items-center mt-6">

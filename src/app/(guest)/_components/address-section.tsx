@@ -17,13 +17,19 @@ import { RadioGroup } from "@/components/ui/radio-group"
 import CreateAddressForm from "@/app/(guest)/_components/create-address-form"
 import { Skeleton } from "@/components/ui/skeleton"
 import AddressItem from "@/app/(guest)/_components/address-item"
+import { decodeData } from "@/helpers"
+import { useAppInfoSelector } from "@/redux/stores/profile.store"
+import envConfig from "@/config"
+import { clientAccessToken } from "@/lib/http"
+import { toast } from "@/components/ui/use-toast"
 
 
-export default function AddressSection({ address, addresses, setAddress }: { address: any, setAddress: any, addresses: any[] }) {
+export default function AddressSection({ address, addresses, setAddress, setCheckoutItems, setAddresses, stateCheckout, selectedItems }: { selectedItems: any, stateCheckout: any, setAddresses: any, setCheckoutItems: any, address: any, setAddress: any, addresses: any[] }) {
   const [isShowListAddress, setIsShowListAddress] = useState<boolean>(false);
   const [isShowUpdateAddress, setIsShowUpdateAddress] = useState<boolean>(false);
   const [isShowCreateAddress, setIsShowCreateAdress] = useState<boolean>(false);
   const [address1, setAddress1] = useState<any>(null);
+  const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
   const [valueAdressSelected, setValueAdressSelected] = useState(() => {
     if (address) return address.id.toString();
     else return null
@@ -33,6 +39,56 @@ export default function AddressSection({ address, addresses, setAddress }: { add
 
   const handleCloseCreateAddressForm = () => {
     setIsShowCreateAdress(false);
+  }
+
+  const handleSubmit = async () => {
+    let decodeSelectedItems = stateCheckout ? JSON.parse(decodeData(stateCheckout)) : selectedItems;
+    let a: any[] = [];
+    cart.forEach((s) => {
+      let items: any[] = [];
+      s.items.forEach((i: any) => {
+        if ((decodeSelectedItems).includes(i.id)) {
+          items.push(i);
+        }
+      });
+      if (items.length) {
+        a.push({ ...s, items });
+      }
+    });
+
+
+    const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id), address_id: +valueAdressSelected }));
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${clientAccessToken.value}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        throw 'OK';
+      }
+      const payload = await res.json();
+      setCheckoutItems((prev: any) => {
+        return [...prev.map((s: any, index: number) => (
+          {
+            ...s,
+            ship_fee: payload[index].ship_fee,
+          }
+        ))]
+      })
+      const ad = addresses.find((a: any) => +valueAdressSelected === a.id);
+      setAddress(ad);
+      setIsShowListAddress(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        variant: "destructive"
+      })
+    }
+
   }
 
 
@@ -57,7 +113,7 @@ export default function AddressSection({ address, addresses, setAddress }: { add
                 <div className="text-[16px] font-bold">
                   {address?.name || 'khnag'} {address?.phone || '123'}
                 </div>
-                <div className="ml-4 text-[16px]">{addresses.length > 0 ? addresses[0].address : "null"}</div>
+                <div className="ml-4 text-[16px]">{address?.address || '123'}</div>
               </div>
 
               <Dialog open={isShowListAddress} onOpenChange={(o) => setIsShowListAddress(o)}>
@@ -68,7 +124,7 @@ export default function AddressSection({ address, addresses, setAddress }: { add
                 </DialogTrigger>
                 <DialogContent onInteractOutside={(e) => e.preventDefault()} className="w-[500px] p-0">
                   {isShowCreateAddress && (
-                    <CreateAddressForm handleCloseCreateAddressForm={handleCloseCreateAddressForm} />
+                    <CreateAddressForm setCheckoutItems={setCheckoutItems} setAddresses={setAddresses} handleCloseCreateAddressForm={handleCloseCreateAddressForm} />
                   )}
                   {!isShowCreateAddress && (
                     <>
@@ -96,11 +152,7 @@ export default function AddressSection({ address, addresses, setAddress }: { add
                           setValueAdressSelected(address.id.toString())
                           setIsShowListAddress(false);
                         }} type="submit">Hủy</Button>
-                        <Button className="w-[120px]" onClick={() => {
-                          const ad = addresses.find((a: any) => +valueAdressSelected === a.id);
-                          setAddress(ad);
-                          setIsShowListAddress(false);
-                        }} type="button">Xác nhận</Button>
+                        <Button className="w-[120px]" onClick={handleSubmit} type="button">Xác nhận</Button>
                       </DialogFooter>
                     </>
                   )}

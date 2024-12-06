@@ -25,16 +25,18 @@ import {
 } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import ghnApiRequest from "@/apiRequest/ghn"
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check } from "lucide-react"
+import { Check, LoaderCircle } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import envConfig from "@/config"
 import { clientAccessToken } from "@/lib/http"
 import { toast } from "@/components/ui/use-toast"
+import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store"
+import { addAddresses } from "@/redux/slices/profile.slice"
 
 const schema = z.object({
   province_id: z.number(),
@@ -68,7 +70,7 @@ const initialValues: FormData = {
 
 const typeOfAddress = [{ label: 'Nhà Riêng' }, { label: 'Văn Phòng' }]
 
-export default function CreateAddressForm({ handleCloseCreateAddressForm, setAddresses, setCheckoutItems }: { setCheckoutItems: any, setAddresses: any, handleCloseCreateAddressForm: () => void }) {
+function TestCreateAddressForm({ onOpen }: { onOpen: (o: boolean) => void }) {
   const { control, register, handleSubmit, getValues, setValue, setError, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'all',
@@ -91,6 +93,9 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm, setAdd
   const [wards, setWards] = useState<{ ward_id: string, name: string }[]>([]);
   const [tab, setTab] = useState<string>('province');
   const [open, setOpen] = useState<boolean>(false);
+  const dispatch = useAppInfoDispatch();
+  const addresses = useAppInfoSelector(state => state.profile.addresses);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const getProvinces = async () => {
@@ -102,7 +107,6 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm, setAdd
   }, []);
 
   useEffect(() => {
-    console.log({ open });
     if (!open) {
       if (!getValues('district') || !getValues('province') || !getValues('ward')) {
         setError('root', { message: 'error' });
@@ -133,7 +137,6 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm, setAdd
     if (+v) {
 
       const b = await ghnApiRequest.ward(+v);
-      console.log({ b });
       setWards((prev) => {
         const wards = (b as any).data.map((w: any) => ({ ward_id: w.WardCode, name: w.WardName }))
         return wards;
@@ -157,6 +160,7 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm, setAdd
 
   const onSubmit = async (data: FormData) => {
     try {
+      setLoading(true);
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
         headers: {
           "Authorization": `Bearer ${clientAccessToken.value}`,
@@ -169,29 +173,27 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm, setAdd
         throw 'Error'
       }
       const payload = await res.json();
+      const address = payload.address;
+      const newAddresses = defaultWatched === 1 ? addresses?.map(a => ({ ...a, default: 0 })) : addresses;
+      newAddresses?.unshift(address)
+      dispatch(addAddresses(
+        [...newAddresses as any[]]
+      ))
 
-      const addressesRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
-        headers: {
-          "Authorization": `Bearer ${clientAccessToken.value}`,
-          "Content-Type": "application/json"
-        },
-      });
-      const adressesPayload = await addressesRes.json();
       toast({
-        title: "Thanh cong",
+        title: "success",
         variant: "success"
       })
-      console.log(adressesPayload.data);
-      setAddresses([...adressesPayload.data]);
-      handleCloseCreateAddressForm();
+      onOpen(false);
     } catch (error) {
       toast({
         title: "Error",
         variant: "destructive"
       })
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <DialogHeader className=" px-6 py-4">
@@ -390,9 +392,22 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm, setAdd
 
       </div>
       <DialogFooter className="px-6 bg-white w-full h-16 flex items-center border-t left-0 absolute right-0 bottom-0">
-        <Button className="w-[120px]" onClick={handleCloseCreateAddressForm} type="button">Trở lại</Button>
-        <Button className="w-[120px]" type="submit">Hoàn thành</Button>
+        <Button className="w-[120px]" onClick={() => {
+          onOpen(false);
+        }} type="button">Trở lại</Button>
+
+        {loading && (
+          <Button className="w-[120px] bg-blue-700 hover:bg-blue-700 hover:opacity-80" type="button">
+            <LoaderCircle strokeWidth={1.25} width={16} />
+            Hoàn thành
+          </Button>
+        )}
+        {!loading && (
+          <Button className="w-[120px] bg-blue-700 hover:bg-blue-700 hover:opacity-80" type="submit">Hoàn thành</Button>
+        )}
       </DialogFooter>
     </form>
   )
 }
+
+export default memo(TestCreateAddressForm);

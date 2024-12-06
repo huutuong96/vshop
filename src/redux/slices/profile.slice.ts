@@ -6,16 +6,30 @@ interface Profile {
   info: any,
   cart: {
     cartInfo: any[],
-    selectedItems: any[]
-  } | null
+    selectedItems: any[],
+    mainVouchers: any[]
+  } | null,
+  addresses: any[] | null
   checkoutState: string
+  checkout: {
+    checkoutItems: any[],
+    mainVouchers: any[],
+    originPrice: number
+    totalShipFee: number,
+    voucherPrice: number,
+    rankPrice: number,
+    address: any
+    // shopVouchers: any[]
+  } | null
 }
 
 const initialState = {
   accessToken: '',
   info: {},
   cart: null,
-  checkoutState: ''
+  checkoutState: '',
+  addresses: null,
+  checkout: null
 } as Profile
 
 const profileSlice = createSlice({
@@ -31,7 +45,42 @@ const profileSlice = createSlice({
     addCart: (state, action: PayloadAction<any>) => {
       state.cart = {
         cartInfo: action.payload,
-        selectedItems: []
+        selectedItems: [],
+        mainVouchers: []
+      }
+    },
+    addVouchers: (state, action: PayloadAction<{ mainVouchers: any[], shopVouchers: any[] }>) => {
+      let { shopVouchers, mainVouchers } = action.payload;
+      if (state.cart) {
+        let newCart = state.cart.cartInfo.map(c => ({
+          ...c,
+          vouchers: shopVouchers.filter((v: any) => +v.shop_id === c.id),
+          voucherSelected: null
+        }))
+        state.cart.cartInfo = [...newCart];
+        state.cart.mainVouchers = [...mainVouchers]
+      }
+    },
+    addAddresses: (state, action: PayloadAction<any[]>) => {
+      state.addresses = action.payload;
+    },
+    addCheckout: (state, action: PayloadAction<{
+      checkoutItems: any[],
+      mainVouchers: any[],
+      originPrice: number,
+      totalShipFee: number,
+      voucherPrice: number,
+      rankPrice: number
+      // shopVouchers: any[]
+    }>) => {
+      state.checkout = {
+        ...action.payload, address: null
+      }
+    },
+    selectShopVoucher: (state, action: PayloadAction<{ index: number, voucher: any }>) => {
+      let { index, voucher } = action.payload;
+      if (state.cart?.cartInfo) {
+        state.cart.cartInfo[index].voucherSelected = voucher;
       }
     },
     selectAllProducts: (state, action: PayloadAction<boolean>) => {
@@ -90,12 +139,14 @@ const profileSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addMatcher((state) => true, (state, action) => {
+      .addMatcher((state) => (state.type as string).endsWith('addCheckout'), (state, action) => {
         // console.log('-----------------------');
-        // state.cart?.selectedItems.forEach(i => {
-        //   console.log(i.id);
-        // })
-        // console.log('-----------------------');
+        // if (false) {
+        //   const address = state.addresses?.find(a => +a.default);
+        //   if (address) {
+        //     state.checkout.address = address;
+        //   }
+        // }
 
       })
       .addDefaultCase((state, action) => {
@@ -107,6 +158,10 @@ export const {
   addAccessToken,
   addInfo,
   addCart,
+  addAddresses,
+  addVouchers,
+  addCheckout,
+  selectShopVoucher,
   selectAllProducts,
   selectAllShopProducts,
   selectItem,

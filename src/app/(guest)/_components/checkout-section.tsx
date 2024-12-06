@@ -93,11 +93,11 @@ const ranks = [
 export default function CheckoutSection({ stateCheckout }: { stateCheckout: string | undefined | null }) {
   const dispatch = useAppInfoDispatch();
   const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
-  const stateCheckoutInProfle = useAppInfoSelector(state => state.profile.checkoutState);
   const profile = useAppInfoSelector(state => state.profile.info);
   const [loading, setLoading] = useState<boolean>(true);
   const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
   const selectedItems = useAppInfoSelector(state => state.profile.cart?.selectedItems) as any[];
+  const stateCheckoutInProfle = useAppInfoSelector(state => state.profile.checkoutState);
   const router = useRouter();
   const [mainVouchers, setMainVouchers] = useState<any[]>([]);
   const [mainVoucherSelected, setMainVoucherSelected] = useState<any>(null);
@@ -107,6 +107,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false);
   const [addresses, setAddresses] = useState<any[]>([]);
   const [address, setAddress] = useState<any>();
+
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -174,10 +175,9 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         const paymentsPayload = await paymentsRes.json();
         const addressesPayload = await addressesRes.json();
 
-        console.log({ addressesPayload });
         setAddress((prev: any) => {
-          const a = addressesPayload.data.find((a: any) => a.default === 1);
-          return a;
+          const defaultAdress = addressesPayload.data.find((a: any) => a.default === 1);
+          return defaultAdress;
         })
         setAddresses(addressesPayload.data);
 
@@ -212,11 +212,6 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   }, [selectedItems.length]);
 
 
-  useEffect(() => {
-
-  }, [])
-
-
 
   const handleCheckout = async () => {
     const carts = checkoutItems.reduce((acc: any, s: any) => [...acc, ...s.items.map((i: any) => i.id)], []);
@@ -226,48 +221,54 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         voucherToShopCode.push(s.voucherSelected.code)
       }
     })
-    try {
-      setLoadingCheckout(true);
-      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/purchase_to_cart`, {
-        method: "POST",
-        body: JSON.stringify({
-          carts,
-          payment: paymentSelected,
-          voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
-          voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
-        }),
-        headers: {
-          "Authorization": `Bearer ${clientAccessToken.value}`,
-          "Content-Type": "application/json"
-        }
-      });
-      const payload = await res.json();
-      console.log(payload);
+    console.log({
+      carts,
+      payment: paymentSelected,
+      voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
+      voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
+    });
+    // try {
+    //   setLoadingCheckout(true);
+    //   const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/purchase_to_cart`, {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       carts,
+    //       payment: paymentSelected,
+    //       voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
+    //       voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
+    //     }),
+    //     headers: {
+    //       "Authorization": `Bearer ${clientAccessToken.value}`,
+    //       "Content-Type": "application/json"
+    //     }
+    //   });
+    //   const payload = await res.json();
+    //   console.log(payload);
 
-      if (!res.ok) {
-        console.log(payload);
+    //   if (!res.ok) {
+    //     console.log(payload);
 
-        throw 'Error'
-      }
-      await fetch(`/api/auth/del-cookie`, {
-        method: "POST",
-      });
-      dispatch(changeCheckoutState(""));
-      if (paymentSelected === 12) {
-        window.location.href = payload.url;
-      } else {
-        window.location.href = `http://localhost:3000/checkout/success?id=${payload.data}`;
-      }
+    //     throw 'Error'
+    //   }
+    //   await fetch(`/api/auth/del-cookie`, {
+    //     method: "POST",
+    //   });
+    //   dispatch(changeCheckoutState(""));
+    //   if (paymentSelected === 12) {
+    //     window.location.href = payload.url;
+    //   } else {
+    //     window.location.href = `http://localhost:3000/checkout/success?id=${payload.data}`;
+    //   }
 
-      // router.push('/');
-      // toast({ title: "Đặt hàng thành công!", variant: "success" })
-      // location.href = '/'
+    //   // router.push('/');
+    //   // toast({ title: "Đặt hàng thành công!", variant: "success" })
+    //   // location.href = '/'
 
-    } catch (error) {
-      toast({ title: "Lỗi", variant: "destructive" })
-    } finally {
-      setLoadingCheckout(false);
-    }
+    // } catch (error) {
+    //   toast({ title: "Lỗi", variant: "destructive" })
+    // } finally {
+    //   setLoadingCheckout(false);
+    // }
 
   }
 
@@ -301,7 +302,14 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       {totalPrice > 0 && (
         <div className="w-full flex justify-center">
           <div className="w-full">
-            <AddressSection address={address} addresses={addresses} setAddress={setAddress} />
+            <AddressSection
+              setCheckoutItems={setCheckoutItems}
+              address={address} addresses={addresses}
+              setAddresses={setAddresses}
+              setAddress={setAddress}
+              stateCheckout={stateCheckout}
+              selectedItems={selectedItems}
+            />
 
             {checkoutItems.map((s: any, index) => (
               <CheckoutByshopItem key={s.id} s={s} setCheckoutItems={setCheckoutItems} index={index} vouchersSelected={vouchersSelected} setVoucherSelected={setVoucherSelected} />

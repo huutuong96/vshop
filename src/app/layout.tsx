@@ -31,23 +31,33 @@ export default async function RootLayout({
     const info = cookieStore.get('info')?.value;
     let cart = null;
     let test = null;
+    let addresses = null;
     if (accessToken) {
-      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts`, {
-        headers: {
-          "Authorization": `Bearer ${accessToken}`
-        }
-      });
+      const [cartRes, addressesRes] = await Promise.all([
+        fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts`, {
+          headers: {
+            "Authorization": `Bearer ${accessToken}`
+          }
+        }),
+        fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
+          headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            "Content-Type": "application/json"
+          },
+        })
+      ]);
 
 
-      if (!res.ok) {
+      if (!cartRes.ok || !addressesRes.ok) {
         throw 'Error'
 
       }
-      const payload = await res.json();
+      const cartPayload = await cartRes.json();
+      const addressesPayload = await addressesRes.json();
 
-      const newCart = payload.shop.map((shop: any) => {
+      const newCart = cartPayload.shop.map((shop: any) => {
         const shop_id = shop.id;
-        const items = payload.cart.filter((p: any) => +p.shop_id === shop_id).map((p: any) => ({ ...p }));
+        const items = cartPayload.cart.filter((p: any) => +p.shop_id === shop_id).map((p: any) => ({ ...p }));
 
         return {
           ...shop,
@@ -55,7 +65,15 @@ export default async function RootLayout({
         }
       })
       cart = newCart
-      test = payload;
+      test = cartPayload;
+      let a = (addressesPayload.data as any[]).filter(a => !+a.default);
+      let b = (addressesPayload.data as any[]).find(a => +a.default);
+      if (b) {
+        a.unshift(b);
+        addresses = [...a]
+      } else {
+        a = []
+      }
     }
 
 
@@ -68,6 +86,7 @@ export default async function RootLayout({
             info={accessToken ? JSON.parse(info as string) : null}
             cart={cart}
             test={test}
+            addresses={addresses}
           >
             {children}
           </ProfileProvider>

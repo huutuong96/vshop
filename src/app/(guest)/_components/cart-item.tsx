@@ -150,14 +150,15 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
               <img src={item.product_image ? item.product_image : item.variant_image} className='w-full h-full object-cover' alt="" />
             </div>
             <div className='w-[calc(100%-80px-8px)] h-full p-1 px-2'>
-              <Link href={`/products/${item.product_slug}`} className='text-[14px] hover:text-blue-600'>{item.product_name}</Link>
+              <Link href={`/products/${item.product_slug}`} className='text-[14px] hover:text-blue-700'>{item.product_name}</Link>
             </div>
           </div>
           <div className='w-full h-[20px] flex items-center'>
             {item.quantity === 0 ? (
               <span className='text-[12px] text-red-500'>Sản phẩm này đã hết</span>
             ) : (
-              <span className='text-[12px] text-blue-500'>Fash Sale kết thúc lúc 23:59:00</span>
+              // <span className='text-[12px] text-blue-500'>Fash Sale kết thúc lúc 23:59:00</span>
+              ''
             )}
           </div>
         </div>
