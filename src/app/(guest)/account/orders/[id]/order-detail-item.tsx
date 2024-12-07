@@ -48,18 +48,20 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
     }
   }
 
+  console.log(o);
+
   return (
     <div className="my-3 ">
       <div className=' w-full  flex flex-col gap-3 p-6 border border-b-0 rounded bg-white ' >
         <div className="w-full">
           <div className='nav-list-product w-full flex justify-between pb-3 border-b'>
             <div className='flex gap-3 items-end '>
-              <p className='font-semibold text-[16px]'>{o.shop.shop_name ? o.shop.shop_name : 'Shop đã biến mất'}</p>
+              <p className='font-semibold text-[16px]'>{o?.shop?.shop_name ? o.shop.shop_name : 'Shop đã biến mất'}</p>
               <button className='p-1 flex items-center justify-center gap-1 border bg-blue-700 rounded-sm text-white'>
                 <MailPlus size={12} />
                 <p className="text-[12px]">Chat</p>
               </button>
-              <Link href={`/vendors/${o.shop.id}`}>
+              <Link href={`/vendors/${o?.shop?.id || 1}`}>
                 <button className='p-1 flex items-center justify-center gap-1 border rounded-sm text-gray-500 font-semibold'>
                   <Store size={12} />
                   <p className="text-[12px]">Xem Shop</p>
@@ -88,19 +90,19 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
                 return (
                   <div key={d.id} className={`w-full flex items-center gap-3 py-3 ${o.order_details.length - 1 !== index ? 'border-b' : ''}`}>
                     <div className=''>
-                      <img src={`${d.variant ? d.variant.images : d.product.image}`} className='size-20 object-cover' />
+                      <img src={`${d.variant ? d.variant.images : (d?.product?.image || '')}`} className='size-20 object-cover' />
                     </div>
                     <div className='w-full flex gap-6 justify-between'>
                       <div className='flex flex-col justify-center'>
-                        <Link href={`/products/${d.product.slug}`} >{d.product.name ? d.product.name : 'Sản phẩm không hoạt động'}</Link>
+                        <Link href={`/products/${d?.product?.slug || 'abx'}`} >{d?.product?.name ? d.product.name : 'Sản phẩm không hoạt động'}</Link>
                         {d?.variant && (
-                          <span className='text-sm text-gray-500'>Phân loại hàng: {d.variant.name}</span>
+                          <span className='text-sm text-gray-500'>Phân loại hàng: {d?.variant?.name || 'abx'}</span>
                         )}
-                        <span className="text-sm">x{d.quantity}</span>
+                        <span className="text-sm">x{d?.quantity || '1'}</span>
                       </div>
                       <div className='flex items-center gap-1 font-semibold'>
                         <span className="font-semibold">
-                          {formattedPrice(+d.subtotal)}
+                          {formattedPrice(+(d?.subtotal || '0'))}
                         </span>
                       </div>
                     </div>
@@ -117,7 +119,9 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
         <div className="w-full px-6 pt-6 py-6">
           <div className="w-full h-[30px] ">
             <div className="size-full flex justify-between items-center gap-2">
-              <Link href={`/account/orders/${o.id}`} className="text-sm text-blue-700 hover:underline">Chi tiết</Link>
+              {o?.shop?.shop_name && (
+                <Link href={`/account/orders/${o.id}`} className="text-sm text-blue-700 hover:underline">Chi tiết</Link>
+              )}
               <div className="flex items-center gap-2">
                 <span className="text-sm">Thành tiền: </span>
                 <div className="text-2xl text-red-500 font-semibold">{formattedPrice(+o.total_amount)}</div>

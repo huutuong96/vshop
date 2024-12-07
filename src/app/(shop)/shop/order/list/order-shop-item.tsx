@@ -221,7 +221,7 @@ export default function OrderShopItem({ o, setStatus }: { o: any, setStatus: any
             {o.status === '1' ?
               <div className="text-sm text-red-500">Chưa thanh toán</div>
               :
-              <div className="text-sm text-green-600">Thanh toán</div>
+              <div className="text-sm text-green-600"> Đã thanh toán</div>
             }
           </div>
           <div className="flex-[0.5] px-2 flex flex-col">

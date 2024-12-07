@@ -273,13 +273,15 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                 {variantSelected.every(v => v.id) && (
                   <div className="flex">
                     <div className="p-[5px]">
-                      <Button className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">-</Button>
+                      <Button onClick={() => {
+                        if (quantity !== 1) setQuantity(prev => prev - 1)
+                      }} className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">-</Button>
                     </div>
                     <div className="p-[5px]">
                       <Input min={1} onChange={(e) => setQuantity(+e.target.value)} className="w-12 text-center h-8 text-[14px]" type="number" value={quantity} />
                     </div>
                     <div className="p-[5px]">
-                      <Button className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">+</Button>
+                      <Button onClick={() => setQuantity(prev => prev + 1)} className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">+</Button>
                     </div>
                   </div>
                 )}

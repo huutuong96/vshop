@@ -155,6 +155,21 @@ export default function LoginForm() {
     }
 
   }
+
+  const handleLoginWithGoogle = async () => {
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/auth/google`, {
+
+      });
+      if (!res.ok) {
+        throw 'ERror'
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
   return (
     <>
       <div className="w-1/2 bg-white p-12 flex flex-col justify-center">
@@ -189,7 +204,7 @@ export default function LoginForm() {
           </div>
           <div className="mt-6">
             <div className="flex flex-col gap-2">
-              <Button variant="outline">
+              <Button type='button' onClick={handleLoginWithGoogle} variant="outline">
                 <RiGoogleFill
                   className="me-3 text-[#DB4437] dark:text-white/60"
                   size={16}
@@ -197,14 +212,14 @@ export default function LoginForm() {
                 />
                 Đăng nhập với tài khoản Google
               </Button>
-              <Button variant="outline">
+              {/* <Button variant="outline">
                 <RiFacebookFill
                   className="me-3 text-[#1877f2] dark:text-white/60"
                   size={16}
                   aria-hidden="true"
                 />
                 Đăng nhập với tài khoản Facebook
-              </Button>
+              </Button> */}
 
             </div>
           </div>

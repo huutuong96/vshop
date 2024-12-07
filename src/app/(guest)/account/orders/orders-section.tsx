@@ -153,7 +153,7 @@ export default function OrdersGuestSection() {
   const [orderStatus, setOrderStatus] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true); // Kiểm tra có thêm dữ liệu không
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const fetchOrders = async (currentPage: number) => {

@@ -39,6 +39,10 @@ export default function OrderDetailSection({ id }: { id: string }) {
   const profile = useAppInfoSelector(state => state.profile.info);
   const [loading, setLoading] = useState<boolean>(true);
 
+  if (order) {
+    console.log(order);
+  }
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -242,7 +246,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
               {+order.order_status !== 10 && (
                 <>
                   <div className="px-6 flex justify-end items-center border-b border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Tổng tiền hàng</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -250,7 +254,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Thuế giá trị gia tăng</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -258,7 +262,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Phí vận chuyển</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -266,7 +270,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Thành viên {profile.rank.title}</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -275,7 +279,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                   </div>
                   {(order.voucher_shop_disscount !== '0') && (
                     <div className="px-6 flex justify-end items-center border-t border-dotted">
-                      <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                      <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                         <span>Voucher từ shop</span>
                       </div>
                       <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -285,7 +289,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                   )}
                   {order.voucher_disscount !== '0' && (
                     <div className="px-6 flex justify-end items-center border-t border-dotted">
-                      <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                      <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                         <span>Voucher từ VNShop</span>
                       </div>
                       <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -294,7 +298,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   )}
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Thành tiền</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -305,7 +309,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
               )}
               {+order.order_status === 10 && (
                 <div className="px-6 flex justify-end items-center border-t border-dotted">
-                  <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                  <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                     <span>Yêu cầu bởi</span>
                   </div>
                   <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -315,7 +319,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
               )}
 
               <div className="px-6 flex justify-end items-center border-t border-dotted rounded-bl-sm rounded-br-sm">
-                <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                   <span>Phương thức thanh toán</span>
                 </div>
                 <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
