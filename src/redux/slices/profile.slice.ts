@@ -72,6 +72,17 @@ const profileSlice = createSlice({
         state.cart.mainVoucherSelected = action.payload;
       }
     },
+    addMainVoucherCheckout: (state, action: PayloadAction<any>) => {
+      if (state.checkout) {
+        state.checkout.mainVoucherSelected = action.payload;
+      }
+    },
+    addShopVoucherCheckout: (state, action: PayloadAction<{ index: number, value: any }>) => {
+      let { index, value } = action.payload;
+      if (state.checkout) {
+        state.checkout.checkoutItems[index].voucherSelected = value;
+      }
+    },
     addCheckout: (state, action: PayloadAction<{
       checkoutItems: any[],
       mainVouchers: any[],
@@ -148,14 +159,20 @@ const profileSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addMatcher((state) => (state.type as string).endsWith('addCheckout'), (state, action) => {
-        // console.log('-----------------------');
-        // if (false) {
-        //   const address = state.addresses?.find(a => +a.default);
-        //   if (address) {
-        //     state.checkout.address = address;
-        //   }
-        // }
+      .addMatcher((state) => ['addShopVoucherCheckout', 'addMainVoucherCheckout'].some(pre => (state.type as string).endsWith(pre)), (state, action) => {
+        if (state.checkout) {
+          let mainVoucherSelected = state.checkout.mainVoucherSelected;
+          let originPrice = state.checkout.originPrice;
+          let priceWithMainVoucher = mainVoucherSelected ? ((+(mainVoucherSelected as any).ratio * originPrice) / 100 > +(mainVoucherSelected as any).max ? +(mainVoucherSelected as any).max : (+(mainVoucherSelected as any).ratio * originPrice) / 100) : 0;
+          let totalPriceWithShopVoucher = state.checkout.checkoutItems.reduce((acc, cur) => {
+            let price = cur.items.reduce((innerAcc: number, item: any) => innerAcc + (+item.quantity) * (item.product_price ? (+item.product_price) : (+item.variant_price)), 0)
+            let voucherShop = cur.voucherSelected;
+            let promotionShopPrice = voucherShop ? ((+voucherShop.ratio * price) / 100 > +voucherShop.max ? +voucherShop.max : (+voucherShop.ratio * price) / 100) : 0
+            return acc + price - promotionShopPrice;
+          }, 0)
+          let voucherPrice = originPrice - totalPriceWithShopVoucher + priceWithMainVoucher;
+          state.checkout.voucherPrice = voucherPrice;
+        }
 
       })
       .addDefaultCase((state, action) => {
@@ -170,6 +187,8 @@ export const {
   addMainVoucher,
   addAddresses,
   addVouchers,
+  addMainVoucherCheckout,
+  addShopVoucherCheckout,
   addCheckout,
   selectShopVoucher,
   selectAllProducts,

@@ -221,54 +221,45 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
         voucherToShopCode.push(s.voucherSelected.code)
       }
     })
-    console.log({
-      carts,
-      payment: paymentSelected,
-      voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
-      voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
-    });
-    // try {
-    //   setLoadingCheckout(true);
-    //   const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/purchase_to_cart`, {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       carts,
-    //       payment: paymentSelected,
-    //       voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
-    //       voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
-    //     }),
-    //     headers: {
-    //       "Authorization": `Bearer ${clientAccessToken.value}`,
-    //       "Content-Type": "application/json"
-    //     }
-    //   });
-    //   const payload = await res.json();
-    //   console.log(payload);
+    try {
+      setLoadingCheckout(true);
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/purchase_to_cart`, {
+        method: "POST",
+        body: JSON.stringify({
+          carts,
+          payment: paymentSelected,
+          voucherToMainCode: mainVoucherSelected ? mainVoucherSelected.code : undefined,
+          voucherToShopCode: voucherToShopCode.length > 0 ? voucherToShopCode : undefined
+        }),
+        headers: {
+          "Authorization": `Bearer ${clientAccessToken.value}`,
+          "Content-Type": "application/json"
+        }
+      });
 
-    //   if (!res.ok) {
-    //     console.log(payload);
+      if (!res.ok) {
+        throw 'Error'
+      }
+      const payload = await res.json();
+      await fetch(`/api/auth/del-cookie`, {
+        method: "POST",
+      });
+      dispatch(changeCheckoutState(""));
+      if (paymentSelected === 12) {
+        window.location.href = payload.url;
+      } else {
+        window.location.href = `http://localhost:3000/checkout/success?id=${payload.data}`;
+      }
 
-    //     throw 'Error'
-    //   }
-    //   await fetch(`/api/auth/del-cookie`, {
-    //     method: "POST",
-    //   });
-    //   dispatch(changeCheckoutState(""));
-    //   if (paymentSelected === 12) {
-    //     window.location.href = payload.url;
-    //   } else {
-    //     window.location.href = `http://localhost:3000/checkout/success?id=${payload.data}`;
-    //   }
+      // router.push('/');
+      // toast({ title: "Đặt hàng thành công!", variant: "success" })
+      // location.href = '/'
 
-    //   // router.push('/');
-    //   // toast({ title: "Đặt hàng thành công!", variant: "success" })
-    //   // location.href = '/'
-
-    // } catch (error) {
-    //   toast({ title: "Lỗi", variant: "destructive" })
-    // } finally {
-    //   setLoadingCheckout(false);
-    // }
+    } catch (error) {
+      toast({ title: "Lỗi", variant: "destructive" })
+    } finally {
+      setLoadingCheckout(false);
+    }
 
   }
 

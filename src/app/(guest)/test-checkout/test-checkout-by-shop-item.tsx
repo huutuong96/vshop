@@ -13,14 +13,15 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
 import React, { Dispatch, SetStateAction } from "react"
+import { addShopVoucherCheckout } from "@/redux/slices/profile.slice"
+import { useAppInfoDispatch } from "@/redux/stores/profile.store"
 
 
 function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
   let price = +s.items.reduce((acc: number, i: any) => acc + (+i.quantity * (i.product_price ? (+i.product_price) : (+i.variant_price))), 0);
   let voucherShop = s.voucherSelected;
   let promotionPrice = voucherShop ? ((+voucherShop.ratio * price) / 100 > +voucherShop.max ? +voucherShop.max : (+voucherShop.ratio * price) / 100) : 0
-
-  console.log({ s });
+  const dispatch = useAppInfoDispatch();
 
   return (
     <div key={s.id} className="w-full mt-3 rounded-sm bg-white border">
@@ -71,7 +72,7 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
                   </div>
                   <div className="flex items-center gap-4">
                     {voucherShop && (
-                      <button className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-6 p-1 w-12">- {voucherShop.ratio}%</button>
+                      <button className="flex items-center text-[12px] text-blue-700 mr-[15px] border border-blue-700 rounded-sm font-medium h-6 p-1 w-12">- {voucherShop.ratio}%</button>
                     )}
                     <DropdownMenu modal={false} >
                       <DropdownMenuTrigger>
@@ -92,23 +93,15 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
                                   {/* <div className="text-[12px] text-gray-400">HSD: 18.12.2024</div> */}
                                 </div>
                                 <div className="w-[42px] h-full p-3 flex items-center justify-center">
-                                  {/* <Checkbox
+                                  <Checkbox
                                     onCheckedChange={(c) => {
                                       let checked = c as boolean;
-                                      setCheckoutItems((prev) => {
-                                        if (checked) {
-                                          prev[index].voucherSelected = { ...v };
-                                          return [...prev];
-                                        } else {
-                                          prev[index].voucherSelected = null;
-                                          return [...prev]
-                                        }
-                                      })
+                                      dispatch(addShopVoucherCheckout({ index, value: c ? v : null }))
                                     }}
                                     value={v.id}
                                     checked={voucherShop && voucherShop.id === v.id}
                                     disabled={price < +v.min}
-                                  /> */}
+                                  />
                                 </div>
                               </div>
                               {price < +v.min && (

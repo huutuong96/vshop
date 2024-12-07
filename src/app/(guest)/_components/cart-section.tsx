@@ -26,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import redis from '@/lib/redis';
 
 
 
@@ -148,9 +149,9 @@ export default function CartSection() {
       }
       const payload = await res.json();
       const ship_fees = payload as { shop_id: number, ship_fee: number }[];
-      const checkoutItems = a.map((c, index) => ({ ...c, ship_fee: ship_fees[index].ship_fee }))
+      const checkoutItems = a.map((c, index) => ({ ...c, ship_fee: ship_fees[index].ship_fee }));
 
-      dispatch(addCheckout({
+      let foo = {
         mainVouchers,
         checkoutItems,
         originPrice: totalPriceNonVouchers(),
@@ -159,29 +160,10 @@ export default function CartSection() {
         rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
         mainVoucherSelected
       }
-      ))
 
-      // let code = await signToken({
-      //   mainVouchers,
-      //   checkoutItems,
-      //   originPrice: totalPriceNonVouchers(),
-      //   totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
-      //   voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
-      //   rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
-      //   mainVoucherSelected
-      // });
-      fetch(`/api/auth/set-cookie`, {
-        method: "POST",
-        body: JSON.stringify({
-          mainVouchers,
-          checkoutItems,
-          originPrice: totalPriceNonVouchers(),
-          totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
-          voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
-          rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
-          mainVoucherSelected
-        })
-      });
+      dispatch(addCheckout(foo));
+      await redis.set(`checkout-${info.id}`, foo)
+
       router.push(`/test-checkout`);
     } catch (error) {
       setLoading(false);
