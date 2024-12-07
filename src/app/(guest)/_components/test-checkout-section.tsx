@@ -175,7 +175,7 @@ export default function TestCheckoutSection() {
       if (paymentSelected === 12) {
         window.location.href = payload.url;
       } else {
-        window.location.href = `http://localhost:3000/checkout/success?id=${payload.data}`;
+        window.location.href = `/test-checkout/success?id=${payload.data}`;
       }
 
     } catch (error) {

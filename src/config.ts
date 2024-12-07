@@ -8,7 +8,9 @@ const configSchema = z.object({
   NEXT_PUBLIC_API_ENDPOINT_GHN_PROVINCES: z.string(),
   NEXT_PUBLIC_API_ENDPOINT_GHN_DISTRICTS: z.string(),
   NEXT_PUBLIC_API_ENDPOINT_GHN_WARDS: z.string(),
-  NEXT_PUBLIC_GHN_API_TOKEN: z.string()
+  NEXT_PUBLIC_GHN_API_TOKEN: z.string(),
+  NEXT_PUBLIC_MODE: z.string(),
+
 })
 
 const configProject = configSchema.safeParse({
@@ -19,7 +21,8 @@ const configProject = configSchema.safeParse({
   NEXT_PUBLIC_API_ENDPOINT_GHN_PROVINCES: process.env.NEXT_PUBLIC_API_ENDPOINT_GHN_PROVINCES,
   NEXT_PUBLIC_API_ENDPOINT_GHN_DISTRICTS: process.env.NEXT_PUBLIC_API_ENDPOINT_GHN_DISTRICTS,
   NEXT_PUBLIC_API_ENDPOINT_GHN_WARDS: process.env.NEXT_PUBLIC_API_ENDPOINT_GHN_WARDS,
-  NEXT_PUBLIC_GHN_API_TOKEN: process.env.NEXT_PUBLIC_GHN_API_TOKEN
+  NEXT_PUBLIC_GHN_API_TOKEN: process.env.NEXT_PUBLIC_GHN_API_TOKEN,
+  NEXT_PUBLIC_MODE: process.env.NEXT_PUBLIC_MODE
 })
 if (!configProject.success) {
   console.error(configProject.error.issues)
