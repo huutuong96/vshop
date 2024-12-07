@@ -7,13 +7,15 @@ interface Profile {
   cart: {
     cartInfo: any[],
     selectedItems: any[],
-    mainVouchers: any[]
+    mainVouchers: any[],
+    mainVoucherSelected: any
   } | null,
   addresses: any[] | null
   checkoutState: string
   checkout: {
     checkoutItems: any[],
     mainVouchers: any[],
+    mainVoucherSelected: null
     originPrice: number
     totalShipFee: number,
     voucherPrice: number,
@@ -46,7 +48,8 @@ const profileSlice = createSlice({
       state.cart = {
         cartInfo: action.payload,
         selectedItems: [],
-        mainVouchers: []
+        mainVouchers: [],
+        mainVoucherSelected: null
       }
     },
     addVouchers: (state, action: PayloadAction<{ mainVouchers: any[], shopVouchers: any[] }>) => {
@@ -64,13 +67,19 @@ const profileSlice = createSlice({
     addAddresses: (state, action: PayloadAction<any[]>) => {
       state.addresses = action.payload;
     },
+    addMainVoucher: (state, action: PayloadAction<any>) => {
+      if (state.cart) {
+        state.cart.mainVoucherSelected = action.payload;
+      }
+    },
     addCheckout: (state, action: PayloadAction<{
       checkoutItems: any[],
       mainVouchers: any[],
       originPrice: number,
       totalShipFee: number,
       voucherPrice: number,
-      rankPrice: number
+      rankPrice: number,
+      mainVoucherSelected: any
       // shopVouchers: any[]
     }>) => {
       state.checkout = {
@@ -158,6 +167,7 @@ export const {
   addAccessToken,
   addInfo,
   addCart,
+  addMainVoucher,
   addAddresses,
   addVouchers,
   addCheckout,

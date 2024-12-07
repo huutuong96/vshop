@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAppInfoDispatch, useAppInfoSelector } from '@/redux/stores/profile.store';
 import { formattedPrice } from '@/lib/utils';
 import { Checkbox } from "@/components/ui/checkbox"
-import { addCheckout, addVouchers, changeCheckoutState, selectAllProducts } from '@/redux/slices/profile.slice';
+import { addCheckout, addMainVoucher, addVouchers, changeCheckoutState, selectAllProducts } from '@/redux/slices/profile.slice';
 import envConfig from '@/config';
 import LoadingScreen from '@/app/(guest)/_components/loading-screen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -54,7 +54,7 @@ export default function CartSection() {
   const cartItemCount = cart.reduce((acc: number, cur) => acc + cur.items.reduce((acc: number, cur: any) => acc + (+cur.quantity), 0), 0);
   const router = useRouter();
   const addresses = useAppInfoSelector(state => state.profile.addresses);
-  const [mainVoucherSelected, setMainVoucherSelected] = useState<any>(null);
+  const mainVoucherSelected = useAppInfoSelector(state => state.profile.cart?.mainVoucherSelected);
   const mainVouchers = useAppInfoSelector(state => state.profile.cart?.mainVouchers) as any[];
   const checkout = useAppInfoSelector(state => state.profile.checkout);
   const info = useAppInfoSelector(state => state.profile.info);
@@ -64,6 +64,7 @@ export default function CartSection() {
   useEffect(() => {
     const getData = async () => {
       try {
+        setLoading(true);
         const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/get/voucher`, {
           headers: {
             "Authorization": `Bearer ${clientAccessToken.value}`
@@ -79,6 +80,8 @@ export default function CartSection() {
 
       } catch (error) {
         toast({ title: 'Error', variant: 'destructive' })
+      } finally {
+        setLoading(false);
       }
     }
     getData()
@@ -153,19 +156,33 @@ export default function CartSection() {
         originPrice: totalPriceNonVouchers(),
         totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
         voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
-        rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value)
+        rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
+        mainVoucherSelected
       }
       ))
 
-      let code = await signToken({
-        mainVouchers,
-        checkoutItems,
-        originPrice: totalPriceNonVouchers(),
-        totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
-        voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
-        rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value)
+      // let code = await signToken({
+      //   mainVouchers,
+      //   checkoutItems,
+      //   originPrice: totalPriceNonVouchers(),
+      //   totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
+      //   voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
+      //   rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
+      //   mainVoucherSelected
+      // });
+      fetch(`/api/auth/set-cookie`, {
+        method: "POST",
+        body: JSON.stringify({
+          mainVouchers,
+          checkoutItems,
+          originPrice: totalPriceNonVouchers(),
+          totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
+          voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
+          rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
+          mainVoucherSelected
+        })
       });
-      router.push(`/test-checkout?code=${code}`);
+      router.push(`/test-checkout`);
     } catch (error) {
       setLoading(false);
     } finally {
@@ -239,16 +256,16 @@ export default function CartSection() {
         {
           cartItemCount ? (
             <section className="checkPrice w-full border sticky bottom-0 bg-white mt-4">
-              <div className='w-full h-[44px] py-3 flex justify-end border-dashed border-b-[1px]'>
-                <div className='w-[515px] h-5 flex justify-around mr-4'>
+              <div className='w-full p-5 flex justify-end border-dashed border-b-[1px]'>
+                <div className='w-[515px] h-5 flex justify-between'>
                   <div className='w-[300px] flex gap-4 text-[16px]'>
                     <TicketPercent strokeWidth={1.25} className='text-blue-700' />
                     <span>VNShop Voucher</span>
                   </div>
                   {/* <span className='text-blue-700'>Chọn thêm mã Voucher</span> */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-end gap-4">
                     {mainVoucherSelected && (
-                      <div className="flex items-center text-[12px] text-blue-500 mr-[15px] border border-blue-500 h-5 p-1">- {mainVoucherSelected.ratio}%</div>
+                      <div className="flex items-center text-[12px] text-blue-500 mr-[15px] border rounded-sm font-medium border-blue-500 h-5 p-1">- {mainVoucherSelected.ratio}%</div>
                     )}
                     <DropdownMenu modal={false} >
                       <DropdownMenuTrigger>
@@ -272,7 +289,7 @@ export default function CartSection() {
                                   <Checkbox
                                     onCheckedChange={(c) => {
                                       let checked = c as boolean;
-                                      setMainVoucherSelected(checked ? v : null);
+                                      dispatch(addMainVoucher((checked ? v : null)));
                                     }}
                                     checked={mainVoucherSelected && mainVoucherSelected.id === v.id}
                                     value={v.id}

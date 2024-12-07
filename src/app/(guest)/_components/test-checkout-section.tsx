@@ -89,26 +89,25 @@ export default function TestCheckoutSection() {
   const checkout = useAppInfoSelector(state => state.profile.checkout);
   const addresses = useAppInfoSelector(state => state.profile.addresses);
   const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false);
-  const searchParams = useSearchParams();
-  const code = searchParams.get('code');
   const dispatch = useAppInfoDispatch();
   const [payments, setPayments] = useState<any[]>([]);
   const [paymentSelected, setPaymentSelected] = useState(11);
   const profile = useAppInfoSelector(state => state.profile.info);
 
+  console.log(checkout);
+
   useEffect(() => {
     const getData = async () => {
       try {
-        if (!code) throw 'Error';
-        const decode = await verifyToken(code);
-        if (!decode) throw 'Error 1';
-        const payload = decode as {
+
+        const payload = {} as {
           checkoutItems: any[];
           mainVouchers: any[];
           originPrice: number;
           totalShipFee: number;
           voucherPrice: number;
           rankPrice: number;
+          mainVoucherSelected: any
         }
         dispatch(addCheckout(payload))
       } catch (error) {
@@ -116,7 +115,8 @@ export default function TestCheckoutSection() {
       }
     }
     if (!checkout) {
-      getData();
+      console.log('vo');
+      // getData();
     }
   }, []);
 

@@ -20,6 +20,8 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
   let voucherShop = s.voucherSelected;
   let promotionPrice = voucherShop ? ((+voucherShop.ratio * price) / 100 > +voucherShop.max ? +voucherShop.max : (+voucherShop.ratio * price) / 100) : 0
 
+  console.log({ s });
+
   return (
     <div key={s.id} className="w-full mt-3 rounded-sm bg-white border">
       <div className="w-full pt-6 px-[30px] flex items-center">

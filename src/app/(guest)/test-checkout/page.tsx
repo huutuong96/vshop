@@ -29,18 +29,18 @@ export const metadata: Metadata = {
 const CheckoutPage = async ({ searchParams }: { searchParams: { code?: string } }) => {
   // const cookieStore = cookies();
   // const stateCheckout = cookieStore.get('stateCheckout')?.value;
-  const { code } = searchParams;
+  // const { code } = searchParams;
 
-  if (!code) {
-    notFound(); // Gọi notFound() nếu không có code
-  }
+  // if (!code) {
+  //   notFound(); // Gọi notFound() nếu không có code
+  // }
 
   try {
-    const decode = await verifyToken(code);
+    // const decode = await verifyToken(code);
 
-    if (!decode) {
-      notFound(); // Gọi notFound() nếu token không hợp lệ
-    }
+    // if (!decode) {
+    //   notFound(); // Gọi notFound() nếu token không hợp lệ
+    // }
 
 
     return (
