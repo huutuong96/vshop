@@ -146,8 +146,8 @@ export default function LoginForm() {
         throw res.error;
       }
     } catch (error) {
-      console.log(error);
-      // setErrorMessage(error as string);
+      // console.log('check: ', error);
+      setErrorMessage(error as string);
       // console.log({ error });
       setLoading(false);
     } finally {
