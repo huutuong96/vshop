@@ -10,7 +10,7 @@ export default function GeustAuthLayout({ children }: { children: React.ReactNod
     <div className="w-content">
       <div className="flex bg-white rounded">
         {/* Left side - Introduction */}
-        {['verify', 'verify_email'].every(p => !pathname.endsWith(p)) && (
+        {['verify', 'verify_email', 'verify_google'].every(p => !pathname.endsWith(p)) && (
           <div className="abx w-1/2 p-12 flex flex-col justify-center items-center">
             <h1 className="text-3xl font-bold text-blue-600 mb-4">Bán hàng chuyên nghiệp</h1>
             <p className="text-gray-600 mb-8 text-center max-w-md">

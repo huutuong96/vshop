@@ -199,15 +199,15 @@ export default function LoginForm() {
           </div>
           <div className="mt-6">
             <div className="flex flex-col gap-2">
-              <Button type='button' variant="outline">
-                <a href='https://vnshop.top/auth/google' className='flex items-center'>
-                  <RiGoogleFill
-                    className="me-3 text-[#DB4437] dark:text-white/60"
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  Đăng nhập với tài khoản Google
-                </a>
+              <Button type='button' onClick={() => {
+                window.location.href = 'https://vnshop.top/auth/google'
+              }} variant="outline">
+                <RiGoogleFill
+                  className="me-3 text-[#DB4437] dark:text-white/60"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Đăng nhập với tài khoản Google
               </Button>
               {/* <Button type='button' onClick={handleLoginWithGoogle} variant="outline">
                 <RiGoogleFill

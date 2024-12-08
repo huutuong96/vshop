@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { formattedPrice } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 export default function CartShopSection({ shop, checked, index }: { shop: any, checked: boolean, index: number }) {
@@ -71,42 +72,49 @@ export default function CartShopSection({ shop, checked, index }: { shop: any, c
                 <DropdownMenuTrigger>
                   <div className="text-sm text-blue-600">{voucherShop ? "Chọn Voucher khác" : "Chọn Voucher"}</div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[544px] absolute top-0 z-10 right-0 h-[716px] px-6 py-4 overflow-y-auto">
-                  <DropdownMenuLabel className="font-medium">{shop.shop_name} Vouchers</DropdownMenuLabel>
-                  <div className="w-full mt-4 flex flex-col gap-4">
-                    {shop?.vouchers && shop.vouchers.map((v: any) => (
-                      <div key={v.id} className="w-full">
-                        <div className="w-full h-[100px] flex border rounded-sm">
-                          <div className="size-[100px] border-r flex items-center justify-center">
-                            <img src="" className="size-14 rounded-full border" alt="" />
-                          </div>
-                          <div className="w-[calc(100%-142px)] border-r text-sm pl-3 flex flex-col items-start justify-center">
-                            <div>Giảm {v.ratio}% ( tối đa {formattedPrice(+v.max)})</div>
-                            <div>Đơn tối thiểu {formattedPrice(+v.min)}</div>
-                            {/* <div className="text-[12px] text-gray-400">HSD: 18.12.2024</div> */}
-                          </div>
-                          <div className="w-[42px] h-full p-3 flex items-center justify-center">
-                            <Checkbox
-                              onCheckedChange={(c) => {
-                                let checked = c as boolean;
-                                dispatch(selectShopVoucher({ index, voucher: c ? v : null }))
+                <DropdownMenuContent align="end" className="w-[544px] p-0 ">
+                  <DropdownMenuLabel className="font-medium text-2xl border-b">
+                    <div className="p-4">
+                      {shop.shop_name} Vouchers
+                    </div>
+                  </DropdownMenuLabel>
+                  <div className="w-full mt-4 flex flex-col gap-4 py-2 mb-4 px-5 overflow-y-auto">
+                    <ScrollArea className='h-[300px] w-full '>
+                      {shop?.vouchers && shop.vouchers.map((v: any) => (
+                        <div key={v.id} className="w-full">
+                          <div className="w-full h-[100px] flex border rounded-sm">
+                            <div className="size-[100px] border-r flex items-center justify-center">
+                              <img src="" className="size-14 rounded-full border" alt="" />
+                            </div>
+                            <div className="w-[calc(100%-142px)] border-r text-sm pl-3 flex flex-col items-start justify-center">
+                              <div>Giảm {v.ratio}% ( tối đa {formattedPrice(+v.max)})</div>
+                              <div>Đơn tối thiểu {formattedPrice(+v.min)}</div>
+                              {/* <div className="text-[12px] text-gray-400">HSD: 18.12.2024</div> */}
+                            </div>
+                            <div className="w-[42px] h-full p-3 flex items-center justify-center">
+                              <Checkbox
+                                onCheckedChange={(c) => {
+                                  let checked = c as boolean;
+                                  dispatch(selectShopVoucher({ index, voucher: c ? v : null }))
 
-                              }}
-                              value={v.id}
-                              checked={voucherShop && voucherShop.id === v.id}
-                              disabled={price < +v.min}
-                            />
+                                }}
+                                value={v.id}
+                                checked={voucherShop && voucherShop.id === v.id}
+                                disabled={price < +v.min}
+                              />
+                            </div>
                           </div>
+                          {price < +v.min && (
+                            <div className="w-full h-[38px] px-[10px] bg-[#fff8e4] flex items-center gap-1">
+                              <CircleAlert size={16} color="#f9470b" strokeWidth={1.25} />
+                              <span className="text-sm text-[#ee4d2d]">Sản phẩm đã chọn không đáp ứng điều kiện áp dụng của Voucher</span>
+                            </div>
+                          )}
+
                         </div>
-                        {price < +v.min && (
-                          <div className="w-full h-[38px] px-[10px] bg-[#fff8e4] flex items-center gap-1">
-                            <CircleAlert size={16} color="#f9470b" strokeWidth={1.25} />
-                            <span className="text-sm text-[#ee4d2d]">Sản phẩm đã chọn không đáp ứng điều kiện áp dụng của Voucher</span>
-                          </div>
-                        )}
+                      ))}
+                    </ScrollArea>
 
-                      </div>
-                    ))}
 
                   </div>
 

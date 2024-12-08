@@ -47,7 +47,7 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
               {s.items.map((i: any) => (
                 <div key={i.id} className="flex items-center mx-[30px] mt-3">
                   <div className="flex items-center justify-start overflow-hidden flex-[4]">
-                    <img src={i.product_image ? i.product_image : i.variant_image} className="size-10 object-cover" />
+                    <img src={i.product_image ? i.product_image : i.variant_image} className="size-16 object-cover border rounded-sm" />
                     <span className="flex flex-col justify-center mx-[15px] overflow-hidden text-sm">{i.product_name}</span>
                   </div>
                   <div className="flex-[2] text-sm flex justify-start text-[#929292]">
@@ -133,7 +133,7 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
                         <div className="bg-white flex items-center border rounded-sm box-border h-10">
                           <input
                             type="text"
-                            className="h-full py-1 px-3 w-full border-0 text-black flex-1 text-sm outline-none"
+                            className="h-full py-1 px-3 w-full rounded-sm border-0 text-black flex-1 text-sm outline-none"
                             placeholder="Lưu ý cho người bán"
                           />
                         </div>
@@ -150,7 +150,7 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
                       Đảm bảo nhận hàng từ 13 Tháng 11 - 14 Tháng 11
                     </div>
                     <div className="col-start-3 row-end-2 row-start-1"></div>
-                    <div className="col-start-4 row-end-2 row-start-1 text-right text-sm font-medium">{formattedPrice(s.ship_fee)}</div>
+                    <div className="col-start-4 row-end-2 row-start-1 text-right text-black font-medium">{formattedPrice(s.ship_fee)}</div>
                   </div>
                 </div>
               </div>

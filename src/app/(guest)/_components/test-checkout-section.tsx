@@ -209,7 +209,7 @@ export default function TestCheckoutSection() {
                   <div className="w-full mt-4 flex flex-col gap-4">
                     {mainVouchers?.map(v => (
                       <div key={v.id} className="w-full">
-                        <div className="w-full h-[100px] flex border">
+                        <div className="w-full h-[100px] flex border rounded-sm">
                           <div className="size-[100px] border-r flex items-center justify-center">
                             <img src="" className="size-14 rounded-full border" alt="" />
                           </div>

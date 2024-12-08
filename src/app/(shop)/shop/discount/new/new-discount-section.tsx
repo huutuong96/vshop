@@ -232,7 +232,7 @@ export default function NewDiscountSection() {
                       <ClipboardList size={16} strokeWidth={1.25} />
                     </div>
                   </SelectItem>
-                  <SelectItem value="2">
+                  <SelectItem value="2" disabled>
                     <div className="flex gap-2 items-center">Giảm giá vận chuyển
                       <Truck size={16} strokeWidth={1.25} /></div>
                   </SelectItem>

@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import redis from '@/lib/redis';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 
 
@@ -248,44 +249,51 @@ export default function CartSection() {
                     {mainVoucherSelected && (
                       <div className="flex items-center text-[12px] text-blue-500 mr-[15px] border rounded-sm font-medium border-blue-500 h-5 p-1">- {mainVoucherSelected.ratio}%</div>
                     )}
-                    <DropdownMenu modal={false} >
+                    <DropdownMenu >
                       <DropdownMenuTrigger>
                         <div className="text-sm text-blue-600">{mainVoucherSelected ? 'Chọn Voucher khác' : 'Chọn Voucher'}</div>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[544px] absolute top-0 z-10 right-0 h-[716px] px-6 py-4 overflow-y-auto">
-                        <DropdownMenuLabel className="font-medium">Chọn Vouchers</DropdownMenuLabel>
-                        <div className="w-full mt-4 flex flex-col gap-4">
-                          {mainVouchers.map(v => (
-                            <div key={v.id} className="w-full">
-                              <div className="w-full h-[100px] flex border">
-                                <div className="size-[100px] border-r flex items-center justify-center">
-                                  <img src="" className="size-14 rounded-full border" alt="" />
+                      <DropdownMenuContent side='top' align="end" className="w-[544px]  p-0 ">
+                        <DropdownMenuLabel className="font-medium text-2xl border-b">
+                          <div className="p-4">
+                            Chọn Vouchers
+                          </div>
+                        </DropdownMenuLabel>
+                        <div className="w-full mt-4 flex flex-col gap-4 py-2 mb-4 px-5 overflow-y-auto">
+                          <ScrollArea className='h-[400px] w-full '>
+                            {mainVouchers.map(v => (
+                              <div key={v.id} className="w-full">
+                                <div className="w-full h-[100px] flex border rounded-sm">
+                                  <div className="size-[100px] border-r flex items-center justify-center">
+                                    <img src="" className="size-14 rounded-full border" alt="" />
+                                  </div>
+                                  <div className="w-[calc(100%-142px)] border-r text-sm pl-3 flex flex-col items-start justify-center">
+                                    <div>Giảm {v.ratio}% ( tối đa {formattedPrice(+v.max)})</div>
+                                    <div>Đơn tối thiểu {formattedPrice(+v.min)}</div>
+                                    {/* <div className="text-[12px] text-gray-400">HSD: 18.12.2024</div> */}
+                                  </div>
+                                  <div className="w-[42px] h-full p-3 flex items-center justify-center">
+                                    <Checkbox
+                                      onCheckedChange={(c) => {
+                                        let checked = c as boolean;
+                                        dispatch(addMainVoucher((checked ? v : null)));
+                                      }}
+                                      checked={mainVoucherSelected && mainVoucherSelected.id === v.id}
+                                      value={v.id}
+                                      disabled={totalPriceNonVouchers() < +v.min}
+                                    />
+                                  </div>
                                 </div>
-                                <div className="w-[calc(100%-142px)] border-r text-sm pl-3 flex flex-col items-start justify-center">
-                                  <div>Giảm {v.ratio}% ( tối đa {formattedPrice(+v.max)})</div>
-                                  <div>Đơn tối thiểu {formattedPrice(+v.min)}</div>
-                                  {/* <div className="text-[12px] text-gray-400">HSD: 18.12.2024</div> */}
-                                </div>
-                                <div className="w-[42px] h-full p-3 flex items-center justify-center">
-                                  <Checkbox
-                                    onCheckedChange={(c) => {
-                                      let checked = c as boolean;
-                                      dispatch(addMainVoucher((checked ? v : null)));
-                                    }}
-                                    checked={mainVoucherSelected && mainVoucherSelected.id === v.id}
-                                    value={v.id}
-                                    disabled={totalPriceNonVouchers() < +v.min}
-                                  />
-                                </div>
+                                {totalPriceNonVouchers() < +v.min && (
+                                  <div className="w-full h-[38px] px-[10px] bg-[#fff8e4] flex items-center gap-1">
+                                    <CircleAlert size={16} color="#f9470b" strokeWidth={1.25} />
+                                    <span className="text-sm text-[#ee4d2d]">Sản phẩm đã chọn không đáp ứng điều kiện áp dụng của Voucher</span>
+                                  </div>
+                                )}
                               </div>
-                              {totalPriceNonVouchers() < +v.min && (
-                                <div className="w-full h-[38px] px-[10px] bg-[#fff8e4] flex items-center gap-1">
-                                  <CircleAlert size={16} color="#f9470b" strokeWidth={1.25} />
-                                  <span className="text-sm text-[#ee4d2d]">Sản phẩm đã chọn không đáp ứng điều kiện áp dụng của Voucher</span>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                            ))}
+
+                          </ScrollArea>
 
                         </div>
 
