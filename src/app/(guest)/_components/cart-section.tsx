@@ -115,81 +115,81 @@ export default function CartSection() {
     [cart, selectedItems]);
 
 
-  // const handleCheckout = async () => {
-  //   if (!selectedItems.length) {
-  //     toast({ title: "Vui lòng chọn sản phẩm", variant: 'destructive' });
-  //     return
-  //   }
-  //   let a: any[] = [];
-  //   cart.forEach((s) => {
-  //     let items: any[] = [];
-  //     s.items.forEach((i: any) => {
-  //       if ((selectedItems).includes(i.id)) {
-  //         items.push(i);
-  //       }
-  //     });
-  //     if (items.length) {
-  //       a.push({ ...s, items });
-  //     }
-  //   });
-  //   const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id) }));
-  //   try {
-  //     setLoading(true)
-  //     const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Authorization": `Bearer ${clientAccessToken.value}`,
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: JSON.stringify(body),
-  //     });
-  //     if (!res.ok) {
-  //       throw 'Error';
-  //     }
-  //     const payload = await res.json();
-  //     const ship_fees = payload as { shop_id: number, ship_fee: number }[];
-  //     const checkoutItems = a.map((c, index) => ({ ...c, ship_fee: ship_fees[index].ship_fee }));
-
-  //     let foo = {
-  //       mainVouchers,
-  //       checkoutItems,
-  //       originPrice: totalPriceNonVouchers(),
-  //       totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
-  //       voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
-  //       rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
-  //       mainVoucherSelected
-  //     }
-
-  //     dispatch(addCheckout(foo));
-  //     await redis.set(`checkout-${info.id}`, foo)
-
-  //     router.push(`/test-checkout`);
-  //   } catch (error) {
-  //     setLoading(false);
-  //   } finally {
-  //   }
-
-  // }
-
-
   const handleCheckout = async () => {
     if (!selectedItems.length) {
       toast({ title: "Vui lòng chọn sản phẩm", variant: 'destructive' });
       return
     }
-    let stateEncode = encodeData(selectedItems);
-    const res = await fetch(`/api/auth/set-cookie`, {
-      method: "POST",
-      body: JSON.stringify({ stateCheckout: stateEncode })
+    let a: any[] = [];
+    cart.forEach((s) => {
+      let items: any[] = [];
+      s.items.forEach((i: any) => {
+        if ((selectedItems).includes(i.id)) {
+          items.push(i);
+        }
+      });
+      if (items.length) {
+        a.push({ ...s, items });
+      }
     });
-    const payload = await res.json();
-    if (!res.ok) {
-      console.log(payload);
+    const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id) }));
+    try {
+      setLoading(true)
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${clientAccessToken.value}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        throw 'Error';
+      }
+      const payload = await res.json();
+      const ship_fees = payload as { shop_id: number, ship_fee: number }[];
+      const checkoutItems = a.map((c, index) => ({ ...c, ship_fee: ship_fees[index].ship_fee }));
+
+      let foo = {
+        mainVouchers,
+        checkoutItems,
+        originPrice: totalPriceNonVouchers(),
+        totalShipFee: ship_fees.reduce((acc, cur) => acc + cur.ship_fee, 0),
+        voucherPrice: totalPriceNonVouchers() - totalPriceSeltected + priceWithMainVoucher,
+        rankPrice: (totalPriceNonVouchers() * info.rank.value) >= info.rank.limitValue ? info.rank.limitValue : (totalPriceNonVouchers() * info.rank.value),
+        mainVoucherSelected
+      }
+
+      dispatch(addCheckout(foo));
+      await redis.set(`checkout-${info.id}`, foo)
+
+      router.push(`/test-checkout`);
+    } catch (error) {
+      setLoading(false);
+    } finally {
     }
-    dispatch(changeCheckoutState(stateEncode));
-    setLoading(true)
-    window.location.href = `/checkout`;
+
   }
+
+
+  // const handleCheckout = async () => {
+  //   if (!selectedItems.length) {
+  //     toast({ title: "Vui lòng chọn sản phẩm", variant: 'destructive' });
+  //     return
+  //   }
+  //   let stateEncode = encodeData(selectedItems);
+  //   const res = await fetch(`/api/auth/set-cookie`, {
+  //     method: "POST",
+  //     body: JSON.stringify({ stateCheckout: stateEncode })
+  //   });
+  //   const payload = await res.json();
+  //   if (!res.ok) {
+  //     console.log(payload);
+  //   }
+  //   dispatch(changeCheckoutState(stateEncode));
+  //   setLoading(true)
+  //   window.location.href = `/checkout`;
+  // }
 
 
 
