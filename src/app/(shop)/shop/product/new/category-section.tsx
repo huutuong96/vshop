@@ -14,6 +14,7 @@ import { Asterisk, Check, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
+
 const abx = (category: any, categories: any[]): any => {
   let parent_id = category.parent_id;
   let categoriesParent = categories.filter(c => c.parent_id === parent_id);
@@ -43,6 +44,8 @@ export default function CategorySection({ productFormHandle, setShowMore, setLoa
   const [categoriesSlected, setCategoriesSlected] = useState<any[]>([]);
   const [categoriesSlectedCopy, setCategoriesSlectedCopy] = useState<any[]>([]);
   const [isValid, setIsValid] = useState<boolean>(false);
+
+  console.log({ showCategories });
 
 
   useEffect(() => {
@@ -146,10 +149,10 @@ export default function CategorySection({ productFormHandle, setShowMore, setLoa
                 <input type="text" placeholder="Tìm kiếm" className="outline-none rounded-xl border text-[12px] h-full px-3 w-[400px]" />
               </div>
               <ScrollArea className=" w-full rounded-md border pb-2">
-                <div className="flex overflow-x-auto">
+                <div className="flex ">
                   {showCategories.length > 0 && showCategories.map((s, index) => (
-                    <div key={index} className="w-[240.5px] border-r h-[300px]">
-                      <ul className="w-full">
+                    <ScrollArea key={index} className="w-[240.5px] h-[300px] border-r">
+                      <ul className="w-full pr-4">
                         {s.categories.map((c, subIndex) => {
                           let isHasChildren = categories.some((pc) => pc.parent_id === c.id);
                           let checked = categoriesSlected.some(pc => pc.id === c.id);
@@ -174,7 +177,7 @@ export default function CategorySection({ productFormHandle, setShowMore, setLoa
                           )
                         })}
                       </ul>
-                    </div>
+                    </ScrollArea>
                   ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
