@@ -17,6 +17,9 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import CryptoJS from "crypto-js";
+import envConfig from "@/config";
+import { useAppInfoSelector } from "@/redux/stores/profile.store";
+import { clientAccessToken } from "@/lib/http";
 
 const discountFormSchema = z.object({
   title: z.string().min(6, {
@@ -30,13 +33,13 @@ const discountFormSchema = z.object({
   }),
   type: z.string().min(1),
   method: z.string().min(1),
-  percent: z.number().nullable().refine((val) => val === null || (val >= 0 && val <= 99), {
+  ratio: z.number().nullable().refine((val) => val === null || (val >= 0 && val <= 99), {
     message: "Giá trị không hợp lệ",
   }),
   price: z.number().nullable(),
   quantity: z.number().min(1),
   min: z.number(),
-  max: z.number().nullable(),
+  limitValue: z.number().nullable(),
   start: z.string(),
   end: z.string()
 }).superRefine((data, ctx) => {
@@ -49,16 +52,16 @@ const discountFormSchema = z.object({
         code: z.ZodIssueCode.custom,
       });
     }
-    if (data.percent !== null) {
+    if (data.ratio !== null) {
       ctx.addIssue({
-        path: ['percent'],
+        path: ['ratio'],
         message: 'Không được nhập phần trăm khi giảm giá theo tiền.',
         code: z.ZodIssueCode.custom,
       });
     }
-    if (data.max !== null) {
+    if (data.limitValue !== null) {
       ctx.addIssue({
-        path: ['max'],
+        path: ['limitValue'],
         message: 'Không được nhập giá trị tối đa khi giảm giá theo tiền.',
         code: z.ZodIssueCode.custom,
       });
@@ -74,16 +77,16 @@ const discountFormSchema = z.object({
         code: z.ZodIssueCode.custom,
       });
     }
-    if (data.percent === null) {
+    if (data.ratio === null) {
       ctx.addIssue({
-        path: ['percent'],
+        path: ['ratio'],
         message: 'Phần trăm giảm giá là bắt buộc.',
         code: z.ZodIssueCode.custom,
       });
     }
-    if (data.max === null) {
+    if (data.limitValue === null) {
       ctx.addIssue({
-        path: ['max'],
+        path: ['limitValue'],
         message: 'Giá trị tối đa giảm giá là bắt buộc.',
         code: z.ZodIssueCode.custom,
       });
@@ -139,12 +142,14 @@ export default function NewDiscountSection() {
       min: 32423423,
       quantity: 12,
       title: 'dfasfdsafsda',
-      max: null,
-      percent: null,
+      limitValue: null,
+      ratio: null,
       price: null
     },
     mode: 'all'
   });
+  const profile = useAppInfoSelector(state => state.profile.info);
+
 
   const typeWatched = useWatch({
     control,
@@ -158,11 +163,22 @@ export default function NewDiscountSection() {
   });
   const percentWatched = useWatch({
     control,
-    name: 'percent',
+    name: 'ratio',
   });
 
-  const onSubmit = (data: DiscountFormData) => {
-    console.log(data);
+  const onSubmit = async (data: DiscountFormData) => {
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/voucher/${profile.shop_id}`, {
+        headers: {
+          'Authorization': `Bearer ${clientAccessToken.value}`,
+          "Content-Type": 'Application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+    } catch (error) {
+
+    }
   }
 
   const handleRandomCode = () => {
@@ -249,9 +265,9 @@ export default function NewDiscountSection() {
               value={methodWatched}
               onValueChange={(v) => {
                 if (v === '1') {
-                  setValue('percent', null);
-                  setValue('max', null);
-                  clearErrors(['percent', 'max']);
+                  setValue('ratio', null);
+                  setValue('limitValue', null);
+                  clearErrors(['ratio', 'limitValue']);
                 } else {
                   setValue('price', null)
                   clearErrors(['price']);
@@ -292,7 +308,7 @@ export default function NewDiscountSection() {
               <div className="space-y-2">
                 <div className="relative">
                   <Input
-                    {...register('percent', {
+                    {...register('ratio', {
                       valueAsNumber: true,
                     })}
                     className="peer pe-9" />
@@ -301,7 +317,7 @@ export default function NewDiscountSection() {
                     <span className="text-sm">%</span>
                   </div>
                 </div>
-                {errors?.percent?.message && <div className="text-sm text-red-500">{errors.percent.message}</div>}
+                {errors?.ratio?.message && <div className="text-sm text-red-500">{errors.ratio.message}</div>}
               </div>
             )}
 
@@ -344,7 +360,7 @@ export default function NewDiscountSection() {
               </div>
               <div className="space-y-2">
                 <div className="relative">
-                  <Input {...register('max', { valueAsNumber: true })} className="peer pe-9" />
+                  <Input {...register('limitValue', { valueAsNumber: true })} className="peer pe-9" />
                   <div className="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground/80 peer-disabled:opacity-50">
                     <span className="text-sm">VNĐ</span>
                   </div>

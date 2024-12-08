@@ -253,7 +253,7 @@ export default function CartSection() {
                       <DropdownMenuTrigger>
                         <div className="text-sm text-blue-600">{mainVoucherSelected ? 'Chọn Voucher khác' : 'Chọn Voucher'}</div>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent side='top' align="end" className="w-[544px]  p-0 ">
+                      <DropdownMenuContent side='top' align="end" className="w-[544px] p-0 ">
                         <DropdownMenuLabel className="font-medium text-2xl border-b">
                           <div className="p-4">
                             Chọn Vouchers
