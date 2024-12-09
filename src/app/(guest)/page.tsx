@@ -3,6 +3,7 @@ import BannerHomeGuest from "./_components/banner";
 import CategoriesGuest from "./_components/categories";
 import Categories2 from "@/app/(guest)/_components/categories2";
 import HangXinSection from "@/app/(guest)/_components/hang-xin-section";
+import GoiYSanPhamSection from "./_components/product_release";
 import envConfig from "@/config";
 import Link from "next/link";
 
@@ -48,6 +49,7 @@ export default async function HomePage() {
           </div>
         </div>
         <div className="w-content mt-5">
+          <GoiYSanPhamSection />
           <HangXinSection />
           <Categories2 />
           <GoiYSection />
