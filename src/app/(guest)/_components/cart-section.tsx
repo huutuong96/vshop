@@ -194,6 +194,9 @@ export default function CartSection() {
 
 
 
+
+
+
   return (
     <div className='w-full'>
       <>
@@ -260,9 +263,9 @@ export default function CartSection() {
                           </div>
                         </DropdownMenuLabel>
                         <div className="w-full mt-4 flex flex-col gap-4 py-2 mb-4 px-5 overflow-y-auto">
-                          <ScrollArea className='h-[400px] w-full '>
+                          <ScrollArea className='h-[300px] w-full '>
                             {mainVouchers.map(v => (
-                              <div key={v.id} className="w-full">
+                              <div key={v.id} className="w-full mb-4">
                                 <div className="w-full h-[100px] flex border rounded-sm">
                                   <div className="size-[100px] border-r flex items-center justify-center">
                                     <img src="" className="size-14 rounded-full border" alt="" />
@@ -292,6 +295,7 @@ export default function CartSection() {
                                 )}
                               </div>
                             ))}
+
 
                           </ScrollArea>
 

@@ -182,15 +182,15 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
             <span className="text-sm">0</span>
           ) : loading ? (
             <>
-              <span className='px-1 border w-[30px] text-center text-gray-300'>-</span>
+              <span className='px-1 border rounded-tl-sm rounded-bl-sm w-[30px] text-center text-gray-300'>-</span>
               <span className='text-sm text-gray-300 border-b border-t w-[40px] h-[25.6px] flex items-center justify-center'>{tempQuantity}</span>
-              <span className='px-1 border w-[30px] text-gray-300 text-center'>+</span>
+              <span className='px-1 border w-[30px] rounded-tr-sm rounded-br-sm text-gray-300 text-center'>+</span>
             </>
           ) : (
             <>
               <span
                 onClick={() => handleChangeQty("decrement")}
-                className='px-1 border w-[30px] text-center cursor-pointer'
+                className='px-1 border rounded-tl-sm rounded-bl-sm w-[30px] text-center cursor-pointer'
               >
                 -
               </span>
@@ -203,7 +203,7 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
                 onChange={handleInputChange}
               // defaultValue={item.quantity}
               />
-              <span onClick={() => handleChangeQty("increment")} className='px-1 border w-[30px] text-center cursor-pointer'>+</span>
+              <span onClick={() => handleChangeQty("increment")} className='px-1 border rounded-tr-sm rounded-br-sm w-[30px] text-center cursor-pointer'>+</span>
             </>
           )}
           {/* <button disabled={loading || tempQuantity <= 1} onClick={() => handleChangeQty("decrement")}>

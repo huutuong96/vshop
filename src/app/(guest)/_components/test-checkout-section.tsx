@@ -183,6 +183,11 @@ export default function TestCheckoutSection() {
     }
   }
 
+  // useEffect(() => {
+  //   const carts = checkout?.checkoutItems.reduce((acc: any, s: any) => [...acc, ...s.items.map((i: any) => i.id)], []).map( => ({ shop_id: s.id, items: s.items.map((i: any) => i.id), address_id: +valueAdressSelected }));
+  //   console.log(carts);
+  // }, [])
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-full">

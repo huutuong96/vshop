@@ -28,6 +28,7 @@ export default function TestAddressSection() {
     }
   });
   const [open, setOpen] = useState<boolean>(false);
+  let checkoutItems = useAppInfoSelector(state => state.profile.checkout?.checkoutItems);
 
   const handleOpen = (o: boolean) => {
     setOpen(o);
@@ -72,6 +73,7 @@ export default function TestAddressSection() {
                   className="w-full"
                   value={addressIdSelected.toString()}
                   onValueChange={(v) => {
+                    console.log(checkoutItems);
                     setAddressIdSelected(+v)
                   }}
                 >

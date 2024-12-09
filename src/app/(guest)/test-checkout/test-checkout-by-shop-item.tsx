@@ -96,7 +96,7 @@ function TestCheckoutByShopItem({ s, index }: { s: any, index: number }) {
                                   <Checkbox
                                     onCheckedChange={(c) => {
                                       let checked = c as boolean;
-                                      dispatch(addShopVoucherCheckout({ index, value: c ? v : null }))
+                                      dispatch(addShopVoucherCheckout({ index, value: c ? v : null }));
                                     }}
                                     value={v.id}
                                     checked={voucherShop && voucherShop.id === v.id}

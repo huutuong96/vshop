@@ -109,6 +109,8 @@ export default function GuestHeader() {
               <Link href={'/shop'} target='_blank' rel="noopener noreferrer">Kênh người bán</Link>
               <span>Chăm sóc khách hàng</span>
               <span>Nhà cung cấp</span>
+              {/* <Link href={'/about'}>About</Link> */}
+
             </div>
             <div className="mid-nav w-full h-[70px] flex items-center ">
               <div className="logo w-40 h-[48px]">
