@@ -45,6 +45,10 @@ const Page: React.FC = () => {
 
   return (
     <>
+    <div className='w-full text-xl text-black font-semibold mb-4'>
+      Danh sách voucher
+    </div>
+      <div className='bg-white border rounded-sm p-2'>
       <Table>
         <TableHeader>
           <TableRow>
@@ -75,6 +79,7 @@ const Page: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+      </div>
     </>
   );
 };

@@ -4,30 +4,30 @@ import { InfoIcon } from 'lucide-react';
 import envConfig from '@/config';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
-
+type DashboardData = {
+  total_order: number;
+  total_product: number;
+  total_revenue: string;
+  total_follow: number;
+  total_view: number;
+  total_rating: number;
+  orders_wait_confirm: number;
+  orders_confirmed: number;
+  orders_prepare: number;
+  orders_packed: number;
+  orders_handed_over: number;
+  orders_shipping: number;
+  orders_delivery_failed: number;
+  orders_delivered: number;
+  orders_complete: number;
+  orders_refund: number;
+  orders_canceled: number;
+};
 const Page: React.FC = () => {
-  type DashboardData = {
-    total_order: number;
-    total_product: number;
-    total_revenue: string;
-    total_follow: number;
-    total_view: number;
-    total_rating: number;
-    orders_wait_confirm: number;
-    orders_confirmed: number;
-    orders_prepare: number;
-    orders_packed: number;
-    orders_handed_over: number;
-    orders_shipping: number;
-    orders_delivery_failed: number;
-    orders_delivered: number;
-    orders_complete: number;
-    orders_refund: number;
-    orders_canceled: number;
-  };
+  
 
   const info = useAppInfoSelector((state) => state.profile.info);
-  const [statisData, setDataDashboard] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
   const [todoItems, setTodoItems] = useState([
     { title: 'Chờ Xác Nhận', count: 0 },
     { title: 'Chờ Lấy Hàng', count: 0 },
@@ -62,25 +62,25 @@ const Page: React.FC = () => {
         console.log(payload.data);
         
         if (payload.status) {
-          const statisData = payload.data || [];
-          setDataDashboard(statisData);
+          const data = payload.data || [];
+          setData(data);
           
           setTodoItems([
-            { title: 'Chờ Xác Nhận', count: statisData.orders_wait_confirm },
-            { title: 'Chờ Lấy Hàng', count: statisData.orders_prepare },
-            { title: 'Đã Xử Lý', count: statisData.orders_complete },
-            { title: 'Đơn Hủy', count: statisData.orders_canceled },
-            { title: 'Trả Hàng / Hoàn Tiền Chờ Xử Lý', count: statisData.orders_refund },
+            { title: 'Chờ Xác Nhận', count: data.orders_wait_confirm },
+            { title: 'Chờ Lấy Hàng', count: data.orders_prepare },
+            { title: 'Đã Xử Lý', count: data.orders_complete },
+            { title: 'Đơn Hủy', count: data.orders_canceled },
+            { title: 'Trả Hàng / Hoàn Tiền Chờ Xử Lý', count: data.orders_refund },
             { title: 'Sản Phẩm Bị Tạm Khóa', count: 1 },
             { title: 'Sản Phẩm Hết Hàng', count: 0 },
             { title: 'Chương Trình Khuyến Mãi Chờ Xử Lý', count: 0 },
           ]);
 
           setAnalyticItems([
-            { title: 'Doanh số', value: statisData.total_revenue, info: 'Vs hôm qua 0,00% --' },
-            { title: 'Lượt truy cập', value: `${statisData.total_follow}`, info: 'Vs hôm qua 0,00% --' },
-            { title: 'Lượt xem', value: `${statisData.total_view}`, info: 'Vs hôm qua 0,00% --' },
-            { title: 'Đơn hàng', value: `${statisData.total_order}`, info: 'Vs hôm qua 0,00% --' },
+            { title: 'Doanh số', value: data.total_revenue, info: 'Vs hôm qua 0,00% --' },
+            { title: 'Lượt truy cập', value: `${data.total_follow}`, info: 'Vs hôm qua 0,00% --' },
+            { title: 'Lượt xem', value: `${data.total_view}`, info: 'Vs hôm qua 0,00% --' },
+            { title: 'Đơn hàng', value: `${data.total_order}`, info: 'Vs hôm qua 0,00% --' },
             { title: 'Tỷ lệ chuyển đổi', value: '0,00%', info: 'Vs hôm qua 0,00% --' },
           ]);
         } else {

@@ -1,6 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button";
-import { Check, ChevronLeft, ChevronRight, Clock, Dot, List, Logs, Play, ShoppingBag, UserRoundCheck } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Clock, Dot, Link, List, Logs, Play, Plus, ShoppingBag, UserRoundCheck } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -27,6 +27,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { useAppInfoSelector } from "@/redux/stores/profile.store";
+import { clientAccessToken } from "@/lib/http";
 
 const ProductCardSkeleton = () => {
   return (
@@ -108,6 +110,7 @@ export default function ShopDetailSection() {
   const [page, setPage] = useState('1');
   const [shopInfo, setShopInfo] = useState<any>();
   const [categoryId, setCategoryId] = useState(0);
+  const info = useAppInfoSelector(state => state.profile.info);
 
   useEffect(() => {
     if (!params.id) {
@@ -128,8 +131,7 @@ export default function ShopDetailSection() {
           ])
           const shopInfoPayload = await shopInfoRes.json();
           const productsPayload = await productsRes.json();
-
-
+          
           if (!shopInfoRes.ok) {
             throw productsPayload
           }
@@ -169,10 +171,65 @@ export default function ShopDetailSection() {
                 </div>
                 <div className="p-1 flex justify-center w-full flex-col">
                   <div className="text-xl font-bold">{shopInfo?.shop?.shop_name || 'Tieem cua Khang'}</div>
-                  <div className="text-[12px]">{shopInfo?.shop?.visits || '0'} người theo dõi</div>
+                  <div className="text-[12px]">{shopInfo?.follow_count || '0'} người theo dõi</div>
+                  <div className="text-[12px]">{shopInfo?.shop?.visits || '0'} Lượt Truy Cập</div>
                 </div>
                 <div className="p-1 flex items-center">
-                  <Button>+ Theo dõi</Button>
+                    {shopInfo?.shop?.is_follow === false ? (
+                    <Button onClick={async () => {
+                          try {
+                            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/up_follow/${params.id}`, {
+                            method: 'POST',
+                            headers: {
+                            Authorization: `Bearer ${clientAccessToken.value}`,
+                            'Content-Type': 'application/json',
+                            },
+                          });
+                          console.log(response);
+
+                          if (!response.ok) {
+                            throw new Error('Follow cửa hàng thất bại');
+                          }
+                          setShopInfo((prev: any) => ({
+                            ...prev,
+                            shop: {
+                            ...prev.shop,
+                            is_follow: true,
+                            },
+                          }));
+                          toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
+                          } catch (error) {
+                          toast({ title: 'Error', variant: 'destructive' });
+                          }
+                          }}>+ Theo dõi</Button>
+                          ) : (
+                    <Button onClick={async () => {
+                            try {
+                            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/follows/${params.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                            Authorization: `Bearer ${clientAccessToken.value}`,
+                            'Content-Type': 'application/json',
+                            },
+                            });
+                            console.log(response);
+
+                            if (!response.ok) {
+                            throw new Error('Un Follow cửa hàng thất bại');
+                            }
+                            setShopInfo((prev: any) => ({
+                            ...prev,
+                            shop: {
+                              ...prev.shop,
+                              is_follow: false,
+                            },
+                            }));
+                            toast({ title: 'Bỏ Follow cửa hàng thành công', variant: 'success' });
+                            } catch (error) {
+                            toast({ title: 'Error', variant: 'destructive' });
+                            }
+                    }}>Bỏ theo dõi</Button>
+                    )}
                 </div>
               </div>
             </div>
