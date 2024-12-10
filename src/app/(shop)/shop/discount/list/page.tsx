@@ -42,7 +42,8 @@ const Page: React.FC = () => {
     };
     getData();
   }, [info.shop_id]);
-
+  console.log(listVoucherShop);
+  
   return (
     <>
     <div className='w-full text-xl text-black font-semibold mb-4'>
