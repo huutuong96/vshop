@@ -13,34 +13,64 @@ import envConfig from '@/config';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
 import { Link } from 'lucide-react';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+const handleChangeSearchParams = (page: number, limit: string) => {
+  return `${page ? `&page=${page}` : ''}&limit=${limit}`
+}
 
-const Page: React.FC = () => {
+const ListDiscountVoucherPage: React.FC = () => {
   const info = useAppInfoSelector(state => state.profile.info);
   const [listVoucherShop, setListVoucherShop] = useState<{ id: number, title: string, description: string, image: string | null, quantity: number, limitValue: number | null, code: string, min: number | null, price: number | null }[]>([]);
+  const [limit, setLimit] = useState<string>('10');
+  const [pages, setPages] = useState<any[]>([]);
+  const [page, setPage] = useState<number>(1);
+  
+  
   useEffect(() => {
+    const controller = new AbortController(); // Khởi tạo AbortController
+    const signal = controller.signal;
     const getData = async () => {
       try {
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/get_voucher_to_shop/${info.shop_id}`, {
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/get_voucher_to_shop/${info.shop_id}?${handleChangeSearchParams(page, limit)}`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${clientAccessToken.value}`,
             "Content-Type": "application/json"
-          },
+          },signal
         });
         const payload = await res.json();
-        if (payload.status) {
-          // Lấy dữ liệu từ payload.data[0].data
-          const vouchers = payload.data[0]?.data || [];
-          setListVoucherShop(vouchers);
-        } else {
-          console.error(payload.message);
+        if (!res.ok) {
+          throw "error";
         }
+        setListVoucherShop(payload.data[0].data);
+        setPages(payload.data[0].links);
       } catch (error) {
         console.error(error);
       }
     };
-    getData();
-  }, [info.shop_id]);
+    if (info.shop_id) getData();
+    return () => {
+      controller.abort();
+    };
+  }, [handleChangeSearchParams(page, limit)]);
+  console.log(listVoucherShop);
   
   return (
     <>
@@ -79,8 +109,37 @@ const Page: React.FC = () => {
         </TableBody>
       </Table>
       </div>
+      <div>
+      {pages.length > 3 && (
+            <Pagination className="flex justify-end">
+              <PaginationContent>
+                {[...pages].shift().url && (
+                  <PaginationItem onClick={() => setPage(page - 1)}>
+                    <PaginationPrevious />
+                  </PaginationItem>
+                )}
+
+                {pages.slice(1, pages.length - 1).map((p: any, index: number) => (
+                  <PaginationItem key={index} onClick={() => setPage(p.label)} className="cursor-pointer">
+                    <PaginationLink isActive={+p.label === +page}>{p.label}</PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                {/* <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem> */}
+                {[...pages].pop().url && (
+                  <PaginationItem onClick={() => setPage(page + 1)}>
+                    <PaginationNext />
+                  </PaginationItem>
+                )}
+
+              </PaginationContent>
+            </Pagination>
+          )}
+      </div>
     </>
   );
 };
 
-export default Page;
+export default ListDiscountVoucherPage;

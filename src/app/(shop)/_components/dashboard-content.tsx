@@ -4,6 +4,7 @@ import { InfoIcon } from 'lucide-react';
 import envConfig from '@/config';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
+
 type DashboardData = {
   total_order: number;
   total_product: number;
@@ -23,9 +24,9 @@ type DashboardData = {
   orders_refund: number;
   orders_canceled: number;
 };
-const Page: React.FC = () => {
-  
 
+
+const Page: React.FC = () => {
   const info = useAppInfoSelector((state) => state.profile.info);
   const [data, setData] = useState<DashboardData | null>(null);
   const [todoItems, setTodoItems] = useState([
