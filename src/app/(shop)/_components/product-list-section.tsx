@@ -156,6 +156,14 @@ export default function ProductListSection() {
     };
   }, [debouncedSearch]);
 
+  const resetState = () => {
+    setPage(1);
+    setSort('#');
+    setLimit('10');
+    setCategoryId(0);
+    searchRef.current = ''
+  }
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     searchRef.current = e.target.value; // Lưu giá trị mới vào ref
     debouncedSearch(); // Gọi debounce để thực hiện tìm kiếm
@@ -164,6 +172,7 @@ export default function ProductListSection() {
 
   const handleChangeStatus = (s: number) => {
     setStatus(s);
+    resetState();
   }
   const handleDeleteProduct = async (id: number) => {
     try {

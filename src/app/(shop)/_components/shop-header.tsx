@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
 import envConfig from '@/config';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 
 export default function ShopHeader() {
@@ -57,76 +58,35 @@ export default function ShopHeader() {
         </div>
         <div className="flex items-center">
           <div className="flex h-full px-4 border-r-[2px] items-center">
-            {/* <div
-              className="cart-container h-full"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <button className="cart-button h-full">Giỏ hàng</button>
-              <div className={`minicart ${isHovered ? 'animate-in' : 'animate-out'}`}>
-                <p>Sản phẩm 1</p>
-                <p>Sản phẩm 2</p>
-              </div>
-            </div>
-            <div className="">
-              <div className='px-3 hover:bg-gray-200'>
-                <GripHorizontal strokeWidth={1.5} className="h-[56px] w-6" />
-              </div>
-              <div className=''></div>
-            </div>
-            <div className="">
-              <div className='px-3 hover:bg-gray-200'>
-                <BookOpen strokeWidth={1.5} className="h-[56px] w-6" />
-              </div>
-              <div className={``}></div>
-            </div> */}
-            <div className="relative">
-              <div
-                className='px-3 hover:bg-gray-200'
-                onMouseEnter={() => {
-                  setIsNotiVisible(true);
-                  setIsShowNoti(true);
-                }}
-                onMouseLeave={async () => setIsShowNoti(false)}
-              >
-                <Bell strokeWidth={1.5} className="h-[56px] w-6" />
-                {isNotiVisible && (
-                  <div className={`minicart ${isShowNoti ? 'animate-in' : 'animate-out'}`}>
-                    <Notifications />
+            <HoverCard openDelay={200} closeDelay={100}>
+              <HoverCardTrigger>
+                <div className="relative">
+                  <div className='px-3 hover:bg-gray-200'>
+                    <Bell strokeWidth={1.5} className="h-[56px] w-6" />
+                    <div className="absolute top-2 right-1 bg-blue-500 flex items-center justify-center text-white rounded-full text-[12px] size-4">0</div>
                   </div>
-                )}
-
-                <div className="absolute top-2 right-1 bg-blue-500 flex items-center justify-center text-white rounded-full text-[12px] size-4">0</div>
-              </div>
-            </div>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent align='end' className='bg-none p-0 w-80'>
+                <Notifications />
+                {/* <div>he</div> */}
+              </HoverCardContent>
+            </HoverCard>
           </div>
           <div className='h-full pl-4'>
-            <div
-              className="flex w-full h-full px-4 items-center gap-2 hover:bg-gray-200"
-              onMouseEnter={() => {
-                setIsAccountInfoVisible(true);
-                setIsShowAccountInfo(true);
-              }}
-              onMouseLeave={() => setIsShowAccountInfo(false)}
-            >
-              <div className="size-[30px] rounded-full flex items-center justify-center">
-                <img className='size-full object-cover rounded-full' src="https://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg" alt="" />
-              </div>
-              <span className="text-[14px] font-medium">{info.fullname}</span>
-              {isShowAccountInfo ? (
-                <ChevronDown strokeWidth={1.5} size={20} />
-              ) : (
-                <ChevronUp strokeWidth={1.5} size={20} />
-              )}
-              {
-                isAccountInfoVisible && (
-                  <div className={`minicart ${isShowAccountInfo ? 'animate-in' : 'animate-out'}`}>
-                    <AccountInfo />
+            <HoverCard openDelay={200} closeDelay={100}>
+              <HoverCardTrigger>
+                <div className="flex w-full h-full px-4 items-center gap-2 hover:bg-gray-200" >
+                  <div className="size-[30px] rounded-full flex items-center justify-center">
+                    <img className='size-full object-cover rounded-full' src="https://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg" alt="" />
                   </div>
-                )
-              }
-
-            </div>
+                  <span className="text-[14px] font-medium">{info.fullname}</span>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent>
+                <AccountInfo />
+              </HoverCardContent>
+            </HoverCard>
           </div>
 
         </div>
