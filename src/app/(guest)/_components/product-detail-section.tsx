@@ -18,6 +18,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Label } from "@/components/ui/label";
 import { useAppInfoSelector } from "@/redux/stores/profile.store"
 import { isSet } from "lodash"
+import Link from "next/link"
 function formatTimeDifference(createdAt: string): string {
   const createdDate = new Date(createdAt);
   const now = new Date();
@@ -341,7 +342,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
 
             </div>
-            <div className="w-full border-t">
+            {/* <div className="w-full border-t">
               <div className="font-bold py-5 text-[16px]">Ưu đãi dành cho bạn</div>
               <div className="w-full flex flex-wrap">
                 <div className="w-1/2 mb-4 flex gap-2">
@@ -357,7 +358,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                   <span className="text-[14px] font-normal">Trả góp Kredivo</span>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="w-full border-t">
               <div className="font-bold py-5 text-[16px]">Quyền lợi khách hàng & Bảo hành</div>
               <div className="flex gap-8">
@@ -457,8 +458,10 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               )}
 
               <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
-                <Store size={20} />
-                <span className="ml-2">Vào shop</span>
+                <Link className="flex items-center" href={`/vendors/${selectedProduct.shop_id}`}>
+                  <Store size={20} />
+                  <span className="ml-2">Vào shop</span>
+                </Link>
               </Button>
               <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[10%] text-black">
                 <PhoneCall size={20} />
@@ -471,20 +474,35 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               <div className="mt-4 w-full bg-gradient-to-b from-white to-blue-200">
                 <div className="w-full border overflow-hidden">
                   <div className="w-[600px] translate-x-2 flex gap-2">
-                    {selectedProduct.shop.products.map((product: any, index: number) => (
-                      <div key={index} className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                        <div className="size-[120px]">
-                          <img className="size-full object-cover" src={product.image} alt="" />
+                    {selectedProduct.shop.products.map((product: any, index: number) => {
+                      let length = product.show_price ? (product.show_price as string).split(' - ').length : null;
+                      let show_price = ''
+                      if (length) {
+                        if (length > 1) {
+                          show_price = (product.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
+                        } else {
+                          show_price = formattedPrice(+product.show_price)
+                        }
+                      } else {
+                        show_price = formattedPrice(+product.price)
+                      }
+                      return (
+                        <div key={index} className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
+                          <div className="size-[120px]">
+                            <Link href={`/products/${product.slug}`}>
+                              <img className="size-full object-cover" src={product.image} alt="" />
+                            </Link>
+                          </div>
+                          <div className="p-2">
+                            <p className="text-[14px] font-normal text-ellipsis">
+                              {product.name.length > 20 ? `${product.name.substring(0, 13)}...` : product.name}
+                            </p>
+                            <div className="w-full h-4"></div>
+                            <span className="text-[12px] text-red-500 font-bold">{formattedPrice(product.show_price)}</span>
+                          </div>
                         </div>
-                        <div className="p-2">
-                          <p className="text-[14px] font-normal text-ellipsis">
-                            {product.name.length > 20 ? `${product.name.substring(0, 13)}...` : product.name}
-                          </p>
-                          <div className="w-full h-4"></div>
-                          <span className="text-[12px] text-red-500 font-bold">{formattedPrice(product.show_price)}</span>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               </div>
