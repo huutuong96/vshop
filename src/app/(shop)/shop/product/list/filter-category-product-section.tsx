@@ -11,7 +11,7 @@ import {
 import { toast } from "@/components/ui/use-toast"
 import envConfig from "@/config"
 import { clientAccessToken } from "@/lib/http"
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -32,7 +32,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 
-export default function FilterCategoryProductSection() {
+function FilterCategoryProductSection({ onChangeCategory }: { onChangeCategory: (id: number) => void }) {
   const [categories, setCategories] = useState<any[]>([]);
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("");
@@ -50,7 +50,9 @@ export default function FilterCategoryProductSection() {
           throw "Error"
         }
         const payload = await res.json();
-        setCategories([...payload.data])
+        let a = payload.data;
+        a.unshift({ id: 0, title: 'Mặc định', slug: 'none' })
+        setCategories([...a])
       } catch (error) {
         toast({
           title: "error",
@@ -59,7 +61,9 @@ export default function FilterCategoryProductSection() {
       }
     }
     getData()
-  }, [])
+  }, []);
+
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -89,7 +93,7 @@ export default function FilterCategoryProductSection() {
                       value={c.title}
                       onSelect={(currentValue) => {
                         setValue(currentValue === value ? "" : currentValue);
-                        setCategoryId(c.id);
+                        onChangeCategory(c.id)
                         setOpen(false)
                       }}
                     >
@@ -112,3 +116,5 @@ export default function FilterCategoryProductSection() {
     </Popover>
   )
 }
+
+export default memo(FilterCategoryProductSection)

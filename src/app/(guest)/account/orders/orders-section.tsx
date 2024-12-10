@@ -160,7 +160,7 @@ export default function OrdersGuestSection() {
     try {
       setLoading(true);
       const ordersRes = await fetch(
-        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/order/user?order_status=${orderStatus}&page=${currentPage}`,
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/order/user/client?order_status=${orderStatus}&page=${currentPage}`,
         {
           headers: {
             Authorization: `Bearer ${clientAccessToken.value}`,

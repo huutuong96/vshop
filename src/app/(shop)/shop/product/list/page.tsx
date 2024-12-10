@@ -35,23 +35,6 @@ export default function ListProductPage() {
 
   return (
     <div className="w-full overflow-auto">
-      {/* <div className="flex p-4 items-center justify-between">
-        <span className="text-[20px] font-semibold">Sản phẩm</span>
-        <div className="flex items-center gap-2">
-        <Link href={`/export/data?data=products&status=2&shop_id=`}>
-          <Button className="flex items-center gap-2" variant={"outline"}>
-            <Plus strokeWidth={1.25} size={16} />
-            Xuất Excel
-          </Button>
-        </Link>
-          <Link href={'/shop/product/new'}>
-            <Button className="flex items-center gap-2" variant={"outline"}>
-              <Plus strokeWidth={1.25} size={16} />
-              Thêm 1 sản phẩm mới
-            </Button>
-          </Link>
-        </div>
-      </div> */}
       <ProductActions />
       <ProductListSection />
     </div>

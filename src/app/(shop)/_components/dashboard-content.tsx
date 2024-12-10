@@ -5,6 +5,7 @@ import envConfig from '@/config';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
 import { formattedPrice } from '@/lib/utils';
+import DashboardChart from '@/app/(shop)/_components/dashboard-chart';
 
 type DashboardData = {
   total_order: number;
@@ -132,9 +133,7 @@ const Page: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="h-32 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs border border-gray-200">
-            Chart placeholder
-          </div>
+          <DashboardChart />
         </div>
       </div>
 

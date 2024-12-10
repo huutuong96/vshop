@@ -61,7 +61,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
               </div>
             </div>
             <div className="flex-1 p-2 text-right">
-              <div className="text-black font-medium">0</div>
+              <div className="text-black font-medium">{p.sold_count}</div>
             </div>
             <div className="flex-1 p-2 text-right">
               <div className="text-black font-medium">{show_price}</div>

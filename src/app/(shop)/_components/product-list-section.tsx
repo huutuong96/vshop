@@ -13,7 +13,7 @@ import { toast } from "@/components/ui/use-toast"
 import envConfig from "@/config"
 import { clientAccessToken, shop_id } from "@/lib/http"
 import { Search } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Pagination,
   PaginationContent,
@@ -33,6 +33,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import FilterCategoryProductSection from "@/app/(shop)/shop/product/list/filter-category-product-section"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { ArrowUp, ArrowDown, Clock, SortAsc, SortDesc } from 'lucide-react';
+import debounce from "lodash/debounce";
+
 
 // const status = [
 //   'Tất cả', 'Đang hoạt động', 'Vi phạm', 'Chờ duyệt', 'Chưa đăng được'
@@ -63,10 +67,27 @@ const filters = [
   }
 ];
 
+
+const sortOptions: { value: string, label: string, icon: any }[] = [
+  { value: '#', label: 'Mặc định', icon: '' },
+  { value: 'price', label: 'Giá tăng dần', icon: <ArrowUp /> },
+  { value: '-price', label: 'Giá giảm dần', icon: <ArrowDown /> },
+  { value: 'updated_at', label: 'Cũ nhất', icon: <Clock /> },
+  { value: '-updated_at', label: 'Mới nhất', icon: <Clock /> },
+  { value: 'stock', label: 'Hàng tồn tăng dần', icon: <ArrowUp /> },
+  { value: '-stock', label: 'Hàng tồn giảm dần', icon: <ArrowDown /> },
+  { value: 'name', label: 'Tên từ A → Z', icon: <SortAsc /> },
+  { value: '-name', label: 'Tên từ Z → A', icon: <SortDesc /> },
+  { value: 'sold_count', label: 'Lượt bán tăng dần', icon: <ArrowUp /> },
+  { value: '-sold_count', label: 'Lượt bán giảm dần', icon: <ArrowDown /> },
+];
+
+
+
 const apiurl = `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}`;
 
-const handleChangeSearchParams = (page: number, sort: string, status: number, limit: string) => {
-  return `${page ? `&page=${page}` : ''}&limit=${limit}&status=${status}`
+const handleChangeSearchParams = (page: number, sort: string, status: number, limit: string, category_id: number, search: string) => {
+  return `${page ? `&page=${page}` : ''}&limit=${limit}&status=${status}${sort !== '#' ? `&sort=${sort}` : ''}${category_id !== 0 ? `&category_id=${category_id}` : ''}${search ? `&search=${search}` : ''}`
 }
 
 
@@ -75,36 +96,70 @@ export default function ProductListSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [status, setStatus] = useState<number>(1);
   const [page, setPage] = useState<number>(1);
-  const [sort, setSort] = useState<string>('');
+  const [sort, setSort] = useState<string>('#');
   const [limit, setLimit] = useState<string>('10');
   const [pages, setPages] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
+  const [categoryId, setCategoryId] = useState<number>(0);
+
+
+  const searchRef = useRef<string>(''); // Dùng useRef để lưu giá trị của search
+
+  // Debounce function with lodash
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(() => {
+        fetchProducts(page, sort, status, limit, categoryId, searchRef.current);
+      }, 500),
+    [page, sort, status, limit, categoryId]
+  );
+
+  const fetchProducts = async (page: number, sort: string, status: number, limit: string, categoryId: number, search: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_product_to_shop/${shop_id.value}?${handleChangeSearchParams(
+          page,
+          sort,
+          status,
+          limit,
+          categoryId,
+          search
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${clientAccessToken.value}`,
+          },
+          cache: 'no-cache',
+        }
+      );
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error('Error fetching products');
+      }
+      setProducts(payload.data.data);
+      setPages(payload.data.links);
+      setTotal(payload.data.total);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const a = async () => {
-      try {
-        setLoading(true);
-        const b = await fetch(`${apiurl}/api/shop/get_product_to_shop/${shop_id.value}?${handleChangeSearchParams(page, sort, status, limit)}`, {
-          headers: {
-            "Authorization": `Bearer ${clientAccessToken.value}`
-          },
-          cache: 'no-cache'
-        })
-        const payload = await b.json();
-        if (!b.ok) {
-          throw 'loi'
-        }
-        setProducts([...payload.data.data]);
-        setPages([...payload.data.links]);
-        setTotal(payload.data.total)
-      } catch (error) {
-        setLoading(false);
-      } finally {
-        setLoading(false);
-      }
-    }
-    a();
-  }, [handleChangeSearchParams(page, sort, status, limit), products.length])
+    debouncedSearch();
+
+    // Cleanup debounce on unmount
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    searchRef.current = e.target.value; // Lưu giá trị mới vào ref
+    debouncedSearch(); // Gọi debounce để thực hiện tìm kiếm
+  };
 
 
   const handleChangeStatus = (s: number) => {
@@ -143,6 +198,9 @@ export default function ProductListSection() {
 
     }
   }
+  const handleChangeCategoryId = useCallback((id: number) => {
+    setCategoryId(id);
+  }, []);
 
   return (
     <div className="w-full bg-white rounded">
@@ -166,9 +224,30 @@ export default function ProductListSection() {
           <div className="px-2 border border-r-0 flex items-center rounded-tl rounded-bl">
             <Search color="#ababab" strokeWidth={1.25} size={20} className="" />
           </div>
-          <Input className="px-3 w-[300px] text-[14px] border-l-0 outline-none rounded-none rounded-tr rounded-br" placeholder="Tìm tên sản phẩm, SKU sản phẩm" />
+          <Input
+            onChange={handleSearchChange} className="px-3 w-[300px] text-[14px] border-l-0 outline-none rounded-none rounded-tr rounded-br" placeholder="Tìm tên sản phẩm, SKU sản phẩm" />
         </div>
-        <FilterCategoryProductSection />
+        <Select value={sort} onValueChange={(v) => setSort(v)}>
+          <SelectTrigger className="w-[250px]">
+            <SelectValue placeholder="Lọc sản phẩm" />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            <SelectGroup className="w-full">
+              <ScrollArea className="h-40 w-full">
+                <SelectLabel className="w-full">Lọc sản phẩm</SelectLabel>
+                {sortOptions.map((s, index) => (
+                  <SelectItem className="w-full" key={index} value={s.value}>
+                    <div className="w-full flex items-center justify-between">
+                      {s.label}
+                    </div>
+                  </SelectItem>
+                ))}
+              </ScrollArea>
+
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <FilterCategoryProductSection onChangeCategory={handleChangeCategoryId} />
         <div className="flex gap-2">
           <button className="border-blue-500 text-blue-500 hover:border-blue-500 border text-[14px] p-2 rounded">Áp dụng</button>
           <Button variant={'default'}>Đặt lại</Button>
@@ -183,7 +262,7 @@ export default function ProductListSection() {
           <div className="w-full h-full text-sm flex items-center  text-[#000000ba]">
             <Checkbox className="ml-4 mr-2" />
             <div className="flex-[2] p-2">Sản phẩm</div>
-            <div className="flex-1 p-2 py-4 text-right">Doanh số</div>
+            <div className="flex-1 p-2 py-4 text-right">Lượt bán</div>
             <div className="flex-1 p-2 text-right">Giá</div>
             <div className="flex-1 p-2 text-right">Kho hàng</div>
             <div className="flex-1 p-2 text-right">Thao tác</div>
