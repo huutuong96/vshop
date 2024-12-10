@@ -12,11 +12,11 @@ import {
 import envConfig from '@/config';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
+import { Link } from 'lucide-react';
 
 const Page: React.FC = () => {
   const info = useAppInfoSelector(state => state.profile.info);
   const [listVoucherShop, setListVoucherShop] = useState<{ id: number, title: string, description: string, image: string | null, quantity: number, limitValue: number | null, code: string, min: number | null, price: number | null }[]>([]);
-
   useEffect(() => {
     const getData = async () => {
       try {
@@ -27,7 +27,6 @@ const Page: React.FC = () => {
             "Content-Type": "application/json"
           },
         });
-
         const payload = await res.json();
         if (payload.status) {
           // Lấy dữ liệu từ payload.data[0].data
@@ -42,7 +41,6 @@ const Page: React.FC = () => {
     };
     getData();
   }, [info.shop_id]);
-  console.log(listVoucherShop);
   
   return (
     <>
