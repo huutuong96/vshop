@@ -19,34 +19,6 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
   const [tempQuantity, setTempQuantity] = useState(+item.quantity);
 
 
-  // const handleChangeQty = async (quantity: number, index: number, subIndex: number, id: number) => {
-  //   if (quantity) {
-  //     try {
-  //       setLoading(true);
-  //       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts/${id}`, {
-  //         method: "PUT",
-  //         body: JSON.stringify({ quantity }),
-  //         headers: {
-  //           'Authorization': `Bearer ${clientAccessToken.value}`,
-  //           "Content-Type": "application/json"
-  //         }
-  //       })
-  //       const payload = await res.json();
-  //       if (!res.ok) {
-  //         console.log(payload);
-  //         throw 'Error'
-  //       }
-  //       dispatch(changeQuantity({ index, quantity, subIndex }))
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-
-  // }
-
 
   const debouncedUpdateQty = useCallback(
     debounce(async (quantity) => {
@@ -79,7 +51,7 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
   );
 
   const handleChangeQty = (type: "increment" | "decrement") => {
-    const newQuantity = type === "increment" ? tempQuantity + 1 : tempQuantity - 1;
+    const newQuantity = type === "increment" ? tempQuantity + 1 : (tempQuantity >= 2 ? tempQuantity - 1 : 1);
 
     // Cập nhật state tạm
     setTempQuantity(newQuantity);

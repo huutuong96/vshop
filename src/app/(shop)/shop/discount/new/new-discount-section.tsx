@@ -23,23 +23,23 @@ import { clientAccessToken } from "@/lib/http";
 
 const discountFormSchema = z.object({
   title: z.string().min(6, {
-    message: "Title must be at least 6 characters.",
+    message: "Vui lòng nhập từ 6 ký tự.",
   }),
   code: z.string().min(6, {
-    message: "Title must be at least 6 characters.",
+    message: "Vui lòng nhập từ 6 ký tự.",
   }),
   description: z.string().min(6, {
-    message: "Title must be at least 6 characters.",
+    message: "Vui lòng nhập từ 6 ký tự.",
   }),
   type: z.string().min(1),
   method: z.string().min(1),
-  ratio: z.number().nullable().refine((val) => val === null || (val >= 0 && val <= 99), {
+  ratio: z.number({ message: "Vui lòng nhập số phần trăm giảm giá." }).nullable().refine((val) => val === null || (val >= 0 && val <= 99), {
     message: "Giá trị không hợp lệ",
   }),
-  price: z.number().nullable(),
-  quantity: z.number().min(1),
-  min: z.number(),
-  limitValue: z.number().nullable(),
+  price: z.number({ message: "Vui lòng nhập số tiền giảm giá." }).nullable(),
+  quantity: z.number({ message: "Vui lòng nhập số lượng." }).min(1, { message: "Vui lòng nhập số lượng." }),
+  min: z.number({ message: "Vui lòng nhập số tiền tối thiểu đơn hàng." }),
+  limitValue: z.number({ message: "Vui lòng nhập số tiền tối đa có thể giảm." }).nullable(),
   start: z.string(),
   end: z.string()
 }).superRefine((data, ctx) => {
@@ -135,13 +135,6 @@ export default function NewDiscountSection() {
   const { control, handleSubmit, register, getValues, setValue, setError, formState: { errors }, trigger, clearErrors } = useForm<DiscountFormData>({
     resolver: zodResolver(discountFormSchema),
     defaultValues: {
-      code: "fdaofsaf",
-      method: '1',
-      type: '1',
-      description: "dsafasfsdafsda",
-      min: 32423423,
-      quantity: 12,
-      title: 'dfasfdsafsda',
       limitValue: null,
       ratio: null,
       price: null
@@ -189,7 +182,7 @@ export default function NewDiscountSection() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="border w-content bg-white p-4 rounded-sm mb-4">
+      <div className="border w-full bg-white p-4 rounded-sm mb-4">
         <div className="font-semibold text-xl">Tổng Quan</div>
         <div className="text-[13px] text-gray-400 mb-4">Các thông tin cơ bản của mã giảm giá</div>
         <div className="space-y-2 mb-6">
@@ -365,13 +358,15 @@ export default function NewDiscountSection() {
                     <span className="text-sm">VNĐ</span>
                   </div>
                 </div>
+                {errors?.limitValue?.message && <div className="text-sm text-red-500">{errors.limitValue.message}</div>}
+
               </div>
             </div>
           )}
 
         </div>
       </div>
-      <div className="border w-content bg-white p-4 rounded-sm mb-4">
+      <div className="border w-full bg-white p-4 rounded-sm mb-4">
         <div className="font-semibold text-xl">Ngày giờ</div>
         <div className="text-[13px] text-gray-400 mb-4">Chọn thời gian giảm giá</div>
         <div className="flex gap-4">
@@ -382,7 +377,7 @@ export default function NewDiscountSection() {
             </div>
             <div className="space-y-2">
               <div className="relative">
-                <Input {...register('start')} type="datetime-local" className="peer pe-9" />
+                <Input {...register('start')} type="datetime-local" className=" w-auto" />
               </div>
             </div>
             {errors?.start?.message && <div className="text-sm text-red-500">{errors.start.message}</div>}
@@ -393,9 +388,9 @@ export default function NewDiscountSection() {
               <Asterisk size={16} color="#e83030" strokeWidth={1.25} />
               Thời gian kết thúc
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <div className="relative">
-                <Input {...register('end')} type="datetime-local" className="peer pe-9" />
+                <Input {...register('end')} type="datetime-local" className=" w-auto" />
               </div>
             </div>
             {errors?.end?.message && <div className="text-sm text-red-500">{errors.end.message}</div>}
@@ -403,9 +398,13 @@ export default function NewDiscountSection() {
         </div>
       </div>
       <div className="w-full flex justify-end gap-4">
-        <Button onClick={() => console.log(errors)} type="button">Log Error</Button>
-        <Button onClick={() => console.log(getValues())} type="button">Log Data</Button>
-        <Button type="submit">Gửi đi</Button>
+        {envConfig.NEXT_PUBLIC_MODE === 'dev' && (
+          <>
+            <Button onClick={() => console.log(errors)} type="button">Log Error</Button>
+            <Button onClick={() => console.log(getValues())} type="button">Log Data</Button>
+          </>
+        )}
+        <Button className="bg-blue-800 hover:bg-blue-800 hover:opacity-80" type="submit">Gửi đi</Button>
       </div>
     </form>
   )

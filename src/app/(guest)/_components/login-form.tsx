@@ -139,7 +139,7 @@ export default function LoginForm() {
           // }, 10000)
         } else {
           const resToNextServer = await a.json();
-          throw 'Erro'
+          throw resToNextServer.message;
         }
 
       } else {

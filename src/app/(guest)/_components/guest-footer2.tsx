@@ -10,9 +10,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-<<<<<<< HEAD
-const GuestFooter2 = ({ logoFooter }: { logoFooter: string }) => {
-=======
+
 interface GuestFooter2Props {
   logoFooter: string;
   description: string;
@@ -22,7 +20,6 @@ interface GuestFooter2Props {
 
 const GuestFooter2: React.FC<GuestFooter2Props> = ({ logoFooter, description, mail, address }) => {
   const [infoFooter, setInfoFooter] = useState<any>();
->>>>>>> bce97b1dbaa9c96121337b717d181d1d5b4297ba
   const pathname = usePathname();
   useEffect(() => {
     const getData = async () => {
@@ -51,16 +48,10 @@ const GuestFooter2: React.FC<GuestFooter2Props> = ({ logoFooter, description, ma
             <div className="bottom-footer w-full  flex justify-between items-start  py-2">
               <div className="bottom-footer-left text-white w-[345px] h-full flex flex-col gap-4 py-5 ">
                 <img className='' src={logoFooter}></img>
-<<<<<<< HEAD
-                <h4 className='font-semibold pl-3 text-justify text-[14px]'>Công ty Cổ phần Công nghê VNShop, thành viên của nhóm dự án tốt nghiệp</h4>
-                <p className='pl-3 text-justify text-[14px]'><span className='font-bold '>Địa chỉ:</span> Tầng 5, Tòa nhà A, Vườn Ươm Doanh Nghiệp, Lô D.01, Đường Tân Thuận, Khu chế xuất Tân
-                  Thuận, Phường Tân Thuận Đông, Quận 7, Thành phố Hồ Chí Minh, Việt Nam.</p>
-                <p className='pl-3 text-[14px]'>Email: lienhe@vnshop.vn</p>
-=======
+
                 <h4 className='font-semibold pl-3 text-justify text-[14px]'>{description}</h4>
                 <p className='pl-3 text-justify text-[14px]'><span className='font-bold '>Địa chỉ:</span>{address}</p>
                 <p className='pl-3 text-[14px]'>Email: {mail}</p>
->>>>>>> bce97b1dbaa9c96121337b717d181d1d5b4297ba
               </div>
               <div className='flex flex-col w-[150px] py-8 text-white gap-2'>
                 <h4 className='text-[16px] font-bold stroke-1 stroke-black'>Gợi ý trang Website</h4>

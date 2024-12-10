@@ -591,12 +591,17 @@ export default function NewProductTestForm({ id }: { id?: string }) {
       <div className="w-full bg-white rounded">
         <div className="p-6 w-full flex justify-end items-center">
           <div className="flex gap-4">
-            <Button onClick={() => {
-              console.log(productFormHandle.getValues());
-            }} className=" border p-2" type="button">log data</Button>
-            <Button onClick={() => {
-              console.log(productFormHandle.formState.errors);
-            }} className=" border p-2" type="button">log error</Button>
+            {envConfig.NEXT_PUBLIC_MODE === 'dev' && (
+              <>
+                <Button onClick={() => {
+                  console.log(productFormHandle.getValues());
+                }} className=" border p-2" type="button">log data</Button>
+                <Button onClick={() => {
+                  console.log(productFormHandle.formState.errors);
+                }} className=" border p-2" type="button">log error</Button>
+              </>
+            )}
+
             <Button type="submit">Gửi đi</Button>
           </div>
         </div>
