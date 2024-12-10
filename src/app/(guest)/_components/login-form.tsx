@@ -135,10 +135,11 @@ export default function LoginForm() {
           const historyPath = localStorage.getItem('historyPath') ?? '/'
           window.location.href = historyPath;
           // const e = await setTimeout(() => {
-          // }, 500)
+
+          // }, 10000)
         } else {
           const resToNextServer = await a.json();
-          throw resToNextServer.message;
+          throw 'Erro'
         }
 
       } else {

@@ -146,7 +146,7 @@ export default function ProductListSection() {
 
   return (
     <div className="w-full bg-white rounded">
-      <div className="flex p-2 px-3 gap-2">
+      <div className="flex py-4 px-3 gap-2">
         {statusList.map((item => (
           <div key={item.value}
             onClick={() => {

@@ -25,6 +25,9 @@ import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import LoadingScreen from "@/app/(guest)/_components/loading-screen";
 import { Skeleton } from "@/components/ui/skeleton";
 import { notFound } from "next/navigation";
+import ImagesSection from "@/app/(shop)/shop/product/new/images-section";
+import { arrayMove } from "@dnd-kit/sortable";
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 
 // let a = `{"name":"","description":"","base_price":0,"variant":{"variantAttributes":[{"attribute":"Màu sắc","values":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","value":"Đỏ","id":"KHEe7uPH2xNn"},{"id":"UvmWW-PShcR7","image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","value":"xanh"}]}],"variantProducts":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"KHEe7uPH2xNn","attribute":"Màu sắc","value":"Đỏ"}]},{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"UvmWW-PShcR7","attribute":"Màu sắc","value":"xanh"}]}]}}`
 
@@ -147,11 +150,8 @@ function generateVariantProducts(attributes: Array<z.infer<typeof AttributeSchem
 
 export default function NewProductTestForm({ id }: { id?: string }) {
   const info = useAppInfoSelector(state => state.profile.info);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [loadingImage, setLoadingImage] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [imageBlobs, setImageBlobs] = useState<string[]>([]);
 
   const productFormHandle = useForm<Product>({
     resolver: zodResolver(ProductSchema),
@@ -276,72 +276,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     }
   }, [watchedAttributes, productFormHandle.formState.errors.variant?.variantAttributes]);
 
-  const handleImageClick = () => {
-    let images = productFormHandle.getValues('images');
-    if (images.length < 9) {
-      fileInputRef.current?.click(); // Trigger sự kiện click của input file
-    }
-  };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      try {
-        setLoadingImage(true);
-
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-          formData.append("images[]", files[i]);
-        }
-
-        // Tạo blob URL cho preview
-        const newBlobs = Array.from(files).map((file) =>
-          URL.createObjectURL(file)
-        );
-        setImageBlobs((prevBlobs) => [...prevBlobs, ...newBlobs]);
-
-        // Gửi request upload ảnh
-        const res = await fetch(
-          `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/product/uploadImage`,
-          {
-            method: "POST",
-            body: formData,
-            headers: {
-              Authorization: `Bearer ${clientAccessToken.value}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to upload images");
-        }
-
-        const payload: { status: boolean; message: string; images: string[] } = await res.json();
-
-        // Cập nhật ảnh vào form
-        const productImages = productFormHandle.getValues("images");
-        productFormHandle.setValue("images", [
-          ...productImages,
-          ...payload.images,
-        ]);
-        productFormHandle.setError("images", { message: undefined });
-
-        // Dọn dẹp blob URLs khi upload thành công
-        setImageBlobs([]);
-      } catch (error) {
-        toast({ title: "Error uploading images", variant: "destructive" });
-      } finally {
-        setLoadingImage(false);
-        event.target.value = ""; // Reset input file
-      }
-    }
-  };
-
-  const handleDeleteImage = (index: number) => {
-    let images = productFormHandle.getValues('images');
-    images.splice(index, 1);
-    productFormHandle.setValue('images', [...images])
-  }
 
   useEffect(() => {
     if (!productFormHandle.getValues('variantMode')) {
@@ -349,11 +284,9 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     }
   }, [productFormHandle.getValues('variantMode')])
 
-  useEffect(() => {
-    return () => {
-      imageBlobs.forEach((blobUrl) => URL.revokeObjectURL(blobUrl));
-    };
-  }, [imageBlobs]);
+
+
+
 
   return (
     <form className="flex flex-col gap-4" onSubmit={productFormHandle.handleSubmit(onSubmit)}>
@@ -379,77 +312,11 @@ export default function NewProductTestForm({ id }: { id?: string }) {
               {productFormHandle.formState.errors?.name?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.name.message}</p>}
             </div>
             <CategorySection setLoading={setLoading} productFormHandle={productFormHandle} setShowMore={setShowMore} />
-            <div className="my-3">
-              <div className="text-sm mb-2 font-semibold flex items-center gap-1">
-                Ảnh sản phẩm
-              </div>
-              <div className="w-full p-4 bg-[#f5f8fd] rounded flex gap-2">
-                {/* Ảnh đã upload thành công */}
-                {watchedImages.map((img, index) => (
-                  <div key={index} className="border size-20 rounded-sm relative">
-                    <img
-                      src={img}
-                      className="size-full object-cover rounded-sm"
-                      alt={`Uploaded ${index}`}
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => handleDeleteImage(index)}
-                      className="size-4 absolute text-[8px] top-0 right-0"
-                    >
-                      Xóa
-                    </Button>
-                  </div>
-                ))}
 
-                {/* Ảnh đang tải */}
-                {loadingImage &&
-                  imageBlobs.map((blob, index) => (
-                    <div key={index} className="border size-20 rounded-sm relative">
-                      <img
-                        src={blob}
-                        className="size-full object-cover rounded-sm"
-                        alt={`Loading ${index}`}
-                      />
-                      <div className="size-full bg-black opacity-10 rounded-sm absolute top-0 left-0 flex items-center justify-center">
-                        <img
-                          className="size-4 animate-spin"
-                          src="https://www.svgrepo.com/show/199956/loading-loader.svg"
-                          alt="Loading icon"
-                        />
-                      </div>
-                    </div>
-                  ))}
+            {/* ---------------------------------------------------------------------------------------- */}
+            <ImagesSection productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
+            {/* ---------------------------------------------------------------------------------------- */}
 
-                {/* Nút thêm ảnh */}
-                {!loadingImage && (
-                  <div onClick={handleImageClick}>
-                    <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-20 rounded flex items-center justify-center hover:border-blue-500">
-                      <Plus
-                        size={32}
-                        strokeWidth={1.5}
-                        className="group-hover:text-blue-500 text-[#858585]"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Input file */}
-              <input
-                ref={fileInputRef}
-                accept=".jpg, .jpeg, .png, .webp"
-                onChange={handleFileChange}
-                type="file"
-                multiple
-                hidden
-              />
-              {productFormHandle.formState.errors?.images?.message && (
-                <p className="text-sm text-red-500 mt-1">
-                  {productFormHandle.formState.errors.images.message}
-                </p>
-              )}
-            </div>
 
             <div className="mt-0">
               <div className="text-sm mb-2 font-semibold flex items-center gap-1">
@@ -739,3 +606,5 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
   )
 }
+
+

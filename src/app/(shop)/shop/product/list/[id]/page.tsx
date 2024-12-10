@@ -20,7 +20,6 @@ export default async function ProductDetailShopPage({ params: { id } }: { params
       category: payload.data.category_id,
     }
 
-    console.log(payload.data);
 
 
     let variant = product.variants.length > 0 ? JSON.parse(product.json_variants) : null;
