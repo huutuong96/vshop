@@ -26,16 +26,24 @@ import ListProductPagination from "@/app/(shop)/_components/list-product-paginat
 import Link from "next/link";
 import ListProductPopupCategory from "@/app/(shop)/_components/list-product-popup-category";
 import ProductListSection from "@/app/(shop)/_components/product-list-section";
-
+import ProductActions from "../product-actions";
 
 
 
 export default function ListProductPage() {
+
+
   return (
     <div className="w-full overflow-auto">
-      <div className="flex p-4 items-center justify-between">
+      {/* <div className="flex p-4 items-center justify-between">
         <span className="text-[20px] font-semibold">Sản phẩm</span>
         <div className="flex items-center gap-2">
+        <Link href={`/export/data?data=products&status=2&shop_id=`}>
+          <Button className="flex items-center gap-2" variant={"outline"}>
+            <Plus strokeWidth={1.25} size={16} />
+            Xuất Excel
+          </Button>
+        </Link>
           <Link href={'/shop/product/new'}>
             <Button className="flex items-center gap-2" variant={"outline"}>
               <Plus strokeWidth={1.25} size={16} />
@@ -43,7 +51,8 @@ export default function ListProductPage() {
             </Button>
           </Link>
         </div>
-      </div>
+      </div> */}
+      <ProductActions />
       <ProductListSection />
     </div>
   )

@@ -19,6 +19,10 @@ export default async function GuestLayout({ children }: { children: React.ReactN
     }
     const payload = await res.json();
 
+<<<<<<< HEAD
+=======
+    console.log(payload);
+>>>>>>> bce97b1dbaa9c96121337b717d181d1d5b4297ba
 
     return (
       <div className="bg-white w-full">
@@ -27,7 +31,11 @@ export default async function GuestLayout({ children }: { children: React.ReactN
           {children}
         </div>
         {/* <GuestFooter /> */}
+<<<<<<< HEAD
         <GuestFooter2 logoFooter={payload.data.logo_footer} />
+=======
+        <GuestFooter2 logoFooter={payload.data.logo_footer} description={payload.data.description} mail={payload.data.mail} address={payload.data.address}/>
+>>>>>>> bce97b1dbaa9c96121337b717d181d1d5b4297ba
       </div>
     )
   } catch (error) {

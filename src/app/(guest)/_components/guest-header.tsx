@@ -136,7 +136,6 @@ export default function GuestHeader() {
                       className="cursor-pointer"
                       strokeWidth={1.5}
                       size={20}
-
                     />
                   </div>
                   <div className="relative">

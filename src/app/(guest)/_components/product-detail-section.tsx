@@ -17,7 +17,29 @@ import { useCallback, useEffect, useState } from "react"
 
 import { Label } from "@/components/ui/label";
 import { useAppInfoSelector } from "@/redux/stores/profile.store"
+import { isSet } from "lodash"
+function formatTimeDifference(createdAt: string): string {
+  const createdDate = new Date(createdAt);
+  const now = new Date();
 
+  // Tính khoảng cách thời gian (theo milliseconds)
+  const diffInMs = now.getTime() - createdDate.getTime();
+
+  // Quy đổi milliseconds sang ngày, tháng, năm
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const diffInMonths = diffInDays / 30;
+  const diffInYears = diffInMonths / 12;
+
+  if (diffInMonths < 1) {
+    return '1 Tháng Trước';
+  } else if (diffInMonths < 13) {
+    const months = Math.floor(diffInMonths);
+    return `${months} tháng trước`;
+  } else {
+    const years = Math.floor(diffInYears);
+    return `${years} năm trước`;
+  }
+}
 
 
 export default function ProductDetailSection({ product, variant, test }: { product: any, variant: any, test?: any }) {
@@ -90,8 +112,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       }
       data = { ...data, variant_id: selectedProduct.variant_id };
 
-    }
-
+    }    
     if (selectedProduct.stock <= 0) { return }
     try {
       setLoading(true);
@@ -142,7 +163,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
 
 
-
+  
 
 
   return (
@@ -365,40 +386,76 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                 </div>
               </div>
               <div>
-                <div className="font-bold text-[16px]">NextJS Fashion</div>
+                <div className="font-bold text-[16px]">{selectedProduct.shop.shop_name}</div>
                 <span className="text-[12px] text-gray-400">
                   Đồng Nai |
                   <span> 4.7 <span className="text-[#f0ce11] text-[14px]">★</span></span>
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-5 mt-4">
+            <div className="grid grid-cols-2 mt-4">
               <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">1 năm</span>
-                <div className="text-[12px] font-normal">Bán ở VNShop</div>
+                <div className="text-[12px] font-normal">Đã tham gia</div>
+                <span className="text-[16px] font-bold mb-2">{formatTimeDifference(selectedProduct.shop.created_at)}</span>
               </div>
               <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">100</span>
+                <span className="text-[16px] font-bold mb-2">{selectedProduct.shop.countProduct}</span>
                 <div className="text-[12px] font-normal">Sản phẩm</div>
-              </div>
-              <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">1 ngày</span>
-                <div className="text-[12px] font-normal">Chuẩn bị hàng</div>
-              </div>
-              <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">--</span>
-                <div className="text-[12px] font-normal">Tỉ lệ phản hồi</div>
-              </div>
-              <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">--</span>
-                <div className="text-[12px] font-normal">Shop phản hồi</div>
               </div>
             </div>
             <div className="w-full flex gap-2 mt-4">
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
+            {selectedProduct.shop.is_follow === null ? (
+               <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black" 
+               onClick={async () => {
+                 try {
+                   const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/follows/${selectedProduct.shop.id}`, {
+                   method: 'DELETE',
+                   headers: {
+                   Authorization: `Bearer ${clientAccessToken.value}`,
+                   'Content-Type': 'application/json',
+                   },
+                 });
+                 console.log(response);
+
+                 if (!response.ok) {
+                   throw new Error('Follow cửa hàng thất bại');
+                 };
+                 toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
+                 } catch (error) {
+                 toast({ title: 'Error', variant: 'destructive' });
+                 }
+                 }}
+             >
+               <Heart size={20} />
+               <span className="ml-2">Đã theo dõi</span>
+             </Button>
+            ) : (
+              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black" 
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/up_follow/${selectedProduct.shop.id}`, {
+                    method: 'POST',
+                    headers: {
+                    Authorization: `Bearer ${clientAccessToken.value}`,
+                    'Content-Type': 'application/json',
+                    },
+                  });
+                  console.log(response);
+
+                  if (!response.ok) {
+                    throw new Error('Follow cửa hàng thất bại');
+                  };
+                  toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
+                  } catch (error) {
+                  toast({ title: 'Error', variant: 'destructive' });
+                  }
+                  }}
+              >
                 <Heart size={20} />
                 <span className="ml-2">Theo dõi shop</span>
               </Button>
+            )}
+              
               <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
                 <Store size={20} />
                 <span className="ml-2">Vào shop</span>
@@ -414,46 +471,20 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               <div className="mt-4 w-full bg-gradient-to-b from-white to-blue-200">
                 <div className="w-full border overflow-hidden">
                   <div className="w-[600px] translate-x-2 flex gap-2">
+                  {selectedProduct.shop.products.map((product: any) => (
                     <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
+                        <div className="size-[120px]">
+                        <img className="size-full object-cover" src={product.image} alt="" />
+                        </div>
                       <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
+                        <p className="text-[14px] font-normal text-ellipsis">
+                          {product.name.length > 20 ? `${product.name.substring(0, 13)}...` : product.name}
+                        </p>
                         <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
+                        <span className="text-[12px] text-red-500 font-bold">{formattedPrice(product.show_price)}</span>
                       </div>
                     </div>
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -466,9 +497,9 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               Mô tả sản phẩm
             </div>
             <p className="text-[14px] font-normal mb-4">
-              THÔNG TIN SẢN PHẨM Áo Croptop Len LÊ HUY FASHION*Chất liệu: Thun Gân co dãn. * Sản phẩm có các màu: đen, trắng, hồng* Hàng freesize: từ 38-54kg* Bảng size chỉ mang tính chất tham khảo, tùy thuộc vào số đo cơ thể* Độ dài ngang eo còn tùy thuộc vào...
+              {selectedProduct.description}
             </p>
-            <div className="text-[16px] font-bold mb-4">
+            {/* <div className="text-[16px] font-bold mb-4">
               Thông tin cơ bản
             </div>
             <div className="mb-4">
@@ -479,7 +510,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
             </div>
             <p className="text-[14px] font-normal">
               Chi tiết sản phẩm
-            </p>
+            </p> */}
           </div>
           <div className="w-full p-4 shadow border">
             <span className="text-[16px] font-bold mb-4">

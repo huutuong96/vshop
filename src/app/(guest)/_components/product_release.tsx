@@ -5,6 +5,7 @@ import CardProduct from "@/app/(guest)/_components/card-product";
 export default async function GoiYSanPhamSection() {
   try {
     const data = await productRecomend.findAll();
+    console.log(data);
     return (
       <div className="w-full">
         <div className="w-full py-2 flex justify-between items-center">
