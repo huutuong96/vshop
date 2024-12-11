@@ -33,25 +33,25 @@ import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, us
 
 // Schema cho từng thuộc tính của biến thể (e.g., màu sắc, kích thước)
 const AttributeSchema = z.object({
-  attribute: z.string().min(1, "Attribute name is required"),
+  attribute: z.string().min(1, { message: "Lĩnh vực này là cần thiết" }),
   values: z.array(z.object({
     id: z.string(),
     image: z.string().min(0),
-    value: z.string().min(1)
+    value: z.string().min(1, { message: "Lĩnh vực này là cần thiết" })
   })),
 });
 
 // Schema cho từng biến thể của sản phẩm
 const VariantSchema = z.object({
   image: z.string().min(0),
-  sku: z.string().min(1, "SKU is required"),
-  price: z.number().min(0, "Price must be a non-negative number"),
-  stock: z.number().int().min(0, "Stock must be a non-negative integer"),
+  sku: z.string().min(1, { message: "Lĩnh vực này là cần thiết" }),
+  price: z.number().min(0, { message: "Lĩnh vực này là cần thiết" }),
+  stock: z.number().int().min(0, { message: "Lĩnh vực này là cần thiết" }),
   attributes: z.array(z.object(
     {
       id: z.string().min(1),
-      attribute: z.string().min(1),
-      value: z.string().min(1)
+      attribute: z.string().min(1, { message: "Lĩnh vực này là cần thiết" }),
+      value: z.string().min(1, { message: "Lĩnh vực này là cần thiết" })
     }
   )),
 
