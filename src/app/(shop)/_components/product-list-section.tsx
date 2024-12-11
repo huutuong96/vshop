@@ -246,15 +246,25 @@ export default function ProductListSection() {
 
   const handleMultipleDelete = async () => {
     try {
+      setLoading(true);
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/destroyArray`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${clientAccessToken.value}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ arrayId: listIdSelected })
+        body: JSON.stringify({ arrayID: listIdSelected })
+      });
+      if (!res.ok) {
+        throw 'Error';
+      }
+      setProducts(prev => {
+        return prev.filter(p => !listIdSelected.includes(p.id));
       })
+
     } catch (error) {
+      console.log('Error');
+    } finally {
 
     }
   }
@@ -363,20 +373,23 @@ export default function ProductListSection() {
 
           </div>
           <div className="flex justify-between items-center mt-6 px-2">
-            <div className="flex gap-2 items-center">
-              Chọn
-              <Select value={limit} onValueChange={(v) => setLimit(v)}>
-                <SelectTrigger className="w-[60px]">
-                  <SelectValue placeholder={limit} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="w-[100px]">Sản phẩm</div>
-            </div>
+            {total > 10 && (
+              <div className="flex gap-2 items-center">
+                Chọn
+                <Select value={limit} onValueChange={(v) => setLimit(v)}>
+                  <SelectTrigger className="w-[60px]">
+                    <SelectValue placeholder={limit} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="w-[100px]">Sản phẩm</div>
+              </div>
+            )}
+
             {pages.length > 3 && (
               <Pagination className="flex justify-end">
                 <PaginationContent>

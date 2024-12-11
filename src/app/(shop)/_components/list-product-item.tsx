@@ -80,9 +80,11 @@ function ListProductItem({ p, handleDeleteProduct, onChecked, listIdChecked }: {
                 <DropdownMenuTrigger asChild>
                   <div className="cursor-pointer">Xem thêm</div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-36">
+                <DropdownMenuContent align="end" className="">
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>Ẩn</DropdownMenuItem>
+                    {p.status === 2 && (
+                      <DropdownMenuItem>Xem sản phẩm ở website</DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={() => {
                       handleDeleteProduct(p.id)
                     }}>Xóa</DropdownMenuItem>
