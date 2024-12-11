@@ -1,4 +1,4 @@
-import { CalendarCheck, ClipboardCheck, DollarSign, MessageSquare, SquareUser, Tag, Tags } from "lucide-react";
+import { CalendarCheck, ClipboardCheck, DollarSign, MessageSquare, Settings, SquareUser, Tag, Tags } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -67,18 +67,14 @@ const sidebarItems: SidebarItem[] = [
     }]
   },
   {
-    icon: <Tag strokeWidth={1.5} size={20} />,
-    title: 'Kênh Marketing',
-    path: 'marketing',
+    icon: <Settings strokeWidth={1.5} size={20} />,
+    title: 'Cài Đặt',
+    path: 'setting',
     // subItems: ['Kênh Marketing', 'Đấu Giá Rẻ Vô Địch', 'Quản Cáo VNShop', 'Tăng Đơn Cùng KOL', 'Live & Video', 'Kênh Khuyến Mãi Của Shop', 'Flash Sale của shop', 'Mã Giảm Giá Của Shop', 'Chương Trình VNShop']
-    subItems: []
-  },
-  {
-    icon: <SquareUser strokeWidth={1.5} size={20} />,
-    title: 'Quản Lý Khách Hàng',
-    path: 'customer',
-    // subItems: ['Quản Lý Chat']
-    subItems: []
+    subItems: [{
+      title: 'Thông Tin Shop',
+      href: 'info'
+    }]
   },
 
 ];
@@ -90,7 +86,7 @@ export default function ShopSidebar() {
         <ScrollArea className="w-full h-full">
           {sidebarItems.map((item, index: number) => (
             <Accordion key={index} type="single" collapsible className="w-full pr-4 mb-2">
-              <AccordionItem value="item-1">
+              <AccordionItem value={index.toString()}>
                 <AccordionTrigger className="">
                   <div className="flex items-center gap-4 py-2 ">
                     {item.icon}

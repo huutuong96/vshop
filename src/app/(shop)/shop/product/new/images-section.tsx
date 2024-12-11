@@ -15,7 +15,9 @@ import SortableItem from "@/app/(shop)/shop/product/new/sortable-item";
 
 type Props = {
   watchedImages: string[],
-  productFormHandle: UseFormReturn<Product>
+  productFormHandle: UseFormReturn<Product>,
+  tag?: boolean,
+  setTag?: any
 }
 
 let mockImages = [
@@ -25,7 +27,7 @@ let mockImages = [
 ]
 
 export default function ImagesSection(props: Props) {
-  const { productFormHandle, watchedImages } = props;
+  const { productFormHandle, watchedImages, tag, setTag } = props;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [loadingImage, setLoadingImage] = useState<boolean>(false);
   const [imageBlobs, setImageBlobs] = useState<string[]>([]);
@@ -97,10 +99,15 @@ export default function ImagesSection(props: Props) {
       } finally {
         setLoadingImage(false);
         event.target.value = ""; // Reset input file
+        setTag(true)
       }
     }
   };
 
+
+  useEffect(() => {
+    productFormHandle.setValue('images', mockImages)
+  }, [])
 
 
   useEffect(() => {
@@ -126,15 +133,16 @@ export default function ImagesSection(props: Props) {
   }
 
   const handleDelete = (id: number) => {
-    // setImages((prev) => {
-    //   const updated = [...prev];
-    //   updated.splice(id, 1);
-    //   return updated;
-    // });
+    setImages((prev) => {
+      const updated = [...prev];
+      updated.splice(id, 1);
+      return updated;
+    });
 
-    // const updatedImages = images.filter((_, index) => index !== id);
-    // productFormHandle.setValue("images", [...updatedImages]);
-    console.log(id);
+
+
+    const updatedImages = watchedImages.filter((_, index) => index !== id);
+    productFormHandle.setValue("images", [...updatedImages]);
   };
 
 

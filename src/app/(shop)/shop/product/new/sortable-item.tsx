@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { Pencil, Trash } from 'lucide-react';
 
 type Props = {
   id: number,
@@ -35,18 +36,34 @@ export default function SortableItem(props: Props) {
     >
       <img
         src={props.image}
-        className="size-full rounded-sm"
+        className="size-20 object-contain rounded-sm"
         alt={`Image ${props.id}`}
       />
 
+      {/* Lớp phủ */}
+      <div className='absolute inset-0 bg-black opacity-0 group-hover:opacity-40 rounded-sm'></div>
+
+      {/* Nút sửa */}
+      <button
+        type="button"
+        className="absolute top-2 left-2 p-1 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+        title="Edit"
+        onClick={() => {
+          console.log(props.id);
+        }
+        }
+      >
+        <Pencil size={16} color="#000" strokeWidth={2} />
+      </button>
+
       {/* Nút xóa */}
       <button
+        type="button"
         onClick={() => props.onDelete(props.id)}
-        className="absolute top-1 right-1 bg-white text-red-500 border border-red-500 rounded-full p-1 text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
         title="Delete"
-        type='button'
       >
-        ✕
+        <Trash size={16} color="#000" strokeWidth={2} />
       </button>
     </div>
   );

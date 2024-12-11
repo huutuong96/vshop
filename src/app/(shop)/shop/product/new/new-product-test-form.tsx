@@ -152,6 +152,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
   const info = useAppInfoSelector(state => state.profile.info);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [tag, setTag] = useState<boolean>(false);
 
   const productFormHandle = useForm<Product>({
     resolver: zodResolver(ProductSchema),
@@ -314,7 +315,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
             <CategorySection setLoading={setLoading} productFormHandle={productFormHandle} setShowMore={setShowMore} />
 
             {/* ---------------------------------------------------------------------------------------- */}
-            <ImagesSection productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
+            <ImagesSection setTag={setTag} tag={tag} productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
             {/* ---------------------------------------------------------------------------------------- */}
 
 

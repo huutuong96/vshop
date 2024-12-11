@@ -45,7 +45,6 @@ export default function CategorySection({ productFormHandle, setShowMore, setLoa
   const [categoriesSlectedCopy, setCategoriesSlectedCopy] = useState<any[]>([]);
   const [isValid, setIsValid] = useState<boolean>(false);
 
-  console.log({ showCategories });
 
 
   useEffect(() => {

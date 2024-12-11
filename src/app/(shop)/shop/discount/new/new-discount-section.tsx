@@ -20,6 +20,8 @@ import CryptoJS from "crypto-js";
 import envConfig from "@/config";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import { clientAccessToken } from "@/lib/http";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const discountFormSchema = z.object({
   title: z.string().min(6, {
@@ -137,11 +139,14 @@ export default function NewDiscountSection() {
     defaultValues: {
       limitValue: null,
       ratio: null,
-      price: null
+      price: null,
+      type: '1',
+      method: '1'
     },
     mode: 'all'
   });
   const profile = useAppInfoSelector(state => state.profile.info);
+  const router = useRouter();
 
 
   const typeWatched = useWatch({
@@ -169,8 +174,13 @@ export default function NewDiscountSection() {
         method: 'POST',
         body: JSON.stringify(data)
       })
+      if (!res.ok) {
+        throw 'Error';
+      }
+      toast({ title: 'Thành công', variant: 'success' });
+      router.push('/shop/discount/list')
     } catch (error) {
-
+      toast({ title: 'Lỗi', variant: 'destructive' })
     }
   }
 

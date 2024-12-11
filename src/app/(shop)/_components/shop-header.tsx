@@ -19,14 +19,10 @@ import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
 import envConfig from '@/config';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import Link from 'next/link';
 
 
 export default function ShopHeader() {
-  const [isStarted, setIsStarted] = useState(true);
-  const [isShowNoti, setIsShowNoti] = useState(false);
-  const [isShowAccountInfo, setIsShowAccountInfo] = useState(false);
-  const [isNotiVisible, setIsNotiVisible] = useState(false);
-  const [isAccountInfoVisible, setIsAccountInfoVisible] = useState(false);
   const info = useAppInfoSelector(state => state.profile.info);
 
 
@@ -36,18 +32,18 @@ export default function ShopHeader() {
       <div className="w-full h-full flex justify-between">
         <div className="flex items-center gap-4">
           <div className="logo w-40 h-[48px]">
-            <Image width={160} height={48} className="size-full object-cover" src="/images/logo.png" alt="" />
+            <Link href="/shop">
+              <Image width={160} height={48} className="size-full object-cover" src="/images/logo.png" alt="" />
+            </Link>
           </div>
           {info.shop_id && (
             <Breadcrumb>
               <BreadcrumbList className="text-[16px] font-normal">
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/shop">Trang chủ</BreadcrumbLink>
+                  <Link href="/shop">Trang chủ</Link>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Sản phẩm</BreadcrumbPage>
-                </BreadcrumbItem>
+                {/* <BreadcrumbSeparator /> */}
+
               </BreadcrumbList>
             </Breadcrumb>
           )}
