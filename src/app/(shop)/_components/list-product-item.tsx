@@ -4,7 +4,7 @@ import envConfig from "@/config";
 import { clientAccessToken, shop_id } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Image } from "lucide-react";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +22,9 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
-const apiurl = `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}`;
 
 
-export default function ListProductItem({ p, handleDeleteProduct }: { p: any, handleDeleteProduct: (id: number) => Promise<void> }) {
+function ListProductItem({ p, handleDeleteProduct, }: { p: any, handleDeleteProduct: (id: number) => Promise<void> }) {
   let length = p.show_price ? (p.show_price as string).split(' - ').length : null;
   let show_price = ''
   if (length) {
@@ -42,7 +41,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
 
   return (
     <>
-      <div className="py-4 border-b flex">
+      <div className="py-4 border-b flex hover:bg-blue-100/20">
         <div className="w-full">
           <div className="w-full text-[14px] flex">
             <Checkbox className="ml-4 mr-2 mt-4" />
@@ -159,3 +158,4 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
 
   )
 }
+export default memo(ListProductItem);

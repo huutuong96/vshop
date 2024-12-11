@@ -101,7 +101,7 @@ export default function ProductListSection() {
   const [pages, setPages] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [categoryId, setCategoryId] = useState<number>(0);
-
+  const [listIdSelected, setListIdSelected] = useState<number[]>([]);
 
   const searchRef = useRef<string>(''); // Dùng useRef để lưu giá trị của search
 
@@ -210,6 +210,10 @@ export default function ProductListSection() {
   const handleChangeCategoryId = useCallback((id: number) => {
     setCategoryId(id);
   }, []);
+
+  const handleChecked = useCallback(() => {
+
+  }, [listIdSelected])
 
   return (
     <div className="w-full bg-white rounded">

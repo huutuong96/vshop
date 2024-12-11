@@ -12,13 +12,11 @@ export default function CategoriesSection1() {
         const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/categories?limit=10`);
         const payload = await res.json();
         if (!res.ok) {
-          console.log(payload);
           throw 'Error'
         }
-        console.log({ payload });
         setCategories([...payload.data]);
       } catch (error) {
-
+        console.log('Error');
       }
     }
     getData()

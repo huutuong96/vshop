@@ -44,9 +44,9 @@ const AttributeSchema = z.object({
 // Schema cho từng biến thể của sản phẩm
 const VariantSchema = z.object({
   image: z.string().min(0),
-  sku: z.string().min(1, { message: "Lĩnh vực này là cần thiết" }),
-  price: z.number().min(0, { message: "Lĩnh vực này là cần thiết" }),
-  stock: z.number().int().min(0, { message: "Lĩnh vực này là cần thiết" }),
+  sku: z.string({ message: "Lĩnh vực này là cần thiết" }).min(1, { message: "Lĩnh vực này là cần thiết" }),
+  price: z.number({ message: "Lĩnh vực này là cần thiết" }).min(1000, { message: "Giá sản phẩm cần lớn hơn 1000đ" }),
+  stock: z.number({ message: "Lĩnh vực này là cần thiết" }).int().min(0, { message: "Lĩnh vực này là cần thiết" }),
   attributes: z.array(z.object(
     {
       id: z.string().min(1),
@@ -190,6 +190,11 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     name: "variant.variantProducts",
   });
 
+  const variantProductsWatched = useWatch({
+    control: productFormHandle.control,
+    name: 'variant.variantProducts',
+  })
+
   const onSubmit = async (data: Product) => {
     const newData = {
       ...data,
@@ -218,7 +223,6 @@ export default function NewProductTestForm({ id }: { id?: string }) {
       if (!res.ok) {
         throw 'ERror'
       }
-      console.log(payload);
       toast({
         variant: 'success',
         title: "Tao san pham thanh cong!"
@@ -287,8 +291,6 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
 
 
-
-
   return (
     <form className="flex flex-col gap-4" onSubmit={productFormHandle.handleSubmit(onSubmit)}>
       <div className="w-full bg-white rounded">
@@ -315,7 +317,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
             <CategorySection setLoading={setLoading} productFormHandle={productFormHandle} setShowMore={setShowMore} />
 
             {/* ---------------------------------------------------------------------------------------- */}
-            <ImagesSection setTag={setTag} tag={tag} productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
+            <ImagesSection tag={tag} setTag={setTag} productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
             {/* ---------------------------------------------------------------------------------------- */}
 
 
@@ -401,7 +403,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
               {productFormHandle.getValues('variantMode') && (
                 <NewProductVariantTableTest
-                  variantProductFields={variantProducts}
+                  variantProductFields={variantProductFields}
                   variantFields={productFormHandle.getValues('variant.variantAttributes')}
                   productFormHandle={productFormHandle}
                 />

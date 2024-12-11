@@ -27,18 +27,16 @@ const GuestFooter2: React.FC<GuestFooter2Props> = ({ logoFooter, description, ma
         const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/main/config/client`);
         const payload = await res.json();
         if (!res.ok) {
-          console.log(payload);
           throw 'Error'
         }
         setInfoFooter({ ...payload.data });
       } catch (error) {
-
+        console.log('Error');
       }
     }
     // getData()
   }, [])
 
-  console.log({ infoFooter });
   return (
     <>
       {['verify', 'verify_email'].every(p => !pathname.endsWith(p)) && (

@@ -93,7 +93,6 @@ export default function GuestHeader() {
       setLoading(false);
     } finally {
       setLoading(false);
-      console.log(2);
     }
   }
 
@@ -207,7 +206,6 @@ export default function GuestHeader() {
                         <div className='flex gap-2 items-center text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700 cursor-pointer' onClick={() => {
                           if (pathname !== '/auth/login') {
                             localStorage.setItem('historyPath', pathname);
-                            console.log(pathname);
                             router.push('/auth/login');
                           }
 

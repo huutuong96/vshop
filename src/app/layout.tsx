@@ -94,8 +94,8 @@ export default async function RootLayout({
       </html>
     );
 
+
   } catch (error) {
-    console.log(error);
     return (
       <TestABX />
     )

@@ -10,12 +10,11 @@ import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { closestCenter, defaultDropAnimationSideEffects, DndContext, DragEndEvent, DragOverlay, DragStartEvent, DropAnimation, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, horizontalListSortingStrategy, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import SortableImage from "@/app/(shop)/shop/product/new/sortable-image";
-import SortableItem from "@/app/(shop)/shop/product/new/sortable-item";
+import SortableItem from "@/app/(shop)/shop/product/list/[id]/sortable-item";
 
 type Props = {
   watchedImages: string[],
-  productFormHandle: UseFormReturn<Product>,
+  productFormHandle: any,
   tag?: boolean,
   setTag?: any
 }

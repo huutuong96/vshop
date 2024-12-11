@@ -21,10 +21,8 @@ export default async function VerifyEmail1Page({
     })
     const payload = await res.json();
     if (!res.ok) {
-      console.log(payload);
       return <div>Error</div>
     } else {
-      console.log(payload);
       return <div className="h-screen w-full bg-gray-100 flex justify-center py-[100px] absolute top-0 left-0">
         <div>
           <div className='bg-white border w-[400px] h-auto p-10'>

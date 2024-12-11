@@ -103,7 +103,6 @@ export default function NewProductForm() {
       })
       const payload = await resToServer.json();
       if (resToServer.ok) {
-        console.log(payload);
         setLoading(false)
         toast({
           variant: 'success',
@@ -112,7 +111,6 @@ export default function NewProductForm() {
         // router.push('/shop/product/list')
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
     } finally {
       setLoading(false);

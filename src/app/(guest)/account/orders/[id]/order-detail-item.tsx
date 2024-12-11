@@ -40,7 +40,6 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
         throw 'Error';
       }
       const payload = await res.json();
-      console.log(payload);
       setOpen(false);
       setOrderStatus(10);
     } catch (error) {

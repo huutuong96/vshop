@@ -7,6 +7,16 @@ import { useEffect, useState } from 'react'
 import { useFieldArray, UseFieldArrayReturn, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 const FromDataSchema = z.object({
   price: z.number({ message: "Vui long nhap" }).min(1),
@@ -21,6 +31,7 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
   variantFields: any
   productFormHandle: any
 }) {
+  const [a, setA] = useState<any[]>([...productFormHandle.getValues('variant.variantProducts')])
 
   const { control, register, getValues, formState: { errors }, trigger, reset } = useForm<FormData>({
     resolver: zodResolver(FromDataSchema),
@@ -37,22 +48,24 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
       trigger('sku');
       return
     }
-    const a = productFormHandle.getValues('variant.variantProducts').map((p: any) => ({
+    const b = variantProductFields.map((p: any) => ({
       ...p,
       price: getValues('price'),
       stock: getValues('stock'),
       sku: getValues('sku')
     }));
-    productFormHandle.setValue('variant.variantProducts', [...a]);
+    productFormHandle.setValue('variant.variantProducts', [...b]);
   }
 
   useEffect(() => {
     reset({ price: 0, stock: 0, sku: "" })
   }, [variantProductFields])
 
+  console.log({ abx: productFormHandle.getValues('variant.variantProducts'), a });
+
   return (
     <>
-      {productFormHandle.getValues('variant')?.variantProducts && (
+      {/* {productFormHandle.getValues('variant')?.variantProducts && (
         <>
           <div className="w-full flex mb-4">
             <div className="flex h-8">
@@ -93,36 +106,37 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
             <div className='text-sm px-1 text-red-500'>{errors.sku?.message && errors.sku.message}</div>
           </div>
         </>
-      )}
+      )} */}
       <div className="w-full">
         <div className='w-full flex'>
           {productFormHandle.getValues('variant')?.variantProducts && (
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <td className="h-20 w-[120px]">
+            <Table className='w-full'>
+              <TableHeader>
+
+                <TableRow>
+                  <TableHead className="h-20 w-[120px]">
                     <div className="h-full w-full p-3 flex items-center justify-center text-[14px] font-semibold text-center">Ảnh</div>
-                  </td>
+                  </TableHead>
                   {variantFields.map((item: any, index: number) => (
-                    <td key={index} className="h-20 w-[120px]">
+                    <TableHead key={index} className="h-20 w-[120px]">
                       <div className="h-full w-full p-3 flex items-center justify-center text-[14px] font-semibold text-center">{variantFields[index].attribute || `Nhóm phân loại ${index + 1}`}</div>
-                    </td>
+                    </TableHead>
                   ))}
-                  <td className="h-20 w-[120px]">
+                  <TableHead className="h-20 w-[120px]">
                     <div className="h-full w-full p-3 flex items-center justify-center text-[14px] font-semibold text-center">Giá</div>
-                  </td>
-                  <td className="h-20 w-[120px]">
+                  </TableHead>
+                  <TableHead className="h-20 w-[120px]">
                     <div className="h-full w-full p-3 flex items-center justify-center text-[14px] font-semibold text-center">Kho hàng</div>
-                  </td>
-                  <td className="h-20 w-[120px]">
+                  </TableHead>
+                  <TableHead className="h-20 w-[120px]">
                     <div className="h-full w-full p-3 flex items-center justify-center text-[14px] font-semibold text-center">SKU phân loại</div>
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {variantProductFields.map((item: any, index: number) => (
-                  <tr key={index}>
-                    <td className="h-20 w-[120px]">
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {productFormHandle.getValues('variant.variantProducts').map((item: any, index: number) => (
+                  <TableRow key={index}>
+                    <TableCell className="h-20 w-[120px]">
                       <div className="h-full w-full p-3 flex items-center justify-center text-[14px] text-center">
                         {item.image ? (
                           <img className="size-12" src={item.image} alt="" />
@@ -130,68 +144,90 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
                           <Image strokeWidth={1.25} className="size-8" />
                         )}
                       </div>
-                    </td>
+                    </TableCell>
                     {item.attributes.map((it: any, subIndex: number) => (
-                      <td key={it.value} className="w-[120px]">
+                      <TableCell key={it.value} className="w-[120px]">
                         <div className="px-4 py-6 flex items-center justify-center text-[14px]">{it.value}</div>
-                      </td>
+                      </TableCell>
                     ))}
-                    <td className="">
+                    <TableCell className="">
                       <div className="px-4 py-6 flex items-center justify-center text-[14px]">
-                        <div className="border w-56 h-8 px-3 py-1 flex rounded">
-                          <div className="flex items-center text-[12px] pr-2 text-gray-400">
-                            ₫
-                            <div className="ml-2 border-r h-full"></div>
+                        <div className='relative'>
+                          <div className="border w-56 h-8 px-3 py-1 flex rounded">
+                            <div className="flex items-center text-[12px] pr-2 text-gray-400">
+                              ₫
+                              <div className="ml-2 border-r h-full"></div>
+                            </div>
+                            <input
+                              // onChange={(e) => {
+                              //   productFormHandle.setValue(`variant.variantProducts.${index}.price`, +e.target.value)
+                              // }}
+                              // value={productFormHandle.getValues(`variant.variantProducts.${index}.price`)}
+                              {...productFormHandle.register(`variant.variantProducts.${index}.price`, {
+                                valueAsNumber: true,
+                              })}
+                              type='number'
+                              className="w-full h-full outline-none text-[14px]"
+                              placeholder="Giá"
+                            />
                           </div>
-                          <input
-                            onChange={(e) => {
-                              productFormHandle.setValue(`variant.variantProducts.${index}.price`, +e.target.value)
-                            }}
-                            value={productFormHandle.getValues(`variant.variantProducts.${index}.price`)}
-                            type='number'
-                            className="w-full h-full outline-none text-[14px]"
-                            placeholder="Giá"
-                          />
+                          <div className="text-sm mt-2 h-5 text-red-500 absolute top-7">
+                            {productFormHandle.formState.errors.variant?.variantProducts?.[index]?.price?.message ? productFormHandle.formState.errors.variant.variantProducts[index].price.message : ''}
+                          </div>
+
                         </div>
-                      </div>
-                    </td>
-                    <td className="">
-                      <div className="px-4 py-6 flex items-center justify-center text-[14px]">
-                        <div className="border w-56 h-8 px-3 py-1 flex rounded">
-                          <input
-                            onChange={(e) => {
-                              productFormHandle.setValue(`variant.variantProducts.${index}.stock`, +e.target.value)
-                            }}
-                            value={productFormHandle.getValues(`variant.variantProducts.${index}.stock`)}
-                            type='number'
-                            className="w-full h-full outline-none text-[14px]"
-                            placeholder="Kho hàng"
-                          />
-                        </div>
+
+
                       </div>
 
-                    </td>
-                    <td className="">
+                    </TableCell>
+                    <TableCell className="">
                       <div className="px-4 py-6 flex items-center justify-center text-[14px]">
-                        <div className="border w-56 h-8 px-3 py-1 flex rounded">
-                          <input
-                            onChange={(e) => {
-                              productFormHandle.setValue(`variant.variantProducts.${index}.sku`, e.target.value)
-                            }}
-                            value={productFormHandle.getValues(`variant.variantProducts.${index}.sku`)}
-                            className="w-full h-full outline-none text-[14px]"
-                            type='text'
-                            placeholder="sku"
-                          />
+                        <div className='relative'>
+                          <div className="border w-56 h-8 px-3 py-1 flex rounded">
+                            <input
+                              {...productFormHandle.register(`variant.variantProducts.${index}.stock`, {
+                                valueAsNumber: true,
+                              })}
+                              type='number'
+                              className="w-full h-full outline-none text-[14px]"
+                              placeholder="Kho hàng"
+                            />
+                          </div>
+                          <div className="text-sm mt-2 h-5 text-red-500 absolute top-7">
+                            {productFormHandle.formState.errors.variant?.variantProducts?.[index]?.stock?.message ? productFormHandle.formState.errors.variant.variantProducts[index].stock.message : ''}
+                          </div>
                         </div>
+
                       </div>
 
-                    </td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="">
+                      <div className="px-4 py-6 flex items-center justify-center text-[14px]">
+                        <div className='relative'>
+                          <div className="border w-56 h-8 px-3 py-1 flex rounded">
+                            <input
+                              {...productFormHandle.register(`variant.variantProducts.${index}.sku`)}
+                              className="w-full h-full outline-none text-[14px]"
+                              type='text'
+                              placeholder="sku"
+                            />
+                          </div>
+                          <div className="text-sm mt-2 h-5 text-red-500 absolute top-7">
+                            {productFormHandle.formState.errors.variant?.variantProducts?.[index]?.sku?.message ? productFormHandle.formState.errors.variant.variantProducts[index].sku.message : ''}
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+
+            </Table>
           )}
+
 
         </div>
       </div>
