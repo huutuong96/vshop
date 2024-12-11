@@ -24,7 +24,7 @@ import Link from "next/link";
 
 
 
-function ListProductItem({ p, handleDeleteProduct, }: { p: any, handleDeleteProduct: (id: number) => Promise<void> }) {
+function ListProductItem({ p, handleDeleteProduct, onChecked, listIdChecked }: { p: any, listIdChecked: number[], onChecked: (id: number) => void, handleDeleteProduct: (id: number) => Promise<void> }) {
   let length = p.show_price ? (p.show_price as string).split(' - ').length : null;
   let show_price = ''
   if (length) {
@@ -44,7 +44,13 @@ function ListProductItem({ p, handleDeleteProduct, }: { p: any, handleDeleteProd
       <div className="py-4 border-b flex hover:bg-blue-100/20">
         <div className="w-full">
           <div className="w-full text-[14px] flex">
-            <Checkbox className="ml-4 mr-2 mt-4" />
+            <Checkbox
+              className="ml-4 mr-2 mt-4"
+              checked={listIdChecked.includes(p.id)}
+              onCheckedChange={(c) => {
+                let checked = c as boolean;
+                onChecked(p.id);
+              }} />
             <div className="flex-[2] p-2 flex items-center gap-4">
               <div className="w-full">
                 <div className="flex items-center gap-4">
