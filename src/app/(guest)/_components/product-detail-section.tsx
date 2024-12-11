@@ -164,9 +164,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
 
 
-
-
-
   return (
     <>
       {success && (
@@ -405,57 +402,15 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               </div>
             </div>
             <div className="w-full flex gap-2 mt-4">
-              {selectedProduct.shop.is_follow === null ? (
-                <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black"
-                  onClick={async () => {
-                    try {
-                      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/follows/${selectedProduct.shop.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                          Authorization: `Bearer ${clientAccessToken.value}`,
-                          'Content-Type': 'application/json',
-                        },
-                      });
-                      console.log(response);
-
-                      if (!response.ok) {
-                        throw new Error('Follow cửa hàng thất bại');
-                      };
-                      toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
-                    } catch (error) {
-                      toast({ title: 'Error', variant: 'destructive' });
-                    }
-                  }}
-                >
-                  <Heart size={20} />
+              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black"
+              >
+                <Heart size={20} />
+                {info?.followers ? (info.followers.some((c: any) => c.shop_id === product.shop_id) ? (
                   <span className="ml-2">Đã theo dõi</span>
-                </Button>
-              ) : (
-                <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black"
-                  onClick={async () => {
-                    try {
-                      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/up_follow/${selectedProduct.shop.id}`, {
-                        method: 'POST',
-                        headers: {
-                          Authorization: `Bearer ${clientAccessToken.value}`,
-                          'Content-Type': 'application/json',
-                        },
-                      });
-                      console.log(response);
-
-                      if (!response.ok) {
-                        throw new Error('Follow cửa hàng thất bại');
-                      };
-                      toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
-                    } catch (error) {
-                      toast({ title: 'Error', variant: 'destructive' });
-                    }
-                  }}
-                >
-                  <Heart size={20} />
-                  <span className="ml-2">Theo dõi shop</span>
-                </Button>
-              )}
+                ) : (
+                  <span className="ml-2">Theo dõi</span>
+                )) : <span className="ml-2">Theo dõi</span>}
+              </Button>
 
               <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
                 <Link className="flex items-center" href={`/vendors/${selectedProduct.shop_id}`}>
@@ -509,6 +464,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
             </div>
           </div>
         </div>
+
         <div className="w-3/5">
           <div className="w-full p-4 shadow border mb-4">
             <div className="text-[16px] font-bold mb-4">
