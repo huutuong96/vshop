@@ -1,4 +1,4 @@
-import { CalendarCheck, ClipboardCheck, DollarSign, MessageSquare, Settings, SquareUser, Tag, Tags } from "lucide-react";
+import { CalendarCheck, ChartArea, ClipboardCheck, DollarSign, MessageSquare, Settings, SquareUser, Tag, Tags } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -64,6 +64,15 @@ const sidebarItems: SidebarItem[] = [
     }, {
       title: 'Số Dư Tài Khoản',
       href: 'wallet'
+    }]
+  },
+  {
+    icon: <ChartArea strokeWidth={1.5} size={20} />,
+    title: 'Dữ liệu',
+    path: 'datacenter',
+    subItems: [{
+      title: 'Phân Tích Bán Hàng',
+      href: 'overview'
     }]
   },
   {

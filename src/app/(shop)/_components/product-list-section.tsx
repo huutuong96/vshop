@@ -109,7 +109,7 @@ export default function ProductListSection() {
   // Debounce function with lodash
   const debouncedSearch = useMemo(() => {
     return debounce(() => {
-      const controller = new AbortController(); // Tạo AbortController
+      const controller = new AbortController();
       fetchProducts(
         page,
         sort,
@@ -117,16 +117,13 @@ export default function ProductListSection() {
         limit,
         categoryId,
         searchRef.current,
-        controller.signal // Truyền signal vào fetchProducts
+        controller.signal
       );
-
       return () => {
-        controller.abort(); // Hủy yêu cầu khi có thay đổi
+        controller.abort();
       };
     }, 500);
-  },
-    [page, sort, status, limit, categoryId]
-  );
+  }, [page, sort, status, limit, categoryId]);
 
   const fetchProducts = async (page: number, sort: string, status: number, limit: string, categoryId: number, search: string, signal: AbortSignal) => {
     try {
@@ -145,7 +142,7 @@ export default function ProductListSection() {
             Authorization: `Bearer ${clientAccessToken.value}`,
           },
           cache: 'no-cache',
-          signal
+          // signal
         }
       );
       const payload = await response.json();
@@ -164,13 +161,24 @@ export default function ProductListSection() {
   };
 
   useEffect(() => {
-    debouncedSearch();
+    const controller = new AbortController();
 
-    // Cleanup debounce on unmount
+    // Gọi fetchProducts trực tiếp thay vì debounce
+    fetchProducts(
+      page,
+      sort,
+      status,
+      limit,
+      categoryId,
+      searchRef.current,
+      controller.signal
+    );
+
+    // Cleanup signal khi unmount
     return () => {
-      debouncedSearch.cancel();
+      controller.abort();
     };
-  }, [debouncedSearch, products.length]);
+  }, [page, sort, status, limit, categoryId]);
 
   const resetState = () => {
     setPage(1);
@@ -181,9 +189,8 @@ export default function ProductListSection() {
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    searchRef.current = e.target.value; // Lưu giá trị mới vào ref
-    debouncedSearch(); // Gọi debounce để thực hiện tìm kiếm
-    setListIdSelected([]);
+    searchRef.current = e.target.value;
+    debouncedSearch(); // Gọi debounce khi search thay đổi
   };
 
 
@@ -195,37 +202,42 @@ export default function ProductListSection() {
   const handleDeleteProduct = async (id: number) => {
     try {
       setLoading(true);
+
+      // Gửi yêu cầu xóa sản phẩm
       const res = await fetch(`${apiurl}/api/shop/product/remove/${id}`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${clientAccessToken.value}`
-        }
-      })
-      if (!res.ok) {
-        throw 'Xoa that bai!'
-      }
-      setProducts(prev => {
-        const a = prev.filter(p => p.id !== id);
-        return [...a]
-      })
-      setListIdSelected([]);
-      toast({
-        variant: 'success',
-        title: "Thành công",
-        content: 'Xóa sản phẩm thành công'
-      })
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: "Error",
-        content: error as string
-      })
-      setLoading(false);
-    } finally {
-      // setLoading(false);
+          Authorization: `Bearer ${clientAccessToken.value}`,
+        },
+      });
 
+      if (!res.ok) {
+        throw new Error("Xóa thất bại!");
+      }
+
+      // Load lại danh sách sản phẩm từ server
+      await fetchProducts(page, sort, status, limit, categoryId, searchRef.current, new AbortController().signal);
+
+      // Reset danh sách sản phẩm đã chọn
+      setListIdSelected([]);
+
+      // Thông báo thành công
+      toast({
+        variant: "success",
+        title: "Thành công",
+        content: "Xóa sản phẩm thành công",
+      });
+    } catch (error) {
+      // Xử lý lỗi
+      toast({
+        variant: "destructive",
+        title: "Error",
+        content: (error as Error).message,
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
   const handleChangeCategoryId = useCallback((id: number) => {
     setCategoryId(id);
     setListIdSelected([]);
@@ -247,27 +259,44 @@ export default function ProductListSection() {
   const handleMultipleDelete = async () => {
     try {
       setLoading(true);
+
+      // Gửi yêu cầu xóa danh sách sản phẩm
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/destroyArray`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${clientAccessToken.value}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${clientAccessToken.value}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ arrayID: listIdSelected })
+        body: JSON.stringify({ arrayID: listIdSelected }), // Gửi danh sách ID cần xóa
       });
+
       if (!res.ok) {
-        throw 'Error';
+        throw new Error("Xóa thất bại!");
       }
-      setProducts(prev => {
-        return prev.filter(p => !listIdSelected.includes(p.id));
-      })
 
+      // Load lại danh sách sản phẩm từ server sau khi xóa
+      await fetchProducts(page, sort, status, limit, categoryId, searchRef.current, new AbortController().signal);
+
+      // Reset danh sách ID đã chọn
+      setListIdSelected([]);
+
+      // Thông báo thành công
+      toast({
+        variant: "success",
+        title: "Thành công",
+        content: "Xóa các sản phẩm thành công",
+      });
     } catch (error) {
-      console.log('Error');
+      // Thông báo lỗi
+      toast({
+        variant: "destructive",
+        title: "Error",
+        content: (error as Error).message,
+      });
     } finally {
-
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <>

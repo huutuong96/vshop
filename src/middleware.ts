@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const authPaths = ['/auth/login', '/auth/register', '/auth/verify'];
-const privatePaths = ['/account', '/checkout', '/account/profile', '/account/orders']
+const privatePaths = ['/account', '/checkout', '/account/profile', '/account/orders', '/cart']
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {

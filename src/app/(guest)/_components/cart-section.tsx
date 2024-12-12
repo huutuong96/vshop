@@ -80,7 +80,7 @@ export default function CartSection() {
         dispatch(addVouchers({ mainVouchers, shopVouchers }))
 
       } catch (error) {
-        toast({ title: 'Error', variant: 'destructive' })
+        dispatch(addVouchers({ mainVouchers: [], shopVouchers: [] }))
       } finally {
         setLoading(false);
       }
