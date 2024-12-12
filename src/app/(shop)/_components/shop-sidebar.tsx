@@ -83,6 +83,9 @@ const sidebarItems: SidebarItem[] = [
     subItems: [{
       title: 'Thông Tin Shop',
       href: 'info'
+    }, {
+      title: 'Thiết Lập Shop',
+      href: 'all-setting'
     }]
   },
 

@@ -20,11 +20,12 @@ import { clientAccessToken } from '@/lib/http';
 import envConfig from '@/config';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import Link from 'next/link';
+import { useNotification } from '@/context-apis/notification-provider';
 
 
 export default function ShopHeader() {
   const info = useAppInfoSelector(state => state.profile.info);
-
+  const { notifications } = useNotification();
 
 
   return (
@@ -54,20 +55,24 @@ export default function ShopHeader() {
         </div>
         <div className="flex items-center">
           <div className="flex h-full px-4 border-r-[2px] items-center">
-            <HoverCard openDelay={200} closeDelay={100}>
-              <HoverCardTrigger>
-                <div className="relative">
-                  <div className='px-3 hover:bg-gray-200'>
-                    <Bell strokeWidth={1.5} className="h-[56px] w-6" />
-                    <div className="absolute top-2 right-1 bg-blue-500 flex items-center justify-center text-white rounded-full text-[12px] size-4">0</div>
-                  </div>
-                </div>
-              </HoverCardTrigger>
-              <HoverCardContent align='end' className='bg-none p-0 w-80'>
-                <Notifications />
-                {/* <div>he</div> */}
-              </HoverCardContent>
-            </HoverCard>
+            {Object.entries(info).length > 0 && notifications && (
+              <div className="relative">
+                <HoverCard openDelay={200} closeDelay={100}>
+                  <HoverCardTrigger className='w-auto h-auto'>
+                    <div className="">
+                      <div className=' relative cursor-pointer'>
+                        <Bell strokeWidth={1.5} className=" w-6" />
+                        <div className='absolute -top-3 -right-4 text-[10px] w-6 h-4 p-1 flex items-center justify-center bg-red-500 rounded-xl text-white'>{notifications.total}</div>
+                      </div>
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent align='end' className='bg-none p-0 w-80'>
+                    <Notifications />
+                    {/* <div>he</div> */}
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+            )}
           </div>
           <div className='h-full pl-4'>
             <HoverCard openDelay={200} closeDelay={100}>

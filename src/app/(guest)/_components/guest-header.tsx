@@ -18,6 +18,7 @@ import {
 import LoadingScreen from '@/app/(guest)/_components/loading-screen';
 import { addAccessToken, addCart, addInfo } from '@/redux/slices/profile.slice';
 import envConfig from '@/config';
+import { useNotification } from '@/context-apis/notification-provider';
 
 
 const tags: { title: string, icon: any }[] = [
@@ -71,6 +72,11 @@ export default function GuestHeader() {
   const dispatch = useAppInfoDispatch();
   const router = useRouter();
   const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
+  const { fetchNotifications, notifications } = useNotification();
+
+  if (typeof window !== 'undefined' && info) {
+    console.log(notifications);
+  }
 
 
   const handleLogout = async () => {
@@ -130,13 +136,24 @@ export default function GuestHeader() {
                   </div>
                 </div>
                 <div className="nav-dangnhap flex items-center justify-end w-[400px] h-full gap-6">
-                  <div className="relative">
-                    <Bell
-                      className="cursor-pointer"
-                      strokeWidth={1.5}
-                      size={20}
-                    />
-                  </div>
+                  {Object.entries(info).length > 0 && (
+                    <div className="relative">
+                      <HoverCard openDelay={200} closeDelay={100}>
+                        <HoverCardTrigger className='w-auto h-auto'>
+                          <div className="">
+                            <div className=' relative cursor-pointer'>
+                              <Bell strokeWidth={1.5} className=" w-6" />
+                              <div className='absolute -top-[14.5px] -right-4 text-[10px] w-6 h-4 p-1 flex items-center justify-center bg-red-500 rounded-xl text-white'>{notifications?.total ? (notifications?.total > 9 ? '9+' : notifications?.total) : 0}</div>
+                            </div>
+                          </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent align='end' className='bg-none p-0 w-80'>
+                          <Notifications />
+                        </HoverCardContent>
+                      </HoverCard>
+                    </div>
+                  )}
+
                   <div className="relative">
                     <ShoppingBag
                       className="cursor-pointer"

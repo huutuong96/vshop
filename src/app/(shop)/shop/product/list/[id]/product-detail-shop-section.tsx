@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/table"
 import NewProductVariantTableTest from "@/app/(shop)/shop/product/new/new-product-variant-table-test";
 import VariantAttribute from "@/app/(shop)/shop/product/new/variant-attribute";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Asterisk, ImagePlus, Plus } from "lucide-react";
 import { nanoid } from "nanoid";
 import React, { useEffect, useRef, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, UseFieldArrayReturn, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import CategorySection from "@/app/(shop)/shop/product/new/category-section";
@@ -30,17 +30,6 @@ import CategorySection1 from "@/app/(shop)/shop/product/list/[id]/category-secti
 import NewProductVariantTableTest1 from "@/app/(shop)/shop/product/list/[id]/new-product-variant-table-test";
 import ImagesSection from "@/app/(shop)/shop/product/list/[id]/images-section";
 
-// let a = `{"name":"","description":"","base_price":0,"variant":{"variantAttributes":[{"attribute":"Màu sắc","values":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","value":"Đỏ","id":"KHEe7uPH2xNn"},{"id":"UvmWW-PShcR7","image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","value":"xanh"}]}],"variantProducts":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"KHEe7uPH2xNn","attribute":"Màu sắc","value":"Đỏ"}]},{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"UvmWW-PShcR7","attribute":"Màu sắc","value":"xanh"}]}]}}`
-
-// Schema cho từng thuộc tính của biến thể (e.g., màu sắc, kích thước)
-// const AttributeSchema = z.object({
-//   attribute: z.string().min(1, "Attribute name is required"),
-//   values: z.array(z.object({
-//     id: z.string(),
-//     image: z.string(),
-//     value: z.string().min(1)
-//   })),
-// });
 
 // Schema cho từng biến thể của sản phẩm
 const VariantSchema = z.object({

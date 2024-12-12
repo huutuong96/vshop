@@ -11,14 +11,19 @@ import { clientAccessToken } from "@/lib/http"
 import { formattedPrice } from "@/lib/utils"
 import { addCart } from "@/redux/slices/profile.slice"
 import { useAppDispatch } from "@/redux/store"
-import { Check, Heart, PhoneCall, ShoppingBasket, SquareCheckBig, Star, Store } from "lucide-react"
+import { Check, ChevronLeft, ChevronRight, Heart, PhoneCall, ShoppingBasket, SquareCheckBig, Star, Store } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 import { Label } from "@/components/ui/label";
 import { useAppInfoSelector } from "@/redux/stores/profile.store"
 import { isSet } from "lodash"
 import Link from "next/link"
+import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules"
 function formatTimeDifference(createdAt: string): string {
   const createdDate = new Date(createdAt);
   const now = new Date();
@@ -96,7 +101,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
 
 
-
   const handleAddToCart = async () => {
     if (!clientAccessToken.value) {
       router.push('/auth/login')
@@ -162,6 +166,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
+  console.log({ a: selectedProduct.shop });
 
 
   return (
@@ -375,18 +380,18 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
       <div className="w-full flex mt-6">
         <div className="w-2/5 pr-4 ">
-          <div className="shadow border p-4 w-full">
+          <div className="shadow bg-white border p-4 w-full">
             <div className="font-bold text-[16px]">Thông tin nhà cung cấp</div>
             <div className="flex mt-4 gap-4">
               <div className="size-16">
-                <div className="size-full border-2 rounded-full">
-                  <img src="https://static-00.iconduck.com/assets.00/nextjs-icon-512x512-y563b8iq.png" alt="" />
+                <div className="size-full ">
+                  <img className="size-full border-2 rounded-full" src={selectedProduct?.shop?.image || 'https://static-00.iconduck.com/assets.00/nextjs-icon-512x512-y563b8iq.png'} alt="" />
                 </div>
               </div>
               <div>
                 <div className="font-bold text-[16px]">{selectedProduct.shop.shop_name}</div>
                 <span className="text-[12px] text-gray-400">
-                  Đồng Nai |
+                  {selectedProduct?.shop?.province || 'Đồng Nai'} |
                   <span> 4.7 <span className="text-[#f0ce11] text-[14px]">★</span></span>
                 </span>
               </div>
@@ -426,40 +431,67 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               <div className="mt-4 text-[14px] font-bold">
                 Gợi ý thêm từ shop
               </div>
-              <div className="mt-4 w-full bg-gradient-to-b from-white to-blue-200">
-                <div className="w-full border overflow-hidden">
-                  <div className="w-[600px] translate-x-2 flex gap-2">
-                    {selectedProduct.shop.products.map((product: any, index: number) => {
-                      let length = product.show_price ? (product.show_price as string).split(' - ').length : null;
-                      let show_price = ''
-                      if (length) {
-                        if (length > 1) {
-                          show_price = (product.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
-                        } else {
-                          show_price = formattedPrice(+product.show_price)
-                        }
+              <div className="mt-4 w-full bg-gradient-to-b p-2 from-white to-blue-200 relative">
+                <button
+                  className="absolute top-1/2 left-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
+                  id="custom-prev"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                {/* Nút điều hướng phải */}
+                <button
+                  className="absolute top-1/2 right-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
+                  id="custom-next"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+
+                <Swiper
+                  modules={[Autoplay, EffectFade, Pagination, Navigation]}
+                  spaceBetween={10}
+                  slidesPerView={3}
+                  // slidesPerGroup={2}
+                  // pagination={{ clickable: true }}
+                  // autoplay={{ delay: 1500, disableOnInteraction: false }}
+                  loop
+                  navigation={{
+                    prevEl: '.custom-prev',
+                    nextEl: '.custom-next',
+                  }}
+                  className='w-full '
+                >
+                  {selectedProduct.shop.products.map((product: any, index: number) => {
+                    let length = product.show_price ? (product.show_price as string).split(' - ').length : null;
+                    let show_price = ''
+                    if (length) {
+                      if (length > 1) {
+                        show_price = (product.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
                       } else {
-                        show_price = formattedPrice(+product.price)
+                        show_price = formattedPrice(+product.show_price)
                       }
-                      return (
-                        <div key={index} className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                          <div className="size-[120px]">
-                            <Link href={`/products/${product.slug}`}>
-                              <img className="size-full object-cover" src={product.image} alt="" />
-                            </Link>
-                          </div>
-                          <div className="p-2">
-                            <p className="text-[14px] font-normal text-ellipsis">
-                              {product.name.length > 20 ? `${product.name.substring(0, 13)}...` : product.name}
-                            </p>
-                            <div className="w-full h-4"></div>
-                            <span className="text-[12px] text-red-500 font-bold">{formattedPrice(product.show_price)}</span>
-                          </div>
+                    } else {
+                      show_price = formattedPrice(+product.price)
+                    }
+                    return (
+                      <SwiperSlide key={index} className="mb-3 w-[140px] shadow-sm bg-white rounded-sm">
+                        <div className="size-[120px]">
+                          <Link href={`/products/${product.slug}`}>
+                            <img className="size-full object-cover" src={product.image} alt="" />
+                          </Link>
                         </div>
-                      )
-                    })}
-                  </div>
-                </div>
+                        <div className="p-2">
+                          <p className="text-[14px] font-normal text-ellipsis">
+                            {product.name.length > 20 ? `${product.name.substring(0, 13)}...` : product.name}
+                          </p>
+                          <div className="w-full h-4"></div>
+                          <span className="text-[12px] text-red-500 font-bold">{show_price}</span>
+                        </div>
+                      </SwiperSlide>
+                    )
+                  })}
+
+                </Swiper>
               </div>
             </div>
           </div>

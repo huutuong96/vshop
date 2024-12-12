@@ -173,9 +173,10 @@ export default function OrderShopItem({ o, setStatus }: { o: any, setStatus: any
   return (
     <div className="mt-4 ">
       <div className="px-4 h-10 flex rounded-tl-sm border  rounded-tr-sm items-center justify-between bg-[#f5f8fd]  text-black text-[14px]">
-        <div className="h-full flex items-center text-black gap-2 font-semibold">
-          <div className="h-full flex items-center">
+        <div className="h-full w-full flex items-center justify-between text-black gap-2 font-semibold">
+          <div className="h-full flex items-center gap-2">
             <CircleUserRound size={20} strokeWidth={1.5} />
+            <span>{o?.to_name || 'User'}</span>
           </div>
           <div className="flex h-full items-center">Mã đơn hàng: #{o.id}</div>
         </div>

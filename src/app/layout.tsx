@@ -9,6 +9,7 @@ import envConfig from "@/config";
 import { nanoid } from "nanoid";
 import { redirect } from "next/navigation";
 import TestABX from "@/app/test";
+import { NotificationProvider } from "@/context-apis/notification-provider";
 
 
 const nunito = Nunito({
@@ -88,7 +89,9 @@ export default async function RootLayout({
             test={test}
             addresses={addresses}
           >
-            {children}
+            <NotificationProvider>
+              {children}
+            </NotificationProvider>
           </ProfileProvider>
         </body>
       </html>

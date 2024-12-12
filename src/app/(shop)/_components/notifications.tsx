@@ -1,14 +1,16 @@
+'use client'
 import React from 'react';
 import { Bell } from 'lucide-react';
+import { useNotification } from '@/context-apis/notification-provider';
 
-interface Notification {
-  id: number;
-  icon: string;
-  title: string;
-  content: string;
-}
+// interface Notification {
+//   id: number;
+//   icon: string;
+//   title: string;
+//   content: string;
+// }
 
-const notifications: Notification[] = [
+const notifications: any[] = [
   {
     id: 1,
     icon: "🎫",
@@ -41,28 +43,38 @@ const notifications: Notification[] = [
   }
 ];
 
-export default function Notifications() {
+const Notifications: React.FC = () => {
+  const { notifications } = useNotification();
+
   return (
-    <div className="bg-white shadow-lg rounded-lg p-4 w-80">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white shadow-lg rounded-lg w-80">
+      <div className="flex items-center justify-between px-4 pb-2 pt-4 ">
         <h3 className="font-bold text-lg">Thông Báo Mới Nhận</h3>
         <Bell size={20} />
       </div>
-      <ul className="space-y-4">
-        {notifications.map((notification) => (
-          <li key={notification.id} className="flex items-start space-x-2">
-            <div className="text-2xl">{notification.icon}</div>
+      <ul className="">
+        {notifications?.data?.length > 0 && notifications.data.map((n: any) => (
+          <li key={n.id} className="flex items-start p-6 py-2 hover:bg-blue-50">
             <div className="flex-1">
-              <p className="text-sm font-semibold">{notification.title}</p>
-              <p className="text-xs text-gray-600">{notification.content}</p>
+              {/* Tiêu đề thông báo */}
+              <p className="text-sm font-semibold mb-1">{n.title}</p>
+
+              {/* Mô tả thông báo */}
+              <p className="text-xs text-gray-600 mb-1">{n.description}</p>
+
+              {/* Ngày tháng năm */}
+              <p className="text-[10px] text-gray-400 mt-1">
+                {new Date(n.created_at).toLocaleDateString()} - {new Date(n.created_at).toLocaleTimeString()}
+              </p>
             </div>
           </li>
         ))}
       </ul>
-      <div className="mt-4 text-center">
-        <button className="text-[#0E6AFF] font-semibold">Xem tất cả</button>
+      <div className="py-4 text-center">
+        <button className="text-blue-800 ">Xem tất cả</button>
       </div>
     </div>
   );
 };
 
+export default Notifications;

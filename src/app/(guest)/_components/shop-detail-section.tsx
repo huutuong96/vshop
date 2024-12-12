@@ -99,6 +99,8 @@ const handleChangeSearchParams = (page: string, filter: any, sort: string, categ
   return `${page ? `&page=${page}` : ''}${categoryId !== 0 ? `&category_id=${categoryId}` : ''}${filter ? `&${filter}` : ''}${sort !== 'abx' ? `&sort=${sort}` : ''}`
 }
 
+const mockImg = 'https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730028259/idtck4oah4fakc8oob09.jpg'
+
 export default function ShopDetailSection() {
   const params = useParams();
   const [open, setOpen] = useState(false);
@@ -131,7 +133,7 @@ export default function ShopDetailSection() {
           ])
           const shopInfoPayload = await shopInfoRes.json();
           const productsPayload = await productsRes.json();
-          
+
           if (!shopInfoRes.ok) {
             throw productsPayload
           }
@@ -166,7 +168,7 @@ export default function ShopDetailSection() {
               <div className="flex">
                 <div className="p-1">
                   <div className="size-[72px] ">
-                    <img className="size-full border rounded-full " src="https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730028259/idtck4oah4fakc8oob09.jpg" alt="" />
+                    <img className="size-full border rounded-full " src={shopInfo?.shop?.image || mockImg} alt="" />
                   </div>
                 </div>
                 <div className="p-1 flex justify-center w-full flex-col">
@@ -175,61 +177,61 @@ export default function ShopDetailSection() {
                   <div className="text-[12px]">{shopInfo?.shop?.visits || '0'} Lượt Truy Cập</div>
                 </div>
                 <div className="p-1 flex items-center">
-                    {shopInfo?.shop?.is_follow === false ? (
+                  {shopInfo?.shop?.is_follow === false ? (
                     <Button onClick={async () => {
-                          try {
-                            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/up_follow/${params.id}`, {
-                            method: 'POST',
-                            headers: {
+                      try {
+                        const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/up_follow/${params.id}`, {
+                          method: 'POST',
+                          headers: {
                             Authorization: `Bearer ${clientAccessToken.value}`,
                             'Content-Type': 'application/json',
-                            },
-                          });
-                          console.log(response);
+                          },
+                        });
+                        console.log(response);
 
-                          if (!response.ok) {
-                            throw new Error('Follow cửa hàng thất bại');
-                          }
-                          setShopInfo((prev: any) => ({
-                            ...prev,
-                            shop: {
+                        if (!response.ok) {
+                          throw new Error('Follow cửa hàng thất bại');
+                        }
+                        setShopInfo((prev: any) => ({
+                          ...prev,
+                          shop: {
                             ...prev.shop,
                             is_follow: true,
-                            },
-                          }));
-                          toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
-                          } catch (error) {
-                          toast({ title: 'Error', variant: 'destructive' });
-                          }
-                          }}>+ Theo dõi</Button>
-                          ) : (
+                          },
+                        }));
+                        toast({ title: 'Follow cửa hàng thành công', variant: 'success' });
+                      } catch (error) {
+                        toast({ title: 'Error', variant: 'destructive' });
+                      }
+                    }}>+ Theo dõi</Button>
+                  ) : (
                     <Button onClick={async () => {
-                            try {
-                            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/follows/${params.id}`, {
-                            method: 'DELETE',
-                            headers: {
+                      try {
+                        const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/follows/${params.id}`, {
+                          method: 'DELETE',
+                          headers: {
                             Authorization: `Bearer ${clientAccessToken.value}`,
                             'Content-Type': 'application/json',
-                            },
-                            });
-                            console.log(response);
+                          },
+                        });
+                        console.log(response);
 
-                            if (!response.ok) {
-                            throw new Error('Un Follow cửa hàng thất bại');
-                            }
-                            setShopInfo((prev: any) => ({
-                            ...prev,
-                            shop: {
-                              ...prev.shop,
-                              is_follow: false,
-                            },
-                            }));
-                            toast({ title: 'Bỏ Follow cửa hàng thành công', variant: 'success' });
-                            } catch (error) {
-                            toast({ title: 'Error', variant: 'destructive' });
-                            }
+                        if (!response.ok) {
+                          throw new Error('Un Follow cửa hàng thất bại');
+                        }
+                        setShopInfo((prev: any) => ({
+                          ...prev,
+                          shop: {
+                            ...prev.shop,
+                            is_follow: false,
+                          },
+                        }));
+                        toast({ title: 'Bỏ Follow cửa hàng thành công', variant: 'success' });
+                      } catch (error) {
+                        toast({ title: 'Error', variant: 'destructive' });
+                      }
                     }}>Bỏ theo dõi</Button>
-                    )}
+                  )}
                 </div>
               </div>
             </div>

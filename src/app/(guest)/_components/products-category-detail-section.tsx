@@ -156,7 +156,7 @@ export default function ProductsCategoryDetailSection() {
     <>
       <div className="w-full flex items-center justify-center">
         <div className="w-content pt-5">
-          <div className="mt-[30px]">
+          <div className="">
             <div className="w-full flex">
               <div className="flex-[0_0_11.25rem] mr-[22px]">
                 <div className="w-full border-b h-[50px] mb-[10px] flex items-center gap-3 font-bold">
