@@ -35,10 +35,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
+import { formattedPrice } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
 
 const invoices = [
   {
@@ -129,6 +132,11 @@ const initialChartConfig = {
     color: "green",
     dataKey: "revenue",
   },
+  orders: {
+    label: 'Tổng đơn hàng',
+    color: 'red',
+    dataKey: 'orders'
+  }
 };
 
 const allMetrics = {
@@ -177,36 +185,179 @@ const overviews: any[] = [
   }
 ]
 
+type InputData1 = Record<
+  string,
+  {
+    labelEN: string;
+    labelVN: string;
+    value: number;
+    isPrice: boolean;
+  }
+>;
+
+type ChartConfig1 = Record<
+  string,
+  {
+    label: string;
+    color: string;
+    dataKey: string;
+  }
+>;
+
+const colors = ["green", "red", "blue", "purple"]; // Màu sắc tùy ý
+const convertData = (data: InputData1): ChartConfig1 => {
+  const keys = Object.keys(data);
+  return keys.reduce((acc, key, index) => {
+    acc[key] = {
+      label: data[key].labelVN,
+      color: colors[index % colors.length], // Lặp màu theo thứ tự
+      dataKey: key,
+    };
+    return acc;
+  }, {} as ChartConfig1);
+};
+
+type OrderStatus = { label: string; value: string; tagStatus: boolean };
+
+const orderStatuses: OrderStatus[] = [
+  {
+    value: '&order_status=0',
+    label: 'Chờ xác nhận',
+    tagStatus: true
+  },
+  { value: '&order_status=1', label: 'Đã xác nhận', tagStatus: true },
+  { value: '&order_status=2', label: 'Đang chuẩn bị hàng', tagStatus: true },
+  { value: '&order_status=3', label: 'Đã đóng gói', tagStatus: true },
+  { value: '&order_status=4', label: 'Đã bàn giao vận chuyển', tagStatus: true },
+  { value: '&order_status=5', label: 'Đang vận chuyển', tagStatus: true },
+  { value: '&order_status=6', label: 'Giao hàng thất bại', tagStatus: true },
+  { value: '&order_status=7', label: 'Đã giao hàng', tagStatus: true },
+  { value: '&order_status=8', label: 'Hoàn thành', tagStatus: true },
+  { value: '&order_status=9', label: 'Hoàn trả', tagStatus: true },
+  { value: '&order_status=10', label: 'Đã hủy', tagStatus: true },
+  { value: '&status=1', label: 'Đã thanh toán', tagStatus: true }
+];
+
+const times = [
+  { label: 'Hôm nay', value: '1' },
+  { label: '7 Ngày trước', value: '2' },
+  { label: '30 Ngày trước', value: '3' },
+  { label: '1 Năm trước', value: '4' },
+]
+
+const fetchChartData = async (shopId: any, time: any, orderStatus: any, accessToken: any) => {
+  const response = await fetch(
+    `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_chart_shop/${shopId}?time=${time}${orderStatus}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-cache",
+    }
+  );
+  if (!response.ok) throw new Error("Failed to fetch chart data");
+  return response.json();
+};
+
+const fetchConfigData = async (shopId: any, time: any, orderStatus: any, accessToken: any) => {
+  const response = await fetch(
+    `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_shop/${shopId}?time=${time}${orderStatus}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-cache",
+    }
+  );
+  if (!response.ok) throw new Error("Failed to fetch config data");
+  return response.json();
+};
+
 export default function DataOverviewSection() {
-  const [chartConfig, setChartConfig] = useState(initialChartConfig);
+  // const [chartConfig, setChartConfig] = useState(initialChartConfig);
   const info = useAppInfoSelector(state => state.profile.info);
+  // const [chartConfig1, setChartConfig1] = useState<any>();
+  // const [chartData, setChartData] = useState<any[]>([]);
+  const [time, setTime] = useState("1");
+  const [orderStatus, setOrderStatus] = useState("&order_status=0");
+  const [chartData, setChartData] = useState([]);
+  const [chartConfig1, setChartConfig1] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [chartConfig2, setChartConfig2] = useState<any>(null);
+
+
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       const [chartDataRes, configRes] = await Promise.all([
+  //         fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_chart_shop/${info.shop_id}?time=1&order_status=0`, {
+  //           headers: {
+  //             'Authorization': `Bearer ${clientAccessToken.value}`,
+
+  //           },
+  //           cache: 'no-cache'
+  //         }),
+  //         fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_shop/${info.shop_id}?time=1&order_status=0`, {
+  //           headers: {
+  //             'Authorization': `Bearer ${clientAccessToken.value}`,
+
+  //           },
+  //           cache: 'no-cache'
+  //         })
+  //       ])
+  //       if (!configRes.ok || !chartDataRes.ok) {
+  //         throw 'Error';
+  //       }
+  //       const configPayload = await configRes.json();
+  //       const chartDataPayload = await chartDataRes.json();
+  //       setChartConfig1(configPayload.data);
+  //       setChartData([...chartDataPayload.data]);
+  //     } catch (error) {
+
+  //     }
+  //   }
+  //   if (info) {
+  //     getData()
+  //   }
+  // }, [])
+  // Callback cho sự kiện thay đổi giá trị Select
+  const handleTimeChange = useCallback((value: any) => setTime(value), []);
+  const handleOrderStatusChange = useCallback((value: any) => setOrderStatus(value), []);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const [chartDataRes, configRes] = await Promise.all([
+        fetchChartData(info.shop_id, time, orderStatus, clientAccessToken.value),
+        fetchConfigData(info.shop_id, time, orderStatus, clientAccessToken.value),
+      ]);
+      setChartData(chartDataRes.data);
+      let a = convertData(configRes.data)
+      setChartConfig2(a);
+      setChartConfig1(configRes.data);
+    } catch (err) {
+      toast({
+        title: 'Error fetching data',
+        variant: 'destructive'
+      })
+    } finally {
+      setLoading(false);
+    }
+  }, [info, time, orderStatus, clientAccessToken]);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const [configRes, dataChartRes] = await Promise.all([
-          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_chart_shop/${info.shop_id}?time=1&order_status=0`, {
-            headers: {
-              'Authorization': `Bearer ${clientAccessToken.value}`,
-
-            }
-          }),
-          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_shop/${info.shop_id}?time=1&order_status=0`, {
-            headers: {
-              'Authorization': `Bearer ${clientAccessToken.value}`,
-
-            }
-          })
-        ])
-
-      } catch (error) {
-
-      }
-    }
     if (info) {
-      getData()
+      fetchData();
     }
-  }, [])
+  }, [info, fetchData]);
+
+  if (typeof window !== 'undefined') {
+    console.log({ chartData });
+  }
+
+
 
   return (
     <div className="w-full">
@@ -217,7 +368,7 @@ export default function DataOverviewSection() {
       </div>
       <div className="w-full bg-white mb-4 px-6 py-4 rounded-sm shadow-sm">
         <div className="flex gap-4 items-center">
-          <Select value="1">
+          <Select value={time} onValueChange={(v) => setTime(v)}>
             <SelectTrigger className="w-auto">
               <div className="flex gap-4 px-2">
                 Khung thời gian
@@ -226,14 +377,13 @@ export default function DataOverviewSection() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="1">Hôm nay</SelectItem>
-                <SelectItem value="2">Trong 7 ngày qua</SelectItem>
-                <SelectItem value="3">Trong 30 ngày qua</SelectItem>
-                <SelectItem value="4">Trong 1 năm qua</SelectItem>
+                {times.map(t => (
+                  <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select value="1">
+          <Select value={orderStatus} onValueChange={(v) => setOrderStatus(v)}>
             <SelectTrigger className="w-auto">
               <div className="flex gap-4 px-2">
                 Loại đơn hàng
@@ -242,9 +392,9 @@ export default function DataOverviewSection() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="1">Đơn hàng đã đặt</SelectItem>
-                <SelectItem value="2">Đơn hàng đã xác nhận</SelectItem>
-                <SelectItem value="3">Đơn hàng đã thanh toán</SelectItem>
+                {orderStatuses.map(o => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -252,37 +402,64 @@ export default function DataOverviewSection() {
       </div>
       <div className="w-full bg-white mb-4 px-6 py-4 rounded-sm shadow-sm">
         <div className="mb-4">Tổng quan</div>
-        <ScrollArea className="w-full h-[150px] whitespace-nowrap rounded-md">
-          <div className="flex w-max">
-            <div className="flex gap-3 w-max">
-              {overviews.map((o, index) => (
+        <div className="flex gap-4">
+          {loading
+            ? Array(4)
+              .fill(null) // Giả định có 4 skeleton khi đang tải
+              .map((_, index) => (
                 <div
                   key={index}
-                  className="w-[calc(100%/5)] h-[125px] border rounded-sm px-4 py-3 shrink-0"
+                  className="flex-1 h-[125px] border rounded-sm px-4 py-3 shadow"
                 >
-                  <div className="h-9 mb-1">
-                    <span className="text-sm">{o.label}</span>
-                  </div>
-                  <div className="mb-1">
-                    <span className="text-xl">{o.value}</span>
-                  </div>
-                  <div className="text-[12px] text-gray-400">so với năm trước</div>
+                  <Skeleton className="h-9 mb-1 w-1/2" /> {/* Skeleton cho tiêu đề */}
+                  <Skeleton className="h-6 mb-1 w-1/3" /> {/* Skeleton cho giá trị */}
+                  <Skeleton className="h-4 w-1/4" /> {/* Skeleton cho text nhỏ */}
                 </div>
-              ))}
-            </div>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+              ))
+            : chartConfig1 &&
+            Object.entries(chartConfig1).map(([key, config]: [key: string, config: any], index: number) => (
+              <div
+                key={index}
+                className="flex-1 h-[125px] border rounded-sm px-4 py-3 shadow"
+              >
+                <div className="h-9 mb-1">
+                  <span className="text-sm font-medium">{config.labelVN}</span>
+                </div>
+                <div className="mb-1">
+                  <span className="text-xl font-medium">
+                    {config.isPrice ? formattedPrice(+config.value) : config.value}
+                  </span>
+                </div>
+                {/* <div className="text-[12px] text-gray-400">
+                  so với năm trước
+                </div> */}
+              </div>
+            ))}
+        </div>
         <div className="w-full">
-          <div>Biểu đồ</div>
-          {chartConfig && chartData && (
+          <div className="my-4 mt-8 font-medium">Biểu đồ</div>
+          {chartConfig2 && (
             <Card>
               <CardHeader>
-                <CardTitle>Line Chart - Multiple</CardTitle>
-                <CardDescription>January - June 2024</CardDescription>
+                {loading && (
+                  <>
+                    <CardDescription>
+                      <Skeleton className="h-5 w-10" />
+                    </CardDescription>
+                    <CardDescription>
+                      <Skeleton className="h-5 w-24" />
+                    </CardDescription>
+                  </>
+                )}
+                {!loading && (
+                  <>
+                    <CardDescription className="flex gap-2 text-black"><span>Khung thời gian:</span> {times.find(t => t.value === time) ? times.find(t => t.value === time)?.label : ''}</CardDescription>
+                    <CardDescription className="flex gap-2 text-black"><span>Loại đơn hàng:</span> {orderStatuses.find(t => t.value === orderStatus) ? orderStatuses.find(t => t.value === orderStatus)?.label : ''}</CardDescription>
+                  </>
+                )}
               </CardHeader>
               <CardContent >
-                <ChartContainer className="h-[300px] w-full" config={chartConfig}>
+                <ChartContainer className="h-[300px] w-full" config={chartConfig2}>
                   <LineChart
                     accessibilityLayer
                     data={chartData}
@@ -302,7 +479,7 @@ export default function DataOverviewSection() {
 
                     <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
 
-                    {chartConfig && Object.entries(chartConfig).map(([key, config]: [key: string, config: any]) => (
+                    {chartConfig2 && Object.entries(chartConfig2).map(([key, config]: [key: string, config: any]) => (
                       <Line
                         key={key}
                         type="monotone"
@@ -318,10 +495,19 @@ export default function DataOverviewSection() {
               </CardContent>
             </Card>
           )}
-
+          <div className="w-full flex gap-4 items-center my-6 justify-center">
+            {chartConfig2 && Object.entries(chartConfig2).map(([key, config]: [key: string, config: any], index) => (
+              <div key={key} className="flex gap-1">
+                <div className={`size-4 rounded-sm`} style={{
+                  background: colors[index]
+                }}></div>
+                <div className="text-[12px]">{config.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      <div className="w-full">
+      {/* <div className="w-full">
         <div className="flex gap-4">
           <div className="w-2/3 bg-white mb-4 p-6 rounded-sm shadow-sm">
             <div className="text-xl">Thứ hạng sản phẩm</div>
@@ -397,7 +583,7 @@ export default function DataOverviewSection() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
