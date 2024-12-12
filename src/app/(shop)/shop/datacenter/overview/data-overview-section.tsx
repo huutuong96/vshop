@@ -36,6 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useEffect, useState } from "react";
+import envConfig from "@/config";
+import { clientAccessToken } from "@/lib/http";
+import { useAppInfoSelector } from "@/redux/stores/profile.store";
 
 const invoices = [
   {
@@ -176,9 +179,33 @@ const overviews: any[] = [
 
 export default function DataOverviewSection() {
   const [chartConfig, setChartConfig] = useState(initialChartConfig);
+  const info = useAppInfoSelector(state => state.profile.info);
 
   useEffect(() => {
+    const getData = async () => {
+      try {
+        const [configRes, dataChartRes] = await Promise.all([
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_chart_shop/${info.shop_id}?time=1&order_status=0`, {
+            headers: {
+              'Authorization': `Bearer ${clientAccessToken.value}`,
 
+            }
+          }),
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_shop/${info.shop_id}?time=1&order_status=0`, {
+            headers: {
+              'Authorization': `Bearer ${clientAccessToken.value}`,
+
+            }
+          })
+        ])
+
+      } catch (error) {
+
+      }
+    }
+    if (info) {
+      getData()
+    }
   }, [])
 
   return (
