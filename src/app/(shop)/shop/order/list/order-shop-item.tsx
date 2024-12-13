@@ -219,10 +219,14 @@ export default function OrderShopItem({ o, setStatus }: { o: any, setStatus: any
           <div className="w-[160px] px-2 font-semibold items-center">
 
 
-            {o.status === '1' ?
-              <div className="text-sm text-red-500">Chưa thanh toán</div>
+            {o.status === 1 ?
+              <div className="text-sm flex gap-4 items-center">
+                <div className="size-3 rounded-full bg-rose-600"></div>
+                Chưa thanh toán</div>
               :
-              <div className="text-sm text-green-600"> Đã thanh toán</div>
+              <div className="text-sm flex gap-4 items-center">
+                <div className="size-3 rounded-full bg-green-600"></div>
+                Đã thanh toán</div>
             }
           </div>
           <div className="flex-[0.5] px-2 flex flex-col">

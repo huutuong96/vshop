@@ -73,7 +73,7 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
                 <>
                   {titles.find(t => t.order_status === +o.order_status)?.valueString}
                   <span>|</span>
-                  {+o.status === 2 ? (
+                  {o.status === 1 ? (
                     <div className="text-green-700 font-medium">Đã thanh toán</div>
                   ) : (<div className="text-red-500 font-medium">Chưa thanh toán</div>)}
                 </>
