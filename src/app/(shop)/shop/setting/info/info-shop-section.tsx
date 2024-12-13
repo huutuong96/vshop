@@ -16,7 +16,7 @@ import Link from 'next/link';
 
 
 import { Button } from "@/components/ui/button";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Store } from "lucide-react";
 
 
 
@@ -151,7 +151,9 @@ const InfoShopSection = () => {
         >
           Thông tin cơ bản
         </button>
-        <Link target='_blank' href={`/vendors/${shop.id}`} className="bg-blue-800 text-white py-2 px-6 rounded-md hover:opacity-80">Xem Shop của tôi</Link>
+        <Link target='_blank' href={`/vendors/${shop.id}`} className="bg-blue-800 text-white py-2 px-6 flex gap-2 items-center rounded-md hover:opacity-80 text-sm">
+          <Store size={20} strokeWidth={1.25} />
+          Xem Shop của tôi</Link>
       </div>
 
       {/* Tab Content */}
@@ -205,7 +207,7 @@ const InfoShopSection = () => {
                           }
                         }} // Chặn click khi đang tải
                       >
-                        <span className="text-white font-semibold">
+                        <span className="text-white text-sm font-semibold">
                           {loading ? "Đang tải..." : "Cập nhật ảnh"}
                         </span>
                       </div>
