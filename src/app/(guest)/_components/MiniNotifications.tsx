@@ -3,6 +3,7 @@ import React from 'react';
 import { Bell } from 'lucide-react';
 import { useNotification } from '@/context-apis/notification-provider';
 import { useRouter } from 'next/navigation';
+import { timeAgo } from '@/app/(shop)/_components/shop-header';
 
 // interface Notification {
 //   id: number;
@@ -70,7 +71,7 @@ const Notifications: React.FC = () => {
 
                 {/* Ngày tháng năm */}
                 <p className="text-[10px] text-gray-400 mt-1">
-                  {new Date(n.created_at).toLocaleDateString()} - {new Date(n.created_at).toLocaleTimeString()}
+                  {timeAgo(n.created_at)}
                 </p>
               </div>
             </div>

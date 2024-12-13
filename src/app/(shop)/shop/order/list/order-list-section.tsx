@@ -211,10 +211,6 @@ export default function OrderListSection() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <div className="flex gap-2">
-            <button className="border-blue-500 text-blue-500 hover:border-blue-500 border text-[14px] p-2 rounded">Áp dụng</button>
-            <Button variant={'default'}>Đặt lại</Button>
-          </div>
         </div>
         <div className="px-4 py-2 text-[16px] font-semibold">{countOrder} Đơn hàng</div>
         <div className="px-4 py-2">

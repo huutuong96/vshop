@@ -83,7 +83,11 @@ function ListProductItem({ p, handleDeleteProduct, onChecked, listIdChecked }: {
                 <DropdownMenuContent align="end" className="">
                   <DropdownMenuGroup>
                     {p.status === 2 && (
-                      <DropdownMenuItem>Xem sản phẩm ở website</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link target="_blank" href={`/products/${p.slug}`}>
+                          Xem sản phẩm ở website
+                        </Link>
+                      </DropdownMenuItem>
                     )}
                     <DropdownMenuItem onClick={() => {
                       handleDeleteProduct(p.id)

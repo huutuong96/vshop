@@ -65,7 +65,7 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
 
   return (
     <>
-      {/* {productFormHandle.getValues('variant')?.variantProducts && (
+      {productFormHandle.getValues('variant')?.variantProducts && (
         <>
           <div className="w-full flex mb-4">
             <div className="flex h-8">
@@ -94,7 +94,7 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
               </div>
             </div>
             {productFormHandle.getValues('variant')?.variantProducts && (
-              <div onClick={handleChangeAllValueVariantProduct} className={`flex items-center justify-center cursor-pointer w-full ml-6 py-2 border text-[14px] bg-blue-700 text-white rounded hover:opacity-80 ${variantProductFields.length === 0 && 'cursor-not-allowed opacity-80'}`}>
+              <div onClick={handleChangeAllValueVariantProduct} className={`flex items-center justify-center cursor-pointer w-full ml-6 py-2 border text-[14px] bg-blue-800 shadow-sm text-white rounded hover:opacity-80 ${variantProductFields.length === 0 && 'cursor-not-allowed opacity-80'}`}>
                 Áp dụng cho tất cả sản phẩm phân loại
               </div>
             )}
@@ -106,7 +106,7 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
             <div className='text-sm px-1 text-red-500'>{errors.sku?.message && errors.sku.message}</div>
           </div>
         </>
-      )} */}
+      )}
       <div className="w-full">
         <div className='w-full flex'>
           {productFormHandle.getValues('variant')?.variantProducts && (

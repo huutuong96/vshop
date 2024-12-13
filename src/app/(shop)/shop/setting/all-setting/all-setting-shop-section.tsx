@@ -75,8 +75,8 @@ export default function AllSettingShopSection() {
       <div className="w-full my-4 text-xl font-medium">
         Chế độ Tạm Nghỉ
         {shop && shop.status === 3 && (
-          <div className="w-full">
-            Shop đang tạm nghỉ
+          <div className=" w-full bg-yellow-500/100 text-white text-center py-3 shadow-md z-50 mt-4">
+            <p className="text-lg font-semibold">Shop tạm nghỉ</p>
           </div>
         )}
 

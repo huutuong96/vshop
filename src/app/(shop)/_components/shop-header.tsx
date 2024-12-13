@@ -34,7 +34,7 @@ import { useState } from "react";
 import LoadingScreen from '@/app/(guest)/_components/loading-screen';
 
 
-function timeAgo(inputTime: string): string {
+export function timeAgo(inputTime: string): string {
   const now: Date = new Date();
   const time: Date = new Date(inputTime);
   const diff: number = Math.floor((now.getTime() - time.getTime()) / 1000); // Khoảng cách tính bằng giây
@@ -224,7 +224,7 @@ export default function ShopHeader() {
             {shop && (
               <HoverCard openDelay={200} closeDelay={100}>
                 <HoverCardTrigger>
-                  <div className="flex w-full h-full px-4 items-center gap-2 hover:bg-gray-200" >
+                  <div className="flex w-full h-full px-4 items-center gap-2 hover:bg-gray-200 cursor-pointer" >
                     <div className="size-[30px] rounded-full flex items-center justify-center">
                       <img className='size-full object-cover rounded-full' src={shop?.image || mockImg} alt="" />
                     </div>

@@ -337,10 +337,21 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                         </Button>
                         <Button className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
                       </>
-
                     </div>
                   </>
-                  : 'Shop tamj khoa'
+                  : (
+                    <div>
+                      <div className="w-full flex my-2">
+                        <>
+                          <Button disabled className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
+                            Thêm vào giỏ
+                          </Button>
+                          <Button disabled className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
+                        </>
+                      </div>
+                      <div className="w-full my-3 text-yellow-500 text-sm">Cửa hàng đang tạm khóa, xin vui lòng quay lại sau!</div>
+                    </div>
+                  )
               )}
 
 
