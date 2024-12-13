@@ -74,10 +74,6 @@ export default function GuestHeader() {
   const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
   const { fetchNotifications, notifications } = useNotification();
 
-  if (typeof window !== 'undefined' && info) {
-    console.log(notifications);
-  }
-
 
   const handleLogout = async () => {
     try {

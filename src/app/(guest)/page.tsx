@@ -24,7 +24,7 @@ export default async function HomePage() {
 
         <div className="w-full -mt-5">
           <BannerHomeGuest />
-          <CategoriesGuest />
+          {/* <CategoriesGuest /> */}
         </div>
         <div className="w-full flex justify-center">
           <div className="w-content mt-5 bg-white rounded-tl-sm rounded-tr-sm">
@@ -51,7 +51,7 @@ export default async function HomePage() {
         <div className="w-content mt-5">
           <GoiYSanPhamSection />
           <HangXinSection />
-          <Categories2 />
+          {/* <Categories2 /> */}
           <GoiYSection />
         </div>
       </>
