@@ -1,4 +1,5 @@
 'use client'
+import './table.css'
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
 import NewProductVariantTableTest from "@/app/(shop)/shop/product/new/new-product-variant-table-test";
 import VariantAttribute from "@/app/(shop)/shop/product/new/variant-attribute";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Asterisk, ImagePlus, Plus } from "lucide-react";
+import { Asterisk, Image, ImagePlus, Plus } from "lucide-react";
 import { nanoid } from "nanoid";
 import React, { useEffect, useRef, useState } from "react";
 import { useFieldArray, UseFieldArrayReturn, useForm, useWatch } from "react-hook-form";
@@ -45,8 +46,8 @@ const AttributeSchema = z.object({
 const VariantSchema = z.object({
   image: z.string().min(0),
   sku: z.string({ message: "Lĩnh vực này là cần thiết" }).min(1, { message: "Lĩnh vực này là cần thiết" }),
-  price: z.number({ message: "Lĩnh vực này là cần thiết" }).min(1000, { message: "Giá sản phẩm cần lớn hơn 1000đ" }),
-  stock: z.number({ message: "Lĩnh vực này là cần thiết" }).int().min(0, { message: "Lĩnh vực này là cần thiết" }),
+  price: z.coerce.number({ message: "Lĩnh vực này là cần thiết" }).min(1000, { message: "Giá sản phẩm cần lớn hơn 1000đ" }),
+  stock: z.coerce.number({ message: "Lĩnh vực này là cần thiết" }).int().min(0, { message: "Lĩnh vực này là cần thiết" }),
   attributes: z.array(z.object(
     {
       id: z.string().min(1),
@@ -146,15 +147,23 @@ function generateVariantProducts(attributes: Array<z.infer<typeof AttributeSchem
 
 }
 
+const FromDataSchema = z.object({
+  price: z.number({ message: "Vui long nhap" }).min(1),
+  stock: z.number({ message: "Vui long nhap" }).min(1),
+  sku: z.string().min(1, { message: "Vui long nhap" }),
+});
+
+type FormData = z.infer<typeof FromDataSchema>;
+
 
 
 export default function NewProductTestForm({ id }: { id?: string }) {
+  const [abx, setAbx] = useState<any[]>([]);
   const info = useAppInfoSelector(state => state.profile.info);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [tag, setTag] = useState<boolean>(false);
   const router = useRouter();
-
   const productFormHandle = useForm<Product>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
@@ -169,6 +178,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     // defaultValues: { ...JSON.parse(a), isCreated: true, variantMode: (JSON.parse(a) as any).variant ? true : false } as Product,
     mode: "all"
   });
+
 
   const watchedAttributes = useWatch({
     control: productFormHandle.control,
@@ -195,6 +205,37 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     control: productFormHandle.control,
     name: 'variant.variantProducts',
   })
+
+  // -----------------------------------------------------------------------------------------------------------------------
+
+  const dataFormHandle = useForm<FormData>({
+    resolver: zodResolver(FromDataSchema),
+    defaultValues: {
+    },
+    mode: "all"
+  });
+
+  const handleChangeAllValueVariantProduct = () => {
+    if (dataFormHandle.formState.errors.price || dataFormHandle.formState.errors.stock || dataFormHandle.formState.errors.sku) {
+      dataFormHandle.trigger('price');
+      dataFormHandle.trigger('stock');
+      dataFormHandle.trigger('sku');
+      return
+    }
+    const b = variantProductFields.map((p: any) => ({
+      ...p,
+      price: dataFormHandle.getValues('price'),
+      stock: dataFormHandle.getValues('stock'),
+      sku: dataFormHandle.getValues('sku')
+    }));
+    productFormHandle.setValue('variant.variantProducts', [...b]);
+  }
+
+  useEffect(() => {
+    dataFormHandle.reset({ price: 0, stock: 0, sku: "" })
+  }, [variantProductsWatched])
+  // -------------------------------------------------------------------------------------------------------
+
 
   const onSubmit = async (data: Product) => {
     const newData = {

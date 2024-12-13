@@ -1,9 +1,8 @@
 'use client'
 import { Image } from 'lucide-react'
-import './table.css'
 import { Controller, UseFormReturn } from 'react-hook-form'
 import { Product } from '@/app/(shop)/shop/product/new/new-product-test-form'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useFieldArray, UseFieldArrayReturn, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,6 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Button } from '@/components/ui/button'
+import { debounce } from 'lodash'
 
 const FromDataSchema = z.object({
   price: z.number({ message: "Vui long nhap" }).min(1),
@@ -42,26 +43,111 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
 
 
   const handleChangeAllValueVariantProduct = () => {
-    if (errors.price || errors.stock || errors.sku) {
-      trigger('price');
-      trigger('stock');
-      trigger('sku');
-      return
+    if (Object.entries(errors).length === 0) {
+      if (errors.price || errors.stock || errors.sku) {
+        trigger('price');
+        trigger('stock');
+        trigger('sku');
+        return
+      }
+      const b = variantProductFields.map((p: any) => ({
+        ...p,
+        price: getValues('price'),
+        stock: getValues('stock'),
+        sku: getValues('sku')
+      }));
+      productFormHandle.setValue('variant.variantProducts', [...b]);
+      productFormHandle.clearErrors('variant.variantProducts')
     }
-    const b = variantProductFields.map((p: any) => ({
-      ...p,
-      price: getValues('price'),
-      stock: getValues('stock'),
-      sku: getValues('sku')
-    }));
-    productFormHandle.setValue('variant.variantProducts', [...b]);
+
   }
 
   useEffect(() => {
     reset({ price: 0, stock: 0, sku: "" })
   }, [variantProductFields])
 
-  console.log({ abx: productFormHandle.getValues('variant.variantProducts'), a });
+  const handleDebouncedChangePrice = useCallback(
+    debounce((value, idx) => {
+      if (+value === 0) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.price`, {
+          message: 'Lĩnh vực này là cần thiết'
+        })
+      } else if (+value <= 1000) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.price`, {
+          message: 'Giá sản phẩm phải trên 1000đ'
+        })
+      } else if (isNaN(+value)) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.price`, {
+          message: 'Giá trị này không hợp lệ'
+        })
+      }
+      else {
+        productFormHandle.setError(`variant.variantProducts.${idx}.price`, {
+          message: undefined
+        })
+      }
+      productFormHandle.setValue(`variant.variantProducts.${idx}.price`, value)
+    }, 10),
+    [productFormHandle]
+  );
+
+  const handleChangePrice = (e: any, index: number) => {
+    const value = e.target.value;
+    handleDebouncedChangePrice(value, index);
+  };
+
+  const handleDebouncedChangeStock = useCallback(
+    debounce((value, idx) => {
+      if (+value === 0) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.stock`, {
+          message: 'Lĩnh vực này là cần thiết'
+        })
+      } else if (+value <= 1000) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.stock`, {
+          message: 'Giá sản phẩm phải trên 1000đ'
+        })
+      } else if (isNaN(+value)) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.stock`, {
+          message: 'Giá trị này không hợp lệ'
+        })
+      }
+      else {
+        productFormHandle.setError(`variant.variantProducts.${idx}.stock`, {
+          message: undefined
+        })
+      }
+      productFormHandle.setValue(`variant.variantProducts.${idx}.stock`, value)
+    }, 10),
+    [productFormHandle]
+  );
+
+  const handleChangeStock = (e: any, index: number) => {
+    const value = e.target.value;
+    handleDebouncedChangeStock(value, index);
+  };
+
+  const handleDebouncedChangeSku = useCallback(
+    debounce((value, idx) => {
+      if ((value as string).length === 0) {
+        productFormHandle.setError(`variant.variantProducts.${idx}.sku`, {
+          message: 'Lĩnh vực này là cần thiết'
+        })
+      }
+      else {
+        productFormHandle.setError(`variant.variantProducts.${idx}.sku`, {
+          message: undefined
+        })
+      }
+      productFormHandle.setValue(`variant.variantProducts.${idx}.sku`, value)
+    }, 10),
+    [productFormHandle]
+  );
+
+  const handleChangeSku = (e: any, index: number) => {
+    const value = e.target.value;
+    handleDebouncedChangeSku(value, index);
+  };
+
 
   return (
     <>
@@ -94,9 +180,9 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
               </div>
             </div>
             {productFormHandle.getValues('variant')?.variantProducts && (
-              <div onClick={handleChangeAllValueVariantProduct} className={`flex items-center justify-center cursor-pointer w-full ml-6 py-2 border text-[14px] bg-blue-800 shadow-sm text-white rounded hover:opacity-80 ${variantProductFields.length === 0 && 'cursor-not-allowed opacity-80'}`}>
+              <Button type='button' disabled={Object.entries(errors).length > 0} onClick={handleChangeAllValueVariantProduct} className={`flex items-center justify-center cursor-pointer w-full ml-6 py-2 border text-[14px] bg-blue-800 shadow-sm text-white rounded hover:opacity-80 ${variantProductFields.length === 0 && 'cursor-not-allowed opacity-80'}`}>
                 Áp dụng cho tất cả sản phẩm phân loại
-              </div>
+              </Button>
             )}
 
           </div>
@@ -159,14 +245,12 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
                               <div className="ml-2 border-r h-full"></div>
                             </div>
                             <input
-                              // onChange={(e) => {
-                              //   productFormHandle.setValue(`variant.variantProducts.${index}.price`, +e.target.value)
-                              // }}
-                              // value={productFormHandle.getValues(`variant.variantProducts.${index}.price`)}
-                              {...productFormHandle.register(`variant.variantProducts.${index}.price`, {
-                                valueAsNumber: true,
-                              })}
-                              type='number'
+                              onChange={(e) => handleChangePrice(e, index)}
+                              value={productFormHandle.getValues(`variant.variantProducts.${index}.price`)}
+                              // {...productFormHandle.register(`variant.variantProducts.${index}.price`, {
+                              //   valueAsNumber: true,
+                              // })}
+                              // type='number'
                               className="w-full h-full outline-none text-[14px]"
                               placeholder="Giá"
                             />
@@ -186,10 +270,12 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
                         <div className='relative'>
                           <div className="border w-56 h-8 px-3 py-1 flex rounded">
                             <input
-                              {...productFormHandle.register(`variant.variantProducts.${index}.stock`, {
-                                valueAsNumber: true,
-                              })}
-                              type='number'
+                              onChange={(e) => handleChangeStock(e, index)}
+                              value={productFormHandle.getValues(`variant.variantProducts.${index}.stock`)}
+                              // {...productFormHandle.register(`variant.variantProducts.${index}.stock`, {
+                              //   valueAsNumber: true,
+                              // })}
+                              // type='number'
                               className="w-full h-full outline-none text-[14px]"
                               placeholder="Kho hàng"
                             />
@@ -207,7 +293,9 @@ export default function NewProductVariantTableTest({ variantProductFields, varia
                         <div className='relative'>
                           <div className="border w-56 h-8 px-3 py-1 flex rounded">
                             <input
-                              {...productFormHandle.register(`variant.variantProducts.${index}.sku`)}
+                              onChange={(e) => handleChangeSku(e, index)}
+                              value={productFormHandle.getValues(`variant.variantProducts.${index}.sku`)}
+                              // {...productFormHandle.register(`variant.variantProducts.${index}.sku`)}
                               className="w-full h-full outline-none text-[14px]"
                               type='text'
                               placeholder="sku"
