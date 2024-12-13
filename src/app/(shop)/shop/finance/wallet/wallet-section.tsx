@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useRouter } from "next/navigation";
 
 
 interface WithdrawalRecord {
@@ -53,6 +54,8 @@ export default function WalletSection() {
   const [pages, setPages] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (shopInfo.shop_id) {
@@ -86,6 +89,11 @@ export default function WalletSection() {
       if (!res.ok) {
         throw 'Error'
       }
+      toast({
+        variant: 'success',
+        title: 'success'
+      });
+      router.push('/shop/finance/income')
     } catch (error) {
       toast({})
     }
@@ -104,7 +112,16 @@ export default function WalletSection() {
                   <div className="text-3xl font-semibold">{wallet?.wallet && formattedPrice(wallet.wallet)}</div>
                 </div>
                 <div className="mt-2">
-                  <Button disabled={!wallet || wallet.wallet === 0} onClick={() => handleWallet()} className="bg-red-500 text-white">Yêu cầu thanh toán</Button>
+                  {loading && (
+                    <Button disabled className="bg-red-500 text-white flex">
+                      <img className="size-4 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
+                      Yêu cầu thanh toán
+                    </Button>
+
+                  )}
+                  {!loading && (
+                    <Button disabled={!wallet || wallet.wallet === 0} onClick={() => handleWallet()} className="bg-red-500 text-white">Yêu cầu thanh toán</Button>
+                  )}
                 </div>
               </div>
               <div className="pr-4">
