@@ -30,6 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useAppInfoSelector } from "@/redux/stores/profile.store"
 
 
 function FilterCategoryProductSection({ onChangeCategory }: { onChangeCategory: (id: number) => void }) {
@@ -37,11 +38,12 @@ function FilterCategoryProductSection({ onChangeCategory }: { onChangeCategory: 
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState("");
   const [categoryId, setCategoryId] = useState<string>("");
+  const info = useAppInfoSelector(state => state.profile.info);
 
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_categories_for_shop/39`, {
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_categories_for_shop/${info.shop_id}`, {
           headers: {
             "Authorization": `Bearer ${clientAccessToken.value}`
           }
@@ -59,6 +61,9 @@ function FilterCategoryProductSection({ onChangeCategory }: { onChangeCategory: 
           variant: "destructive"
         })
       }
+    }
+    if (info) {
+      getData();
     }
     getData()
   }, []);
