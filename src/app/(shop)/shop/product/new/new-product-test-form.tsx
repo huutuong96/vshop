@@ -24,7 +24,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import LoadingScreen from "@/app/(guest)/_components/loading-screen";
 import { Skeleton } from "@/components/ui/skeleton";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import ImagesSection from "@/app/(shop)/shop/product/new/images-section";
 import { arrayMove } from "@dnd-kit/sortable";
 import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
@@ -153,6 +153,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [tag, setTag] = useState<boolean>(false);
+  const router = useRouter();
 
   const productFormHandle = useForm<Product>({
     resolver: zodResolver(ProductSchema),
@@ -227,6 +228,9 @@ export default function NewProductTestForm({ id }: { id?: string }) {
         variant: 'success',
         title: "Tao san pham thanh cong!"
       })
+      if (envConfig.NEXT_PUBLIC_MODE === 'test' || envConfig.NEXT_PUBLIC_MODE === 'production') {
+        router.push('/shop/product/list')
+      }
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -352,7 +356,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
       {showMore && (
         <>
-          <div className="w-full bg-white rounded">
+          {/* <div className="w-full bg-white rounded">
             <div className="p-6 w-full">
               <div className="w-full">
                 <div className="text-xl font-semibold">
@@ -361,7 +365,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
               </div>
               <div>Update later</div>
             </div>
-          </div>
+          </div> */}
           <div className="w-full bg-white rounded">
             <div className="p-6">
               <div className="text-xl font-semibold">

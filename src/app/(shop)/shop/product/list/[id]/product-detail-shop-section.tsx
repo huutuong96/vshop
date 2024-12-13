@@ -221,7 +221,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
 
         {showMore && (
           <>
-            <div className="w-full bg-white rounded">
+            {/* <div className="w-full bg-white rounded">
               <div className="p-6 w-full">
                 <div className="w-full">
                   <div className="text-xl font-semibold">
@@ -230,7 +230,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
                 </div>
                 <div>Update later</div>
               </div>
-            </div>
+            </div> */}
             <div className="w-full bg-white rounded">
               <div className="p-6">
                 <div className="text-xl font-semibold">
