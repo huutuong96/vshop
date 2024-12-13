@@ -43,14 +43,14 @@ export default function AllSettingShopSection() {
 
   const handleCheckedChange = async (c: boolean) => {
     try {
-      setShop((prev: any) => ({ ...prev, status: c ? 2 : 1 }))
+      setShop((prev: any) => ({ ...prev, status: c ? 3 : 2 }))
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/${info.shop_id}`, {
         headers: {
           'Authorization': `Bearer ${clientAccessToken.value}`,
           'Content-Type': 'application/json'
         },
         method: 'POST',
-        body: JSON.stringify({ ...shop, status: c ? 2 : 3 })
+        body: JSON.stringify({ ...shop, status: c ? 3 : 2 })
       });
       if (!res.ok) {
         throw 'Error';
@@ -60,7 +60,7 @@ export default function AllSettingShopSection() {
         variant: 'success'
       });
     } catch (error) {
-      setShop((prev: any) => ({ ...prev, status: c ? 3 : 2 }))
+      setShop((prev: any) => ({ ...prev, status: c ? 2 : 3 }))
       toast({
         title: 'Error',
         variant: 'destructive'
@@ -92,7 +92,7 @@ export default function AllSettingShopSection() {
           )}
           {!loading && (
             <Switch
-              checked={shop.status === 2 ? true : false}
+              checked={shop.status === 3 ? true : false}
               onCheckedChange={handleCheckedChange}
               className="data-[state=checked]:bg-blue-800"
             />

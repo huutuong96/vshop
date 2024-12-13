@@ -8,6 +8,17 @@ import { z } from "zod";
 import envConfig from '@/config';
 import { clientAccessToken } from '@/lib/http';
 import { toast } from '@/components/ui/use-toast';
+import { useAppDispatch } from '@/redux/store';
+import { addShop } from '@/redux/slices/profile.slice';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+
+
+import { Button } from "@/components/ui/button";
+import { LoaderCircle } from "lucide-react";
+
+
 
 const ShopInfoSchema = z.object({
   image: z.string().min(0).refine(v => v.length > 0, { message: 'Lĩnh vực này là cần thiết' }),
@@ -18,7 +29,9 @@ const ShopInfoSchema = z.object({
 export type ShopInfo = z.infer<typeof ShopInfoSchema>;
 
 const InfoShopSection = () => {
-  const [shop, setShop] = useState<any>();
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
+  const shop = useAppInfoSelector(state => state.profile.shop);
   const [activeTab, setActiveTab] = useState<string>('basic'); // Để quản lý tab hiện tại
   const info = useAppInfoSelector(state => state.profile.info);
   const { register, control, setValue, formState: { errors }, setError, getValues, handleSubmit } = useForm<ShopInfo>({
@@ -33,32 +46,17 @@ const InfoShopSection = () => {
   const watchedImage = useWatch({
     control,
     name: 'image'
-  })
+  });
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/${info.shop_id}`, {
-          headers: {
-            'Authorization': `Bearer ${clientAccessToken.value}`
-          }
-        });
-        if (!res.ok) {
-          throw 'Error';
-        }
-        const payload = await res.json();
-        setValue('shop_name', payload.data.shop.shop_name);
-        setValue('description', payload.data.shop.description);
-        setValue('image', payload.data.shop.image || '');
-        setShop(payload.data.shop);
-      } catch (error) {
 
-      }
+    if (shop) {
+      setValue('shop_name', shop.shop_name);
+      setValue('description', shop.description);
+      setValue('image', shop.image || '');
     }
-    if (info) {
-      getData()
-    }
-  }, []);
+  }, [shop]);
 
 
 
@@ -108,7 +106,8 @@ const InfoShopSection = () => {
 
   const onsubmit = async (data: ShopInfo) => {
     try {
-      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/${info.shop_id}`, {
+      setLoading(true);
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/${shop.id}`, {
         headers: {
           'Authorization': `Bearer ${clientAccessToken.value}`,
           'Content-Type': 'application/json'
@@ -123,26 +122,29 @@ const InfoShopSection = () => {
         title: 'success',
         variant: 'success'
       })
+      dispatch(addShop({ ...shop, ...data }));
     } catch (error) {
       setValue('image', '')
       toast({
         title: 'Error',
         variant: 'destructive'
       })
+    } finally {
+      setLoading(false);
     }
   }
 
-  console.log({ watchedImage });
 
   return (
     <form onSubmit={handleSubmit(onsubmit)} className="w-full">
       {/* Tabs */}
-      <div className="flex">
+      <div className="flex items-center justify-between">
         <button
           className={`py-2 text-xl font-semibold `}
         >
           Thông tin cơ bản
         </button>
+        <Link target='_blank' href={`/vendors/${shop.id}`} className="bg-blue-800 text-white py-2 px-6 rounded-md hover:opacity-80">Xem Shop của tôi</Link>
       </div>
 
       {/* Tab Content */}
@@ -217,13 +219,24 @@ const InfoShopSection = () => {
         )}
       </div>
 
-      {/* Footer buttons */}
-      <div className="flex justify-between mt-6">
-        <button className="bg-blue-500 text-white py-2 px-6 rounded-md">Xem Shop của tôi</button>
-        <button type='button' onClick={() => {
-          console.log(getValues());
-        }} className="bg-gray-200 text-gray-700 py-2 px-6 rounded-md">log data</button>
-        <button type='submit' className="bg-gray-200 text-gray-700 py-2 px-6 rounded-md">Chỉnh sửa</button>
+      <div className="flex justify-end mt-6">
+        {loading && (
+          <Button type='button' disabled className='bg-blue-800'>
+            <LoaderCircle
+              className="-ms-1 me-2 animate-spin"
+              size={16}
+              strokeWidth={2}
+              aria-hidden="true"
+            />
+            Chỉnh sửa
+          </Button>
+        )}
+        {!loading && (
+          <Button type='submit' className='bg-blue-800'>
+            Chỉnh sửa
+          </Button>
+        )}
+
       </div>
     </form>
   );

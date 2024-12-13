@@ -107,7 +107,7 @@ const convertData = (data: InputData1): ChartConfig1 => {
 export default function DashboardChart() {
   const info = useAppInfoSelector(state => state.profile.info);
   const [time, setTime] = useState("3");
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [chartConfig1, setChartConfig1] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -140,6 +140,7 @@ export default function DashboardChart() {
       fetchData();
     }
   }, [info, fetchData]);
+
 
   return (
     <>

@@ -166,7 +166,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
-
+  console.log({ product });
 
   return (
     <>
@@ -324,21 +324,23 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                 <div className="ml-8 w-[200px] text-gray-500 text-[14px] leading-8">{selectedProduct.stock} sản phẩm sẵn có</div>
               </div>
               {info?.shop_id && +info.shop_id === +product.shop_id ? '' : (
-                <>
-                  {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
-                  <div className="w-full flex my-2">
-                    <>
-                      <Button disabled={loading || selectedProduct.stock <= 0} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
-                        {loading && (
-                          <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
-                        )}
-                        Thêm vào giỏ
-                      </Button>
-                      <Button className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
-                    </>
+                product.shop.status === 2 ?
+                  <>
+                    {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
+                    <div className="w-full flex my-2">
+                      <>
+                        <Button disabled={loading || selectedProduct.stock <= 0} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
+                          {loading && (
+                            <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
+                          )}
+                          Thêm vào giỏ
+                        </Button>
+                        <Button className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
+                      </>
 
-                  </div>
-                </>
+                    </div>
+                  </>
+                  : 'Shop tamj khoa'
               )}
 
 

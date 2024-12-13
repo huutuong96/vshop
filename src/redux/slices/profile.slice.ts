@@ -23,6 +23,7 @@ interface Profile {
     address: any
     // shopVouchers: any[]
   } | null
+  shop: any
 }
 
 const initialState = {
@@ -31,7 +32,8 @@ const initialState = {
   cart: null,
   checkoutState: '',
   addresses: null,
-  checkout: null
+  checkout: null,
+  shop: null
 } as Profile
 
 const profileSlice = createSlice({
@@ -40,6 +42,9 @@ const profileSlice = createSlice({
   reducers: {
     addAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
+    },
+    addShop: (state, action: PayloadAction<any>) => {
+      state.shop = action.payload;
     },
     addInfo: (state, action: PayloadAction<any>) => {
       state.info = action.payload;
@@ -189,6 +194,7 @@ export const {
   addVouchers,
   addMainVoucherCheckout,
   addShopVoucherCheckout,
+  addShop,
   addCheckout,
   selectShopVoucher,
   selectAllProducts,

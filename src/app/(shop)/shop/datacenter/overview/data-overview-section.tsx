@@ -417,7 +417,7 @@ export default function DataOverviewSection() {
                 </div>
               ))
             : chartConfig1 &&
-            Object.entries(chartConfig1).map(([key, config]: [key: string, config: any], index: number) => (
+            Object.entries(chartConfig1).filter((a, index) => index < 3).map(([key, config]: [key: string, config: any], index: number) => (
               <div
                 key={index}
                 className="flex-1 h-[125px] border rounded-sm px-4 py-3 shadow"
@@ -479,7 +479,7 @@ export default function DataOverviewSection() {
 
                     <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
 
-                    {chartConfig2 && Object.entries(chartConfig2).map(([key, config]: [key: string, config: any]) => (
+                    {chartConfig2 && Object.entries(chartConfig2).filter((a, index) => index < 3).map(([key, config]: [key: string, config: any]) => (
                       <Line
                         key={key}
                         type="monotone"
@@ -496,7 +496,7 @@ export default function DataOverviewSection() {
             </Card>
           )}
           <div className="w-full flex gap-4 items-center my-6 justify-center">
-            {chartConfig2 && Object.entries(chartConfig2).map(([key, config]: [key: string, config: any], index) => (
+            {chartConfig2 && Object.entries(chartConfig2).filter((a, index) => index < 3).map(([key, config]: [key: string, config: any], index) => (
               <div key={key} className="flex gap-1">
                 <div className={`size-4 rounded-sm`} style={{
                   background: colors[index]
