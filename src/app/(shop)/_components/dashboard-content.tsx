@@ -6,6 +6,8 @@ import { useAppInfoSelector } from '@/redux/stores/profile.store';
 import { clientAccessToken } from '@/lib/http';
 import { formattedPrice } from '@/lib/utils';
 import DashboardChart from '@/app/(shop)/_components/dashboard-chart';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import OtherRank from '@/app/(shop)/_components/other-rank';
 
 type DashboardData = {
   total_order: number;
@@ -26,6 +28,72 @@ type DashboardData = {
   orders_refund: number;
   orders_canceled: number;
 };
+
+
+const formatTime = () => {
+  const currentDate = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: 'long', // Thứ trong tuần (e.g. "Thứ Hai")
+    year: 'numeric',
+    month: 'long',  // Tháng (e.g. "Tháng 12")
+    day: 'numeric',  // Ngày
+    hour: 'numeric',  // Giờ
+    minute: 'numeric',  // Phút
+    timeZoneName: 'short', // Định dạng múi giờ (e.g. "GMT+7")
+  };
+
+  const timeString = new Intl.DateTimeFormat('vi-VN', options).format(currentDate);
+
+  // Định dạng như yêu cầu
+  const formattedTime = `Hôm nay ${timeString}`;
+  return formattedTime;
+};
+
+const invoices = [
+  {
+    invoice: "INV001",
+    paymentStatus: "Paid",
+    totalAmount: "$250.00",
+    paymentMethod: "Credit Card",
+  },
+  {
+    invoice: "INV002",
+    paymentStatus: "Pending",
+    totalAmount: "$150.00",
+    paymentMethod: "PayPal",
+  },
+  {
+    invoice: "INV003",
+    paymentStatus: "Unpaid",
+    totalAmount: "$350.00",
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    invoice: "INV004",
+    paymentStatus: "Paid",
+    totalAmount: "$450.00",
+    paymentMethod: "Credit Card",
+  },
+  {
+    invoice: "INV005",
+    paymentStatus: "Paid",
+    totalAmount: "$550.00",
+    paymentMethod: "PayPal",
+  },
+  {
+    invoice: "INV006",
+    paymentStatus: "Pending",
+    totalAmount: "$200.00",
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    invoice: "INV007",
+    paymentStatus: "Unpaid",
+    totalAmount: "$300.00",
+    paymentMethod: "Credit Card",
+  },
+]
 
 
 const Page: React.FC = () => {
@@ -115,11 +183,11 @@ const Page: React.FC = () => {
           <div className="flex justify-between items-center mb-3">
             <div>
               <h2 className="text-lg font-semibold">Phân Tích Bán Hàng</h2>
-              <p className="text-xs text-gray-500">Hôm nay 00:00 GMT+7 13:00</p>
+              <p className="text-xs text-gray-500">{formatTime()}</p>
             </div>
             <a href="#" className="text-blue-600 text-xs hover:underline">Xem thêm &gt;</a>
           </div>
-          <p className="text-xs text-gray-500 mb-3">Tổng quan dữ liệu của shop đối với đơn hàng đã xác nhận</p>
+          <p className="text-xs text-gray-500 mb-3">Tổng quan dữ liệu của shop đối với đơn hàng.</p>
           <div className="grid grid-cols-3 gap-4 mb-4">
             {analyticItems.map((item, index) => (
               <div key={index} className="border-r last:border-r-0 px-2">
@@ -135,9 +203,10 @@ const Page: React.FC = () => {
           </div>
           <DashboardChart />
         </div>
+        <OtherRank />
       </div>
 
-      <div className="w-64 space-y-4">
+      {/* <div className="w-64 space-y-4">
         <div className="bg-blue-500 text-white rounded-lg shadow-md p-4">
           <h3 className="font-bold mb-2">SPX</h3>
           <p className="text-sm mb-2">LÊN ĐƠN ƯU ĐÃI</p>
@@ -164,7 +233,7 @@ const Page: React.FC = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

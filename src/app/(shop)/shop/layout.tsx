@@ -38,6 +38,11 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
         </div>
+        <footer className="text-center py-4 bg-gray-100 text-sm">
+          <p className="text-gray-600">
+            © {new Date().getFullYear()} VNShop. All rights reserved.
+          </p>
+        </footer>
       </main>
     </div>
   )

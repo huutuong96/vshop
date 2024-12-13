@@ -15,12 +15,12 @@ import {
 } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ScrollAreaViewport } from "@radix-ui/react-scroll-area";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { toast } from "@/components/ui/use-toast";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
-import { CircleUserRound, EllipsisVertical, Truck, UserRoundCheck } from "lucide-react";
+import { ArrowDown, ArrowUp, CircleUserRound, Clock, EllipsisVertical, SortAsc, SortDesc, Truck, UserRoundCheck } from "lucide-react";
 import { formattedPrice } from "@/lib/utils";
 import OrderSkeleton from "@/app/(shop)/shop/order/list/order-skeleton";
 import {
@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import OrderShopItem from "@/app/(shop)/shop/order/list/order-shop-item";
-
+import debounce from 'lodash/debounce';
 
 type OrderStatus = { label: string; value: number, valueString: any };
 
@@ -58,62 +58,23 @@ const orderStatuses: OrderStatus[] = [
   // { label: "Đã thanh toán", value: 12 },
 ];
 
-const nextActionOrders: { label: string, currValue: number, nextValue: number }[] = [
-  {
-    label: "Xác nhận đơn hàng",
-    currValue: 0,
-    nextValue: 1
-  }, {
-    label: 'Chuẩn bị đơn hàng',
-    currValue: 1,
-    nextValue: 2
-  }, {
-    label: 'Xác nhận đóng gói',
-    currValue: 2,
-    nextValue: 3
-  }, {
-    label: "Xác nhận bàn giao GHN",
-    currValue: 3,
-    nextValue: 4
-  }, {
-    label: "Xác nhận đang vận chuyển",
-    currValue: 4,
-    nextValue: 5
-  }, {
-    label: "Xác nhận hoàn thành",
-    currValue: 7,
-    nextValue: 8
-  }, {
-    label: "Xác nhận hoàn trả",
-    currValue: 8,
-    nextValue: 9
-  }
-]
 
-const handleChangeSearchParams = (page: number, sort: string, order_status: number, limit: string) => {
-  return `${page ? `&page=${page}` : ''}&limit=${limit}&order_status=${order_status}`
+
+
+const handleChangeSearchParams = (page: number, sort: string, order_status: number, limit: string, search: string) => {
+  return `${page ? `&page=${page}` : ''}&limit=${limit}&order_status=${order_status}${search ? `&search=${search}` : ''}${sort !== '#' ? `&sort=${sort}` : ''}`;
 }
 
-
-const filters = [
-  {
-    id: '0',
-    name: 'Mã đơn hàng',
-    placehoder: 'Nhập mã đơn hàng'
-  }, {
-    id: '1',
-    name: 'Mã vận đơn',
-    placehoder: 'Nhập mã vận đơn'
-  }, {
-    id: '2',
-    name: 'Tên người mua',
-    placehoder: 'Nhập tên người mua'
-  }, {
-    id: '3',
-    name: 'Sản phẩm',
-    placehoder: 'Nhập tên sản phẩm/SKU'
-  }
+const sortOptions: { value: string, label: string, icon: any }[] = [
+  { value: '#', label: 'Mặc định', icon: '' },
+  { value: 'price', label: 'Giá tăng dần', icon: <ArrowUp /> },
+  { value: '-price', label: 'Giá giảm dần', icon: <ArrowDown /> },
+  { value: 'updated_at', label: 'Cũ nhất', icon: <Clock /> },
+  { value: '-updated_at', label: 'Mới nhất', icon: <Clock /> },
+  { value: 'name', label: 'Tên khách hàng từ A → Z', icon: <SortAsc /> },
+  { value: '-name', label: 'Tên khách hàng từ Z → A', icon: <SortDesc /> },
 ];
+
 
 export default function OrderListSection() {
   const [showAll, setShowAll] = useState(false);
@@ -123,24 +84,36 @@ export default function OrderListSection() {
   const [orders, setOrders] = useState<any>([]);
   const [status, setStatus] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
-  const [sort, setSort] = useState<string>('');
+  const [sort, setSort] = useState<string>('#');
   const [limit, setLimit] = useState<string>('10');
   const [pages, setPages] = useState<any[]>([]);
   const [countOrder, setCountOrder] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>('')
+
   const handleChangeStatus = (value: number) => {
     setStatus(value)
   }
 
-  useEffect(() => {
-    const getData = async () => {
+
+  const fetchOrders = useCallback(
+    debounce(async (searchValue: string) => {
       try {
         setLoading(true);
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/order/${info.shop_id}?${handleChangeSearchParams(page, sort, status, limit)}`, {
-          headers: {
-            "Authorization": `Bearer ${clientAccessToken.value}`
+        const res = await fetch(
+          `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/order/${info.shop_id}?${handleChangeSearchParams(
+            page,
+            sort,
+            status,
+            limit,
+            searchValue
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${clientAccessToken.value}`,
+            },
           }
-        });
+        );
         const payload = await res.json();
         if (!res.ok) {
           throw 'Error';
@@ -150,26 +123,36 @@ export default function OrderListSection() {
         setCountOrder(+payload.data.total);
       } catch (error) {
         toast({
-          title: "error",
-          variant: 'destructive'
-        })
+          title: 'Error',
+          variant: 'destructive',
+        });
       } finally {
         setLoading(false);
       }
-    }
-    getData()
-  }, [handleChangeSearchParams(page, sort, status, limit)])
+    }, 500),
+    [page, sort, status, limit, info.shop_id]
+  );
+
+  // Effect to fetch orders on search or status change
+  useEffect(() => {
+    fetchOrders(search);
+  }, [search, page, sort, status, limit]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    fetchOrders(event.target.value); // Debounced function
+  };
 
   return (
     <>
       <div className="flex p-2 items-center justify-between">
         <span className="text-[20px] font-bold">Tất Cả</span>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Button variant={"outline"}>Xuất</Button>
           <Button variant={"outline"}>Lịch sử Xuất Báo Cáo</Button>
-        </div>
+        </div> */}
       </div>
-      <div className="bg-white shadow-sm rounded-sm">
+      <div className="bg-white shadow-sm rounded-sm relative">
         <div className="px-3 py-2">
           <div className="flex flex-wrap gap-2">
             {visibleItems.map((item) => (
@@ -201,27 +184,30 @@ export default function OrderListSection() {
         </div>
         <div className="flex items-center justify-between w-full p-4 px-3 bg-white">
           <div className="flex">
-            <Select defaultValue={filters[0].id}>
-              <SelectTrigger className="w-[250px] rounded-none rounded-tl rounded-bl">
-                <SelectValue placeholder="Mã Đơn Hàng" className="text-[13px]" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {filters.map((item, index) => (
-                    <SelectItem key={index} className="text-[13px]" value={item.id}>{item.name}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <Input className="px-3 text-[14px] outline-none rounded-none rounded-tr rounded-br" placeholder="Nhập mã đơn hàng" />
+            <Input
+              className="px-3 text-sm w-[400px]"
+              value={search}
+              onChange={handleSearchChange}
+              placeholder="Nhập mã đơn hàng hoặc tên khách hàng"
+            />
           </div>
-          <Select>
-            <SelectTrigger className="w-[250px] outline-none">
-              <SelectValue placeholder="Đơn Vị Vận Chuyển" className="text-[13px]" />
+          <Select value={sort} onValueChange={(v) => setSort(v)}>
+            <SelectTrigger className="w-[250px]">
+              <SelectValue placeholder="Sắp xếp" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem className="text-[13px]" value={'test'}>test</SelectItem>
+            <SelectContent className="w-full">
+              <SelectGroup className="w-full">
+                <ScrollArea className="h-40 w-full">
+                  <SelectLabel className="w-full">Sắp xếp đơn hàng</SelectLabel>
+                  {sortOptions.map((s, index) => (
+                    <SelectItem className="w-full" key={index} value={s.value}>
+                      <div className="w-full flex items-center justify-between">
+                        {s.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -246,7 +232,7 @@ export default function OrderListSection() {
             <OrderShopItem setStatus={setStatus} key={index} o={o} />
           ))}
           {loading && <OrderSkeleton />}
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex justify-between items-center mt-6 sticky top-0 bg-white z-10 shadow-sm">
             <div className="flex gap-2 items-center">
               Chọn
               <Select value={limit} onValueChange={(v) => {
@@ -292,61 +278,6 @@ export default function OrderListSection() {
               </Pagination>
             )}
           </div>
-
-          {/* <div className="mt-4 border rounded-sm">
-            <div className="p-2 flex items-center justify-between bg-[#F0F0F0] text-black text-[14px]">
-              <span>Khách hàng: Test2</span>
-              <span>Mã đơn hàng: 01234544ds5</span>
-            </div>
-            <div className="w-full h-full text-[14px] flex">
-              <div className="w-[364px] p-2 pr-6">
-                <div className="flex w-full justify-between mt-1">
-                  <div className="flex gap-2 items-center">
-                    <div className="size-[92px]">
-                      <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
-                    </div>
-                    <div className="">
-                      <div className="flex flex-col mt-1 ml-2">
-                        <span className="font-bold">Áo màu vàng</span>
-                        <span>Phân loại: màu vàng, size XL</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-[12px]">x1</div>
-                </div>
-                <div className="flex w-full justify-between mt-1">
-                  <div className="flex gap-2 items-center">
-                    <div className="size-[92px]">
-                      <img src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" className="size-full object-cover border" alt="" />
-                    </div>
-                    <div className="">
-                      <div className="flex flex-col mt-1 ml-2">
-                        <span className="font-bold">Áo màu vàng</span>
-                        <span>Phân loại: màu vàng, size XL</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-[12px]">x1</div>
-                </div>
-              </div>
-              <div className="w-[200px] p-2">
-                <div className="text-black font-medium">120.000đ</div>
-                <div className="text-[#585858] mt-1">Thanh toán khi nhận hàng</div>
-              </div>
-              <div className="w-[280px] p-2">
-                <div className="text-black font-medium">Đã giao</div>
-                <div className="text-[#585858] mt-1">Giao hàng thành công</div>
-              </div>
-              <div className="w-[200px] p-2">
-                <div className="text-black font-medium">Nhanh</div>
-                <div className="text-[#585858] mt-1">GHTK</div>
-              </div>
-              <div className="p-2 text-blue-500 cursor-pointer">Xem chi tiết</div>
-            </div>
-          </div> */}
-          {/* <OrderItem />
-        <OrderItem /> */}
-          {/* <EmptyOrder /> */}
         </div>
       </div>
     </>
