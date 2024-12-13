@@ -71,6 +71,7 @@ const InfoShopSection = () => {
       setError('image', { message: undefined });
 
       try {
+        setLoading(true);
         // Tải ảnh lên server
         const formData = new FormData();
         formData.append("images[]", file);
@@ -93,13 +94,19 @@ const InfoShopSection = () => {
         // Cập nhật URL thực từ server
         setValue('image', payload.images[0]);
         toast({
-          title: 'OK'
-        })
+          title: "Upload thành công!",
+          variant: "success",
+        });
       } catch (error) {
         console.error("Upload failed:", error);
+        toast({
+          title: "Upload thất bại!",
+          variant: "destructive",
+        });
       } finally {
-        // Dọn dẹp URL blob nếu không còn cần thiết
+        // Dọn dẹp URL blob khi hoàn tất
         URL.revokeObjectURL(blobUrl);
+        setLoading(false);
       }
     }
   };
@@ -168,22 +175,54 @@ const InfoShopSection = () => {
 
                 </div>
 
-                <div className='flex gap-4 mb-4'>
+                <div className="flex gap-4 mb-4">
                   <div className="text-sm font-semibold w-[150px]">Logo của Shop</div>
                   <div>
-                    <div className="flex items-center gap-4">
+                    <div className="relative group">
+                      {/* Container của ảnh */}
                       <img
-                        src={watchedImage || ''} // Link tới ảnh logo
+                        src={watchedImage || '/placeholder-image.jpg'} // Placeholder nếu chưa có ảnh
                         alt="Shop Logo"
-                        className="size-20 object-cover rounded-full border"
+                        className={`w-32 h-32 object-cover rounded-full border ${loading ? "opacity-50" : ""
+                          }`} // Làm mờ khi đang tải
                       />
-                      <div>
-                        <Input type='file' onChange={handleUploadAvatar} />
+                      {/* Spinner hiển thị khi loading */}
+                      {loading && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <img
+                            className="w-10 h-10 animate-spin"
+                            src="https://www.svgrepo.com/show/199956/loading-loader.svg"
+                            alt="Loading icon"
+                          />
+                        </div>
+                      )}
+                      {/* Nút cập nhật ảnh hiển thị khi hover */}
+                      <div
+                        className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => {
+                          if (!loading) {
+                            document.getElementById("file-upload")?.click();
+                          }
+                        }} // Chặn click khi đang tải
+                      >
+                        <span className="text-white font-semibold">
+                          {loading ? "Đang tải..." : "Cập nhật ảnh"}
+                        </span>
                       </div>
                     </div>
-
+                    {/* Input file ẩn */}
+                    <Input
+                      id="file-upload"
+                      type="file"
+                      className="hidden"
+                      onChange={(event) => {
+                        if (!loading) {
+                          handleUploadAvatar(event); // Chỉ cho phép khi không tải
+                        }
+                      }}
+                    />
                     {errors?.image?.message && (
-                      <div className='text-sm text-rose-600'>{errors.image.message}</div>
+                      <div className="text-sm text-rose-600">{errors.image.message}</div>
                     )}
                   </div>
                 </div>
