@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb"
 
 import { BookOpen, ChevronDown, ChevronUp, GripHorizontal, User } from "lucide-react"
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import AccountInfo from '@/app/(shop)/_components/account-info';
 import Notifications from '@/app/(shop)/_components/notifications';
 import { useAppInfoSelector } from '@/redux/stores/profile.store';
@@ -31,6 +31,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Bell } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import LoadingScreen from '@/app/(guest)/_components/loading-screen';
 
 
 function timeAgo(inputTime: string): string {
@@ -164,8 +165,31 @@ export default function ShopHeader() {
   const info = useAppInfoSelector(state => state.profile.info);
   const { notifications } = useNotification();
   const shop = useAppInfoSelector(state => state.profile.shop);
+  const [loading, setLoading] = useState<boolean>(false);
 
 
+  const handleLogout = useCallback(async () => {
+    try {
+      setLoading(true);
+      const a = await fetch(`/api/auth/logout`, {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+      if (a.ok) {
+        const res = await a.json();
+        // dispatch(addAccessToken(''));
+        // dispatch(addInfo(null));
+        // dispatch(addCart(null));
+        // router.push('/');
+        localStorage.removeItem('historyPath')
+        window.location.href = '/'
+      }
+    } catch (error) {
+      setLoading(false);
+    } finally {
+      setLoading(true);
+    }
+  }, [])
 
   return (
     <header className="w-full h-[56px] bg-white sticky top-0 z-[100] shadow border-b">
@@ -208,7 +232,7 @@ export default function ShopHeader() {
                   </div>
                 </HoverCardTrigger>
                 <HoverCardContent className='p-0'>
-                  <AccountShopInfoDropdown />
+                  <AccountShopInfoDropdown onLogout={handleLogout} />
                 </HoverCardContent>
               </HoverCard>
             )}
@@ -217,6 +241,9 @@ export default function ShopHeader() {
 
         </div>
       </div>
+      {loading && (
+        <LoadingScreen />
+      )}
     </header>
   )
 }

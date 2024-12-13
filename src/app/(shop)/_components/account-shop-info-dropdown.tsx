@@ -1,14 +1,17 @@
 'use client';
 
+import LoadingScreen from "@/app/(guest)/_components/loading-screen";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import { LogOut, Settings, Store } from "lucide-react";
 import Link from "next/link";
+import { memo, useState } from "react";
 
 
 const mockImg = 'https://phunuvietnam.mediacdn.vn/media/news/33abffcedac43a654ac7f501856bf700/anh-profile-tiet-lo-g-ve-ban-1.jpg';
 
 
-export default function AccountShopInfoDropdown() {
+function AccountShopInfoDropdown({ onLogout }: { onLogout: any }) {
+
   const shop = useAppInfoSelector(state => state.profile.shop);
   return (
     <div className="w-full">
@@ -38,16 +41,17 @@ export default function AccountShopInfoDropdown() {
               </div>
             </Link>
 
-            <div className="w-full py-2 px-4 hover:bg-gray-50 cursor-pointer">
+            <div onClick={onLogout} className="w-full py-2 px-4 hover:bg-gray-50 cursor-pointer">
               <div className="flex gap-3 items-center">
                 <LogOut size={16} color="#303030" strokeWidth={1.25} />
-                <span className="text-sm">Thiết lập shop</span>
+                <span className="text-sm">Đăng xuất</span>
               </div>
             </div>
           </div>
         </>
       )}
-
     </div>
   )
 }
+
+export default memo(AccountShopInfoDropdown)
