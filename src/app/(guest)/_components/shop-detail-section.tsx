@@ -176,6 +176,7 @@ export default function ShopDetailSection() {
                   <div className="text-[12px]">{shopInfo?.follow_count || '0'} người theo dõi</div>
                   <div className="text-[12px]">{shopInfo?.shop?.visits || '0'} Lượt Truy Cập</div>
                 </div>
+                <div></div>
                 <div className="p-1 flex items-center">
                   {shopInfo?.shop?.is_follow === false ? (
                     <Button onClick={async () => {
