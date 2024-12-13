@@ -185,7 +185,9 @@ export default function ShopDetailSection() {
                     <div className="w-20 h-8 bg-blue-300 rounded-md"></div> {/* Skeleton for Follow Button */}
                   </div>
                 </div>
+
               </div>
+
 
               {/* Skeleton for Product Stats */}
               <div className="flex-1 p-5 bg-slate-200 animate-pulse">

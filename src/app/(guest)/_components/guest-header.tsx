@@ -113,7 +113,6 @@ export default function GuestHeader() {
             <div className="top-nav w-full flex gap-4 pt-2 text-[13px] text-[#8E8181] font-normal">
               <Link href={'/shop'} target='_blank' rel="noopener noreferrer">Kênh người bán</Link>
               <span>Chăm sóc khách hàng</span>
-              <span>Nhà cung cấp</span>
               {/* <Link href={'/about'}>About</Link> */}
 
             </div>
@@ -126,7 +125,7 @@ export default function GuestHeader() {
               <div className="w-[calc(100%-10rem)] h-full flex items-center gap-5 justify-between pl-8">
                 <div className="flex items-center gap-5">
                   <div className="icon-cate size-6 ">
-                    <LayoutGrid />
+                    {/* <LayoutGrid /> */}
                   </div>
                   <div className="input-nav h-10 flex">
                     <input type="text" placeholder="Tìm trên VNShop" className="w-[550px] h-full px-5 border rounded-tl-[16px] rounded-bl-[16px] outline-none text-[13px] bg-gray-50" />
