@@ -219,7 +219,7 @@ export default function OrderShopItem({ o, setStatus }: { o: any, setStatus: any
           <div className="w-[160px] px-2 font-semibold items-center">
 
 
-            {o.status === 1 ?
+            {o.status === 2 ?
               <div className="text-sm flex gap-4 items-center">
                 <div className="size-3 rounded-full bg-rose-600"></div>
                 Chưa thanh toán</div>
