@@ -167,7 +167,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
-  console.log({ product });
 
   return (
     <>

@@ -56,10 +56,10 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
           <div className='nav-list-product w-full flex justify-between pb-3 border-b'>
             <div className='flex gap-3 items-end '>
               <p className='font-semibold text-[16px]'>{o?.shop?.shop_name ? o.shop.shop_name : 'Shop đã biến mất'}</p>
-              <button className='p-1 flex items-center justify-center gap-1 border bg-blue-700 rounded-sm text-white'>
+              {/* <button className='p-1 flex items-center justify-center gap-1 border bg-blue-700 rounded-sm text-white'>
                 <MailPlus size={12} />
                 <p className="text-[12px]">Chat</p>
-              </button>
+              </button> */}
               <Link href={`/vendors/${o?.shop?.id || 1}`}>
                 <button className='p-1 flex items-center justify-center gap-1 border rounded-sm text-gray-500 font-semibold'>
                   <Store size={12} />
@@ -131,11 +131,32 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
             {+o.order_status === 0 && (
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                  <Button>Hủy đơn</Button>
+                  <Button variant={'destructive'}>Hủy đơn</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>Thông báo</DialogTitle>
+                  </DialogHeader>
+                  <div className="w-full py-4">
+                    <div>Bạn có chắc muốn hủy đơn hàng #{o.id} ?</div>
+                  </div>
+                  <DialogFooter className="flex gap-2">
+                    <Button type="button" onClick={() => {
+                      setOpen(false);
+                    }}>Không</Button>
+                    <Button type="button" onClick={async () => await handleCancelOrder(+o.id)}>Có</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+            {+o.order_status === 8 && (
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-blue-800 text-white">Đánh giá đơn hàng</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Đánh giá sản phẩm</DialogTitle>
                   </DialogHeader>
                   <div className="w-full py-4">
                     <div>Bạn có chắc muốn hủy đơn hàng #{o.id} ?</div>
