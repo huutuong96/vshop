@@ -22,7 +22,9 @@ const BannerHomeGuest = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/banners/client`);
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/banners/client`, {
+          cache: 'default'
+        });
         if (!res.ok) {
           throw 'Error';
         }

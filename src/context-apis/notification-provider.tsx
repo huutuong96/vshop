@@ -85,7 +85,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    if (info) {
+    if (Object.entries(info).length > 0) {
       fetchNotifications()
     }
   }, [])
