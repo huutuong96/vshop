@@ -1,7 +1,7 @@
 
 'use client'
 import { Button } from "@/components/ui/button";
-import { Check, ChevronLeft, ChevronRight, Clock, Dot, List, Logs, Play, ShoppingBag, UserRoundCheck } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Clock, Dot, Lightbulb, List, Logs, Play, ShoppingBag, UserRoundCheck } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useEffect, useState } from "react";
-import { notFound, useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { notFound, useParams, useRouter, useSearchParams } from "next/navigation";
 import productApiRequest from "@/apiRequest/product";
 import CardProduct from "@/app/(guest)/_components/card-product";
 import envConfig from "@/config";
@@ -95,61 +95,77 @@ function formatTimeDifference(createdAt: string): string {
   }
 }
 
-const handleChangeSearchParams = (page: string, filter: any, sort: string) => {
-  return `${page ? `&page=${page}` : ''}${filter ? `&${filter}` : ''}${sort !== 'abx' ? `&sort=${sort}` : ''}`
+const handleChangeSearchParams = (page: string, filter: any, sort: string, search: string) => {
+  return `${search ? `search=${search}&` : ''}${page ? `page=${page}` : ''}${filter ? `&${filter}` : ''}${sort && sort !== 'abx' ? `&sort=${sort}` : ''}`
 }
 
-export default function SearchProductSection() {
+const handleChangeSearchParams1 = (page: string, filter: any, sort: string, search: string) => {
+  return `${search ? `search=${search}&` : ''}${page ? `page=${page}&` : ''}${filter ? `filter=${filter}&` : ''}${sort && sort !== 'abx' ? `&sort=${sort}` : ''}`
+}
+
+export default function SearchProductSection({ page1, sort1, filter1, search1 }: { page1?: string, sort1?: string, filter1?: string, search1?: string }) {
   const params = useParams();
   const [open, setOpen] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
-  const [filter, setFilter] = useState<any>(null);
+  const [filter, setFilter] = useState<any>(filter1 || '');
   const [loading, setLoading] = useState<boolean>(true);
-  const [sort, setSort] = useState<any>('abx');
+  const [sort, setSort] = useState<string>(sort1 || 'abx');
   const [pages, setPages] = useState<any[]>([]);
-  const [page, setPage] = useState('1');
+  const [page, setPage] = useState(page1 || '1');
   const [category, setCategory] = useState<any>();
   const [categoryId, setCategoryId] = useState(0);
+  const searchPrams = useSearchParams();
+  const search = searchPrams.get('search');
 
-  // useEffect(() => {
-  //   if (!params.id) {
-  //     return notFound();
-  //   }
-  // }, []);
-
+  const router = useRouter();
 
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true);
-        const [productsRes] = await Promise.all([
-          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/filter?limit=20&${handleChangeSearchParams(page, filter, sort)}`),
-          // fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/categories?category_id=${params.id}`),
+    console.log('in useEffect: ', { page, filter, sort, search });
 
-        ])
-        const productsPayload = await productsRes.json();
-        // const categoryPayload = await categoryRes.json();
+    setPage(searchPrams.get('page') || '1');
+    setSort(searchPrams.get('sort') || '');
+    setFilter(searchPrams.get('filter') || '')
+  }, [searchPrams])
 
 
-        if (!productsRes.ok) {
-          throw productsPayload
+  const getData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const productsRes = await fetch(
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/client/search?limit=20&${handleChangeSearchParams(
+          page,
+          filter,
+          sort,
+          search as string
+        )}`
+      );
 
-        }
 
-        setProducts([...productsPayload.data]);
-        setPages([...productsPayload.links]);
-        // setCategory(categoryPayload)
-      } catch (error) {
-        setProducts([]);
-        setPages([]);
-      } finally {
-        setLoading(false);
+      const productsPayload = await productsRes.json();
+
+
+      if (!productsRes.ok) {
+        throw productsPayload;
       }
 
+      setProducts([...productsPayload.data.data]);
+      setPages([...productsPayload.data.links]);
+    } catch (error) {
+      toast({ title: "Lỗi khi tải sản phẩm", description: "Vui lòng thử lại." });
+      setProducts([]);
+      setPages([]);
+    } finally {
+      setLoading(false);
     }
-    getData()
-  }, [handleChangeSearchParams(page, filter, sort)])
+  }, [page, filter, sort, search]);
+
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
+
+
 
   return (
     <>
@@ -179,6 +195,13 @@ export default function SearchProductSection() {
                 </div>
               </div>
               <div className="flex-1">
+                {search && (
+                  <div className="mb-4 mx-[2px] flex gap-2">
+                    <Lightbulb size={20} strokeWidth={1.25} />
+                    Kết quả tìm với từ khóa : <span className="text-blue-800 font-medium">{search}</span>
+                  </div>
+                )}
+
                 <div className="w-full">
                   <div className="mx-[2px] py-[13px] px-5 shadow-sm bg-white rounded-sm">
                     <div className="w-full flex items-center justify-between h-[34px]">
@@ -189,17 +212,14 @@ export default function SearchProductSection() {
                             <Button
                               onClick={() => {
                                 if (!filter) {
-                                  setPage('1')
-                                  setFilter(f.value);
+                                  router.push(`/search?${handleChangeSearchParams1('1', f.value, '', search || '')}`)
                                   return
                                 }
                                 if (filter === f.value) {
-                                  setPage('1')
-                                  setFilter(null)
+                                  router.push(`/search?${handleChangeSearchParams1('1', null, '', search || '')}`)
                                   return
                                 } else {
-                                  setPage('1')
-                                  setFilter(f.value)
+                                  router.push(`/search?${handleChangeSearchParams1('1', f.value, '', search || '')}`)
                                   return
                                 }
                               }}
@@ -226,8 +246,7 @@ export default function SearchProductSection() {
                           )
                           }
                           <Select open={open} value={sort} onValueChange={(v) => {
-                            setSort(v);
-                            setPage('1')
+                            router.push(`/search?${handleChangeSearchParams1('1', '', v, search || '')}`)
                           }} onOpenChange={setOpen}>
                             <SelectTrigger className="w-[200px] bg-white">
                               <SelectValue className="text-sm" placeholder="Giá" />
@@ -300,7 +319,10 @@ export default function SearchProductSection() {
                         )}
 
                         {pages.slice(1, pages.length - 1).map((p: any, index: number) => (
-                          <PaginationItem key={index} onClick={() => setPage(p.label)} className="cursor-pointer">
+                          <PaginationItem key={index} onClick={() => {
+                            router.push(`/search?${handleChangeSearchParams1(p.label, filter || '', sort || '', search || ''
+                            )}`)
+                          }} className="cursor-pointer">
                             <PaginationLink isActive={+p.label === +page}>{p.label}</PaginationLink>
                           </PaginationItem>
                         ))}

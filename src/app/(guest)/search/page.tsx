@@ -1,7 +1,7 @@
 import SearchProductSection from "@/app/(guest)/search/search-product-section";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
-export default function SearchProductPage() {
+export default function SearchProductPage({ searchParams: { page, sort, filter, search } }: { searchParams: { page?: string, filter?: string, sort?: string, search?: string } }) {
   return (
     <div className='w-content'>
       <Breadcrumb className="pb-5">
@@ -15,7 +15,7 @@ export default function SearchProductPage() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <SearchProductSection />
+      <SearchProductSection filter1={filter} page1={page} sort1={sort} search1={search} />
     </div>
   );
 }

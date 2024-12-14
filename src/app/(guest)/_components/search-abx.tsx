@@ -44,20 +44,14 @@ export default function SearchAbx() {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT_1}/api/test/search`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ search: searchTerm }), // Chuyển searchTerm vào body
-      });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT_1}/api/client/search?search=${searchTerm}`);
 
       if (!response.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
 
       const payload = await response.json();
-      setResults(payload.products.data || []); // Lưu kết quả trả về nếu có
+      setResults(payload.data.data || []); // Lưu kết quả trả về nếu có
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -103,6 +97,7 @@ export default function SearchAbx() {
     e.preventDefault()
     if (query) {
       setShow(false);
+      setQuery('')
       router.push(`/search?search=${query}`);
     }
   }
@@ -115,6 +110,7 @@ export default function SearchAbx() {
         value={query}
         onChange={onInputChange}
         onFocus={() => setShow(true)}
+      // onBlurCapture={() => setShow(false)}
       />
       <div onClick={handleSubmit} className="icon-input flex items-center justify-center w-[42px] h-full border-b border-t border-r  rounded-tr-[16px] rounded-br-[16px] bg-gray-50">
         <Search size={20} />
