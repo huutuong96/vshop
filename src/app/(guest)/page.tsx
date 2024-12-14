@@ -37,7 +37,6 @@ export default async function HomePage() {
       </>
     )
   } catch (error) {
-    console.log({ error });
     return (
       <div>he</div>
     )

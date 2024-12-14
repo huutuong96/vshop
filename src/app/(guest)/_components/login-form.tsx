@@ -19,6 +19,7 @@ import { RiFacebookFill, RiGithubFill, RiGoogleFill, RiTwitterXFill } from "@rem
 // Dependencies: pnpm install lucide-react
 
 import { LoaderCircle } from "lucide-react";
+import { handleLoginAction } from '@/app/action';
 function ButtonLoading(
 ) {
   return (
@@ -154,6 +155,17 @@ export default function LoginForm() {
     } finally {
       // setLoading(false);
     }
+    // try {
+    //   const res = await handleLoginAction(data);
+    //   if (!res.success) {
+    //     throw res.errorMessage
+    //   }
+    //   const historyPath = localStorage.getItem('historyPath') ?? '/'
+    //   router.push(historyPath)
+    //   router.refresh();
+    // } catch (error) {
+    //   setErrorMessage(error as string);
+    // }
 
   }
 

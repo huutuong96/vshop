@@ -26,6 +26,7 @@ export default function ProfileProvider({
   const storeRef = useRef<ProfileStore>()
   if (!storeRef.current) {
     // Create the store instance the first time this renders
+
     storeRef.current = profileStore()
     storeRef.current.dispatch(addAccessToken(accessToken));
     clientAccessToken.value = accessToken;
@@ -34,6 +35,8 @@ export default function ProfileProvider({
       storeRef.current.dispatch(addCart(cart));
       storeRef.current.dispatch(addAddresses(addresses))
       shop_id.value = info.shop_id;
+    } else {
+      console.log('ko co token ');
     }
     // if (typeof window !== 'undefined') {
     //   clientAccessToken.value = accessToken;

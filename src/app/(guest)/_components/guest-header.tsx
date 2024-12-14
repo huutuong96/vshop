@@ -19,6 +19,7 @@ import LoadingScreen from '@/app/(guest)/_components/loading-screen';
 import { addAccessToken, addCart, addInfo } from '@/redux/slices/profile.slice';
 import envConfig from '@/config';
 import { useNotification } from '@/context-apis/notification-provider';
+import SearchAbx from '@/app/(guest)/_components/search-abx';
 
 
 const tags: { title: string, icon: any }[] = [
@@ -123,12 +124,7 @@ export default function GuestHeader() {
                   <div className="icon-cate size-6 ">
                     {/* <LayoutGrid /> */}
                   </div>
-                  <div className="input-nav h-10 flex">
-                    <input type="text" placeholder="Tìm trên VNShop" className="w-[550px] h-full px-5 border rounded-tl-[16px] rounded-bl-[16px] outline-none text-[13px] bg-gray-50" />
-                    <div className="icon-input flex items-center justify-center w-[42px] h-full border-b border-t border-r  rounded-tr-[16px] rounded-br-[16px] bg-gray-50">
-                      <Search size={20} />
-                    </div>
-                  </div>
+                  <SearchAbx />
                 </div>
                 <div className="nav-dangnhap flex items-center justify-end w-[400px] h-full gap-6">
                   {Object.entries(info).length > 0 && (

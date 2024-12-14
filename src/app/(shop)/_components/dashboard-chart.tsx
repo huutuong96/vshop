@@ -44,7 +44,7 @@ const chartConfig = {
 
 const fetchChartData = async (shopId: any, time: any, accessToken: any) => {
   const response = await fetch(
-    `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_chart_shop/${shopId}?time=${time}`,
+    `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_chart_shop/${shopId}?time=${time}&order_status=8`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -58,7 +58,7 @@ const fetchChartData = async (shopId: any, time: any, accessToken: any) => {
 
 const fetchConfigData = async (shopId: any, time: any, accessToken: any) => {
   const response = await fetch(
-    `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_shop/${shopId}?time=${time}`,
+    `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop/get_analyst_shop/${shopId}?time=${time}&order_status=8`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
