@@ -39,7 +39,6 @@ export default function CategoryListHomeSection({ categories }: { categories: an
                   </div>
                 </Link>
               </SwiperSlide>
-
             ))}
           </Swiper>
 
