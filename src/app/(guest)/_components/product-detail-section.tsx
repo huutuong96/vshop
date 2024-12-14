@@ -24,6 +24,7 @@ import { useAppInfoSelector } from "@/redux/stores/profile.store"
 import { isSet } from "lodash"
 import Link from "next/link"
 import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules"
+import CommentProductSection from "@/app/(guest)/_components/comment-product-section"
 function formatTimeDifference(createdAt: string): string {
   const createdDate = new Date(createdAt);
   const now = new Date();
@@ -647,15 +648,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
           </div>
         </div>
       </div>
-      <div className="w-full py-8 flex flex-col gap-6">
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-      </div>
+      <CommentProductSection id={product.id} />
     </>
   )
 

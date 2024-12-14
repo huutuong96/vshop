@@ -12,13 +12,13 @@ export default function AbxGoiY({ products }: { products: any }) {
   return (
     <>
       <Swiper
-        modules={[Autoplay, EffectFade]}
+        modules={[EffectFade]}
         spaceBetween={10}
         slidesPerView={5}
         // slidesPerGroup={2}
         // pagination={{ clickable: true }}
-        autoplay={{ delay: 1500, disableOnInteraction: false }}
-        loop
+        // autoplay={{ delay: 1500, disableOnInteraction: false }}
+        // loop
         className='w-full'
       >
         {products.map((item: any, index: number) => (

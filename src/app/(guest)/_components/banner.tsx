@@ -43,13 +43,13 @@ const BannerHomeGuest = () => {
       <div className='w-content'>
         {banners.length > 0 && (
           <Swiper
-            modules={[Autoplay, EffectFade, Pagination]}
+            modules={[EffectFade]}
             spaceBetween={10}
             slidesPerView={2}
             // slidesPerGroup={2}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 1500, disableOnInteraction: false }}
-            loop
+            // pagination={{ clickable: true }}
+            // autoplay={{ delay: 1500, disableOnInteraction: false }}
+            // loop
             className='w-full h-[335px] grid grid-cols-2 grid-rows-1 gap-2'
           >
             {banners.map((banner) => (

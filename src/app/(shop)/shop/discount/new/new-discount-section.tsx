@@ -172,7 +172,7 @@ export default function NewDiscountSection() {
           "Content-Type": 'Application/json'
         },
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify({ ...data, method: data.method === '1' ? '2' : '1' })
       })
       if (!res.ok) {
         throw 'Error';
