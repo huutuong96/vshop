@@ -55,7 +55,7 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
         />
         <div>
           <p className="font-bold text-gray-800">{c?.user?.fullname || 'khang'}</p>
-          <p className="text-sm text-gray-500">{timeAgo(c.updated_at)}</p>
+          <p className="text-sm text-gray-500">{timeAgo(c.created_at)}</p>
         </div>
       </div>
 

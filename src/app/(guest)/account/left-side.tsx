@@ -43,13 +43,15 @@ export default function LeftSide() {
   const profile = useAppInfoSelector(state => state.profile.info);
   const pathname = usePathname();
 
+  console.log(profile);
+
   return (
     <div className='left-body flex flex-col items-center pt-4'>
       <div className='w-[240px] h-[80px] flex gap-5 items-center'>
         <img src={profile?.avatar || ''} className='size-14 rounded-full bg-slate-500' />
         <div className='w-[195px] h-full flex flex-col justify-center'>
           <div className='w-full h-[20px] flex justify-start gap-1'>
-            <img src="./images/kimcuongRank.png" className='w-[20px] h-full' alt="Lỗi rank" />
+            <img src={profile?.rank?.image || ''} className='size-5' alt="Lỗi rank" />
             <div
               className='text-[16px] max-w-[120px] font-semibold truncate whitespace-nowrap overflow-hidden'
               title={profile.fullname} // Hiển thị đầy đủ tên khi hover

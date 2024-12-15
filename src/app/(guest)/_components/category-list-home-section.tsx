@@ -17,12 +17,12 @@ export default function CategoryListHomeSection({ categories }: { categories: an
         </div>
         <div className="w-full">
           <Swiper
-            modules={[Autoplay, EffectFade]}
+            modules={[EffectFade]}
             spaceBetween={10}
             slidesPerView={10}
             // slidesPerGroup={2}
             // pagination={{ clickable: true }}
-            autoplay={{ delay: 1500, disableOnInteraction: false }}
+            // autoplay={{ delay: 1500, disableOnInteraction: false }}
             loop
             className='w-full grid grid-cols-2 grid-rows-1 gap-2'
           >
