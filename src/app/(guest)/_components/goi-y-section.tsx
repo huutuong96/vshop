@@ -19,9 +19,9 @@ export default async function GoiYSection() {
             <CardProduct key={index} p={item} />
           ))}
         </div>
-        <div className="mt-4 flex justify-center">
+        <Link href={'/search'} className="mt-4 flex justify-center underline text-blue-800">
           Xem thêm
-        </div>
+        </Link>
       </div>
     )
   } catch (error) {

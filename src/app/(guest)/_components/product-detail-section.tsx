@@ -419,7 +419,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               </div>
             </div>
             <div className="w-full flex gap-2 mt-4">
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black"
+              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 flex-1 text-black"
               >
                 <Heart size={20} />
                 {info?.followers ? (info.followers.some((c: any) => c.shop_id === product.shop_id) ? (
@@ -429,15 +429,15 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                 )) : <span className="ml-2">Theo dõi</span>}
               </Button>
 
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
+              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 flex-1 text-black">
                 <Link className="flex items-center" href={`/vendors/${selectedProduct.shop_id}`}>
                   <Store size={20} />
                   <span className="ml-2">Vào shop</span>
                 </Link>
               </Button>
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[10%] text-black">
+              {/* <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[10%] text-black">
                 <PhoneCall size={20} />
-              </Button>
+              </Button> */}
             </div>
             <div className="mt-4 border-t">
               <div className="mt-4 text-[14px] font-bold">
