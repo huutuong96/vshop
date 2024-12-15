@@ -7,6 +7,8 @@ export default function Google() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
+  console.log({ token });
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -20,6 +22,7 @@ export default function Google() {
         }
         const info = await res.json();
         // const historyPath = localStorage.getItem('historyPath') ?? '/'
+        console.log({ info });
         window.location.href = '/';
       } catch (error) {
         console.log(error);
