@@ -162,7 +162,38 @@ export default function ShopDetailSection() {
 
     }
     getData()
-  }, [handleChangeSearchParams(page, filter, sort, categoryId)])
+  }, [handleChangeSearchParams(page, filter, sort, categoryId)]);
+
+
+  const handleGetShopVoucher = async (code: string) => {
+    try {
+      if (!clientAccessToken.value) {
+        throw 'Vui lòng đăng nhập để lấy voucher!'
+      }
+      const res = await fetch(`${envConfig}/api/add/voucher`, {
+        headers: {
+          'Authorization': `Bearer ${clientAccessToken.value}`,
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify({ code })
+      });
+      if (!res.ok) {
+        throw 'Error'
+      }
+      toast({
+        title: 'success',
+        variant: 'success'
+      })
+
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: error as string,
+        title: 'Error'
+      })
+    }
+  }
 
   return (
     <>
@@ -303,7 +334,7 @@ export default function ShopDetailSection() {
                           </div>
                         </div>
                         <div className="px-3 border-l border-dashed flex items-center justify-center">
-                          <button className="w-[60px] h-[34px] px-[15px] border text-sm bg-blue-800 text-white rounded-sm">
+                          <button onClick={() => handleGetShopVoucher(v.code)} className="w-[60px] h-[34px] px-[15px] border text-sm bg-blue-800 text-white rounded-sm">
                             Lưu
                           </button>
                         </div>
