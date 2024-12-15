@@ -357,7 +357,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </div>
           </div>
         </div>
-        <div className="w-full py-8 flex flex-col gap-6">
+        {/* <div className="w-full py-8 flex flex-col gap-6">
           <Comment />
           <Comment />
           <Comment />
@@ -365,7 +365,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           <Comment />
           <Comment />
           <Comment />
-        </div>
+        </div> */}
       </div>
     </div>
   )
