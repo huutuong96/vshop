@@ -33,7 +33,7 @@ export default function CardProduct({ p }: { p: any }) {
         <div className="text-[12px]">Đã bán {p.sold_count}</div>
         <div className="flex justify-between items-center text-[12px]">
           <div className="flex gap-1 items-center">
-            <div className="leading-4">5/5</div>
+            <div className="leading-4">{Math.round(p?.rateAvg * 10) / 10 || 0} / 5</div>
             <Star size={12} className="text-yellow-500" />
           </div>
           <span>{p?.shop?.province ? p?.shop?.province : 'Đồng Nai'}</span>

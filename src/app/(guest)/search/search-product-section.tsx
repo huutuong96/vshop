@@ -1,7 +1,7 @@
 
 'use client'
 import { Button } from "@/components/ui/button";
-import { Check, ChevronLeft, ChevronRight, Clock, Dot, Lightbulb, List, Logs, Play, ShoppingBag, UserRoundCheck } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Clock, Dot, Filter, Lightbulb, List, Logs, Play, ShoppingBag, UserRoundCheck } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,6 +29,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import _ from "lodash";
 
 const ProductCardSkeleton = () => {
   return (
@@ -95,13 +100,36 @@ function formatTimeDifference(createdAt: string): string {
   }
 }
 
-const handleChangeSearchParams = (page: string, filter: any, sort: string, search: string) => {
-  return `${search ? `search=${search}&` : ''}${page ? `page=${page}` : ''}${filter ? `&${filter}` : ''}${sort && sort !== 'abx' ? `&sort=${sort}` : ''}`
+const handleChangeSearchParams = (page: string, filter: any, sort: string, search: string, min: number, max: number, min_rate: number, max_rate: number) => {
+  return `${search ? `search=${search}&` : ''}${min_rate ? `min_rate=${min_rate}&` : ''}${max_rate ? `max_rate=${max_rate}&` : ''}${min ? `min_price=${min}&` : ''}${max ? `max_rate=${max}&` : ''}${page ? `page=${page}` : ''}${filter ? `&${filter}` : ''}${sort && sort !== 'abx' ? `&sort=${sort}` : ''}`
 }
 
 const handleChangeSearchParams1 = (page: string, filter: any, sort: string, search: string) => {
   return `${search ? `search=${search}&` : ''}${page ? `page=${page}&` : ''}${filter ? `filter=${filter}&` : ''}${sort && sort !== 'abx' ? `&sort=${sort}` : ''}`
 }
+
+// Định nghĩa schema với Zod
+const priceRangeSchema = z.object({
+  from: z.coerce.number().min(0, "Giá trị phải lớn hơn hoặc bằng 0"),
+  to: z.coerce.number().min(0, "Giá trị phải lớn hơn hoặc bằng 0"),
+}).refine((data) => {
+  if (data.from !== null && data.to !== null) {
+    return data.from <= data.to;
+  }
+  return true;
+}, {
+  message: "Giá trị 'Từ' phải nhỏ hơn hoặc bằng 'Đến'",
+  path: ["to"], // Chỉ định lỗi cho trường 'Đến'
+});
+
+// Kiểu dữ liệu TypeScript từ schema
+type PriceRangeForm = z.infer<typeof priceRangeSchema>;
+
+
+const starMes = [
+  ''
+]
+
 
 export default function SearchProductSection({ page1, sort1, filter1, search1 }: { page1?: string, sort1?: string, filter1?: string, search1?: string }) {
   const params = useParams();
@@ -116,8 +144,37 @@ export default function SearchProductSection({ page1, sort1, filter1, search1 }:
   const [categoryId, setCategoryId] = useState(0);
   const searchPrams = useSearchParams();
   const search = searchPrams.get('search');
+  const [min, setMin] = useState<number>(0);
+  const [max, setMax] = useState<number>(0);
+  const [minRate, setMinRate] = useState<number>(0);
+  const [maxRate, setMaxRate] = useState<number>(0);
 
   const router = useRouter();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    register,
+    getValues
+  } = useForm<PriceRangeForm>({
+    resolver: zodResolver(priceRangeSchema),
+    mode: 'all',
+    defaultValues: {
+    },
+  });
+
+  const onSubmit = (data: PriceRangeForm) => {
+    // reset()
+  };
+  const handleClickPriceRange = () => {
+    if (Object.entries(errors).length === 0) {
+      setMin(getValues('from'))
+      setMax(getValues('to'))
+      // reset()
+    }
+
+  }
 
 
   useEffect(() => {
@@ -137,7 +194,11 @@ export default function SearchProductSection({ page1, sort1, filter1, search1 }:
           page,
           filter,
           sort,
-          search as string
+          search as string,
+          min,
+          max,
+          minRate,
+          maxRate
         )}`
       );
 
@@ -158,7 +219,7 @@ export default function SearchProductSection({ page1, sort1, filter1, search1 }:
     } finally {
       setLoading(false);
     }
-  }, [page, filter, sort, search]);
+  }, [page, filter, sort, search, min, max, minRate, maxRate]);
 
 
   useEffect(() => {
@@ -173,25 +234,111 @@ export default function SearchProductSection({ page1, sort1, filter1, search1 }:
         <div className="w-content pt-5">
           <div className="">
             <div className="w-full flex">
-              <div className="flex-[0_0_11.25rem] mr-[22px]">
-                <div className="w-full border-b h-[50px] mb-[10px] flex items-center gap-3 font-bold">
-                  <List size={16} strokeWidth={2.0} color="black" />
-                  <span>Danh Mục</span>
-                </div>
-                <div className="w-full">
-                  <div className="w-full mb-2 px-3 pr-0 py-2 transition-all relative cursor-pointer hover:text-blue-700">
-                    <div className={`text-sm font-semibold h-4 text-black uppercase `}>
-                      {category?.name || 'Tất cả danh mục'}
+              <div className="flex-[0_0_13.25rem] mr-[22px]">
+                {/* <div className="mb-4">
+                  <div className="w-full border-b h-[50px] mb-[10px] flex items-center gap-3 font-bold">
+                    <List size={16} strokeWidth={2.0} color="black" />
+                    <span>Danh Mục</span>
+                  </div>
+                  <div className="w-full">
+                    <div className="w-full mb-2 px-3 pr-0 py-2 transition-all relative cursor-pointer hover:text-blue-700">
+                      <div className={`text-sm font-semibold h-4 text-black uppercase `}>
+                        {category?.name || 'Tất cả danh mục'}
+                      </div>
+                    </div>
+                    {category?.nest.map((c: any) => (
+                      <div key={c.id} onClick={() => setCategoryId(+c.id)} className="w-full px-3 mb-2 pr-0 relative transition-all cursor-pointer hover:text-blue-700">
+                        <Link href={`/categories/${c.id}`} className={`text-sm font-medium h-4 ${+c.id === categoryId ? 'text-blue-700' : ''}`}>
+                          {c.title}
+                        </Link>
+                      </div>
+                    ))}
+
+                  </div>
+                </div> */}
+                <div>
+                  <div className="w-full border-b h-[50px] mb-[10px] flex items-center gap-3 font-bold">
+                    <Filter size={16} strokeWidth={2.0} color="black" />
+                    <span>Lọc Sản Phẩm</span>
+                  </div>
+                  <div className="w-full">
+                    {/* <div className="w-full mb-2 px-3 pr-0 py-2 transition-all relative cursor-pointer hover:text-blue-700">
+                      <div className={`text-sm font-semibold h-4 text-black uppercase `}>
+                        {category?.name || 'Tất cả danh mục'}
+                      </div>
+                    </div>
+                    {category?.nest.map((c: any) => (
+                      <div key={c.id} onClick={() => setCategoryId(+c.id)} className="w-full px-3 mb-2 pr-0 relative transition-all cursor-pointer hover:text-blue-700">
+                        <Link href={`/categories/${c.id}`} className={`text-sm font-medium h-4 ${+c.id === categoryId ? 'text-blue-700' : ''}`}>
+                          {c.title}
+                        </Link>
+                      </div>
+                    ))} */}
+                    <div className="w-full mb-2 pr-0 py-2">Danh mục</div>
+                    <div className="py-2 border-b"></div>
+                    <div className="w-full mb-2 pr-0 py-2">Khoảng giá</div>
+                    <form onSubmit={handleSubmit(onSubmit)} className="w-full mb-2 pr-0">
+                      <div className="flex gap-4">
+                        {/* Trường 'Từ' */}
+                        <div className="flex-1">
+                          <Input
+                            {...register('from')}
+                            type="number"
+                            placeholder="đ Từ"
+                            className={`bg-white ${errors.from ? "border-red-500" : ""}`}
+                          />
+                          {/* {errors.from && <p className="text-red-500 text-sm">{errors.from.message}</p>} */}
+                        </div>
+
+                        {/* Trường 'Đến' */}
+                        <div className="flex-1">
+                          <Input
+                            {...register('to')}
+                            type="number"
+                            placeholder="đ Đến"
+                            className={`bg-white ${errors.to ? "border-red-500" : ""}`}
+                          />
+                          {/* {errors.from && <p className="text-red-500 text-sm">{errors.from.message}</p>} */}
+                        </div>
+                      </div>
+
+                      <div className="w-full mt-4 flex justify-center">
+                        <Button type="button" onClick={handleClickPriceRange} className="bg-blue-800 w-full">
+                          Áp dụng
+                        </Button>
+                      </div>
+                    </form>
+                    <div className="py-2 border-b"></div>
+                    <div className="w-full mb-2 pr-0 py-2">Đánh giá</div>
+                    <div className="w-full mb-2 pr-0">
+                      {/* {[...Array(review.rate)].map((_, i) => (
+                            <span key={i} className={`text-yellow-400`}>★</span>
+                          ))}
+                          {[...Array(greyStar)].map((_, i) => (
+                            <span key={i} className={`text-gray-400`}>★</span>
+                          ))} */}
+                      {Array.from({ length: 5 }).map((_, index) => {
+                        let star = 5 - index;
+                        let grayStart = index
+                        return (
+                          <div key={index} onClick={() => {
+                            setMinRate(star);
+                            setMaxRate(5);
+                          }}>
+                            <div className="flex gap-1 items-center cursor-pointer py-[1px]">
+                              {Array.from({ length: star }).map((_, sI) => (
+                                <span key={sI} className={`text-yellow-400 text-xl`}>★</span>
+                              ))}
+                              {Array.from({ length: grayStart }).map((_, sI) => (
+                                <span key={sI} className={`text-gray-400 text-xl`}>★</span>
+                              ))}
+                              {index !== 0 && <div className="text-[16px] ml-2 text-gray-700">Trở lên</div>}
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
-                  {category?.nest.map((c: any) => (
-                    <div key={c.id} onClick={() => setCategoryId(+c.id)} className="w-full px-3 mb-2 pr-0 relative transition-all cursor-pointer hover:text-blue-700">
-                      <Link href={`/categories/${c.id}`} className={`text-sm font-medium h-4 ${+c.id === categoryId ? 'text-blue-700' : ''}`}>
-                        {c.title}
-                      </Link>
-                    </div>
-                  ))}
-
                 </div>
               </div>
               <div className="flex-1">

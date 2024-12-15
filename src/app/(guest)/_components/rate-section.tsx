@@ -1,5 +1,6 @@
 'use client'
 
+import ProductReviews from "@/app/(guest)/_components/product-review";
 import { Button } from "@/components/ui/button";
 import envConfig from "@/config";
 import { Star, StarHalf, StarOff } from "lucide-react";
@@ -163,7 +164,7 @@ export default function RateSection({ productId }: { productId: number }) {
         </div>
       </div>
       <div className="mt-4 flex gap-2 justify-center">
-        <span className="text-sm text-blue-800 underline cursor-pointer">Xem thêm</span>
+        <ProductReviews productId={productId} />
       </div>
     </div>
   )

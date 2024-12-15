@@ -19,8 +19,8 @@ export default function Google() {
           throw resToNextServer.message;
         }
         const info = await res.json();
-        const historyPath = localStorage.getItem('historyPath') ?? '/'
-        window.location.href = historyPath;
+        // const historyPath = localStorage.getItem('historyPath') ?? '/'
+        window.location.href = '/';
       } catch (error) {
         console.log(error);
       }

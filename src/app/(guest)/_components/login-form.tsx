@@ -169,14 +169,7 @@ export default function LoginForm() {
 
   }
 
-  const handleLoginWithGoogle = () => {
-    const popup = window.open(
-      "https://vnshop.top/auth/google",
-      "Google Login",
-      "width=500,height=600"
-    );
 
-  }
 
   return (
     <>
