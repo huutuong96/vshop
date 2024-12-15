@@ -170,7 +170,7 @@ export default function ShopDetailSection() {
       if (!clientAccessToken.value) {
         throw 'Vui lòng đăng nhập để lấy voucher!'
       }
-      const res = await fetch(`${envConfig}/api/add/voucher`, {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/add/voucher`, {
         headers: {
           'Authorization': `Bearer ${clientAccessToken.value}`,
           'Content-Type': 'application/json'
