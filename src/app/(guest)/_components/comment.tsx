@@ -1,4 +1,4 @@
-'use state'
+'use client'
 import { timeAgo } from "@/app/(shop)/_components/shop-header";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
