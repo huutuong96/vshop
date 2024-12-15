@@ -251,7 +251,7 @@ export default function OrderShopItem({ o, setStatus }: { o: any, setStatus: any
                     </>
                   )}
                   {+o.order_status === 0 && (
-                    <div onClick={() => handleChangeStatus(1)} className="px-2 text-red-500 cursor-pointer flex flex-col hover:underline">Xác nhận hủy đơn hàng</div>
+                    <div onClick={() => handleChangeStatus(10)} className="px-2 text-red-500 cursor-pointer flex flex-col hover:underline">Xác nhận hủy đơn hàng</div>
                   )}
                 </DropdownMenuLabel>
               </DropdownMenuContent>

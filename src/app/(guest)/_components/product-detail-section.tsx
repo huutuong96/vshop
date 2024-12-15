@@ -25,6 +25,7 @@ import { isSet } from "lodash"
 import Link from "next/link"
 import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules"
 import CommentProductSection from "@/app/(guest)/_components/comment-product-section"
+import RateSection from "@/app/(guest)/_components/rate-section"
 function formatTimeDifference(createdAt: string): string {
   const createdDate = new Date(createdAt);
   const now = new Date();
@@ -167,6 +168,8 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
+  console.log(product);
+
 
   return (
     <>
@@ -222,14 +225,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               </div>
               <div className="absolute bottom-0 w-full left-0">
                 <div className="w-full flex gap-3 items-center">
-                  <div className="flex gap-1">
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                  </div>
-                  <span className="text-[14px] text-blue-500">71 đánh giá</span>
+                  <span className="text-[14px] text-blue-500">{product.countRanting} đánh giá</span>
                   <div className="flex gap-1 items-center">
                     <ShoppingBasket size={16} className="text-gray-400" />
                     <span className="text-[14px] text-gray-400">{selectedProduct.sold_count} lượt mua</span>
@@ -517,134 +513,8 @@ export default function ProductDetailSection({ product, variant, test }: { produ
             <p className="text-[14px] font-normal mb-4">
               {selectedProduct.description}
             </p>
-            {/* <div className="text-[16px] font-bold mb-4">
-              Thông tin cơ bản
-            </div>
-            <div className="mb-4">
-              <AttributesTable />
-            </div>
-            <div className="text-[16px] font-bold mb-4">
-              Chi tiết sản phẩm
-            </div>
-            <p className="text-[14px] font-normal">
-              Chi tiết sản phẩm
-            </p> */}
           </div>
-          <div className="w-full p-4 shadow border">
-            <span className="text-[16px] font-bold mb-4">
-              Đánh giá và nhận xét sản phẩm <span className="text-gray-400 font-normal text-[14px] text-">( 71 lượt đánh giá)</span>
-            </span>
-            <div className="flex gap-8">
-              <div className="w-1/2 flex flex-col justify-center">
-                <span>
-                  <span className="font-bold text-black text-[30px]">4.6</span>
-                  <span className="font-bold text-black text-[22px]">/</span>
-                  <span className="font-bold text-red-500 text-[22px]">5</span>
-                  <span className="ml-4 text-[#f0ce11] text-[20px]">★★★★★</span>
-                </span>
-                <span className="italic text-[14px] text-gray-500">
-                  Đây là thông tin người mua đánh giá shop bán sản
-                  phẩm này có đúng mô tả không.
-                </span>
-              </div>
-              <div className="w-1/2 flex flex-col gap-3">
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex gap-2">
-              <Button>Tất cả</Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                1 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                2 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                3 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                4 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                5 sao
-              </Button>
-
-            </div>
-          </div>
+          <RateSection productId={product.id} />
         </div>
       </div>
       <CommentProductSection id={product.id} />

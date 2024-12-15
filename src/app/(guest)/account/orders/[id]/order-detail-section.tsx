@@ -8,7 +8,7 @@ import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.s
 import { ChevronLeft, MailPlus, MapPinIcon, Store, Truck } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 const titles: { id: number, title: string, order_status: number, valueString: any }[] = [
   { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#d2b510] font-medium">Chờ xác nhận</div>) },
@@ -39,9 +39,6 @@ export default function OrderDetailSection({ id }: { id: string }) {
   const profile = useAppInfoSelector(state => state.profile.info);
   const [loading, setLoading] = useState<boolean>(true);
 
-  if (order) {
-    console.log(order);
-  }
 
   useEffect(() => {
     const getData = async () => {

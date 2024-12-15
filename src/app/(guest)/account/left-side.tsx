@@ -50,8 +50,8 @@ export default function LeftSide() {
       <div className='w-[240px] h-[80px] flex gap-5 items-center'>
         <img src={profile?.avatar || ''} className='size-14 rounded-full bg-slate-500' />
         <div className='w-[195px] h-full flex flex-col justify-center'>
-          <div className='w-full h-[20px] flex justify-start gap-1'>
-            <img src={profile?.rank?.image || ''} className='size-5' alt="Lỗi rank" />
+          <div className='w-full h-[20px] flex justify-start gap-1 items-center'>
+            <img src={profile?.rank?.image || ''} className='size-8' alt="Lỗi rank" />
             <div
               className='text-[16px] max-w-[120px] font-semibold truncate whitespace-nowrap overflow-hidden'
               title={profile.fullname} // Hiển thị đầy đủ tên khi hover

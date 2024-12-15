@@ -14,15 +14,9 @@ export default function GeustAuthLayout({ children }: { children: React.ReactNod
           <div className="abx w-1/2 p-12 flex flex-col justify-center items-center">
             <h1 className="text-3xl font-bold text-blue-600 mb-4">Bán hàng chuyên nghiệp</h1>
             <p className="text-gray-600 mb-8 text-center max-w-md">
-              Quản lý shop của bạn một cách hiệu quả hơn trên Shopee với Shopee - Kênh Người Bán
+              Quản lý shop của bạn một cách hiệu quả hơn trên VNShop với VNShop - Kênh Người Bán
             </p>
-            <Image
-              src="/images/seller-illustration.png"
-              alt="Seller Illustration"
-              width={300}
-              height={200}
-              className="mb-8"
-            />
+            <img src="https://octopod.co.in/slink/images/login.svg" className="size-[300px] mb-8" alt="" />
           </div>
         )}
 

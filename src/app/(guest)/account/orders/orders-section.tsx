@@ -4,7 +4,7 @@ import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
 import { MailPlus, Store, Truck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -156,6 +156,13 @@ export default function OrdersGuestSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
+  const handleChangeFeedbackOrder = useCallback((index: number) => {
+    setOrders(prev => {
+      prev[index].is_feedbacked = 1
+      return [...prev];
+    })
+  }, [])
+
   const fetchOrders = async (currentPage: number) => {
     try {
       setLoading(true);
@@ -263,8 +270,8 @@ export default function OrdersGuestSection() {
       )}
 
       <div>
-        {orders.map((o: any) => (
-          <OrderDetailItem key={o.id} setOrderStatus={setOrderStatus} o={o} />
+        {orders.map((o: any, index: number) => (
+          <OrderDetailItem key={o.id} setOrderStatus={setOrderStatus} o={o} handleChangeFeedbackOrder={handleChangeFeedbackOrder} index1={index} />
         ))}
         {loading && (
           <>

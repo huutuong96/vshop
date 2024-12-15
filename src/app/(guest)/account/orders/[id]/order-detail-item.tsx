@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import envConfig from "@/config"
 import { toast } from "@/components/ui/use-toast"
 import { clientAccessToken } from "@/lib/http"
+import ProductReviewForm from "@/app/(guest)/test/product-review-form"
 
 const titles: { id: number, title: string, order_status: number, valueString: any }[] = [
   { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#ebb726] font-medium">Chờ xác nhận</div>) },
@@ -26,7 +27,7 @@ const titles: { id: number, title: string, order_status: number, valueString: an
   { id: 5, title: "Đã hủy", order_status: 10, valueString: (<div className="text-red-500 font-medium">Đã hủy</div>) }
 ]
 
-export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrderStatus: any }) {
+export default function OrderDetailItem({ o, setOrderStatus, handleChangeFeedbackOrder, index1 }: { o: any, setOrderStatus: any, handleChangeFeedbackOrder: any, index1: number }) {
   const [open, setOpen] = useState<boolean>(false);
 
   const handleCancelOrder = async (id: number) => {
@@ -47,7 +48,6 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
     }
   }
 
-  console.log(o);
 
   return (
     <div className="my-3 ">
@@ -150,25 +150,8 @@ export default function OrderDetailItem({ o, setOrderStatus }: { o: any, setOrde
               </Dialog>
             )}
             {+o.order_status === 8 && (
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-blue-800 text-white">Đánh giá đơn hàng</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Đánh giá sản phẩm</DialogTitle>
-                  </DialogHeader>
-                  <div className="w-full py-4">
-                    <div>Bạn có chắc muốn hủy đơn hàng #{o.id} ?</div>
-                  </div>
-                  <DialogFooter className="flex gap-2">
-                    <Button type="button" onClick={() => {
-                      setOpen(false);
-                    }}>Không</Button>
-                    <Button type="button" onClick={async () => await handleCancelOrder(+o.id)}>Có</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              o.order_details.every((od: any) => od.product) && !o.is_feedbacked ?
+                <ProductReviewForm products={o.order_details} order_id={o.id} handleChangeFeedbackOrder={handleChangeFeedbackOrder} index={index1} /> : <div className="text-sm text-blue-800">Bạn đã đánh giá đơn hàng</div>
             )}
             {+o.order_status === 10 && (+o.updated_by === + o.user_id ? (
               <div className="text-sm text-gray-500">Đã hủy bởi bạn</div>
