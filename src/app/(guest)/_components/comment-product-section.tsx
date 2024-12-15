@@ -7,7 +7,7 @@ import { toast } from "@/components/ui/use-toast";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 
 export default function CommentProductSection({ id }: { id?: number }) {
   const [comment, setComment] = useState<string>('');
@@ -17,42 +17,46 @@ export default function CommentProductSection({ id }: { id?: number }) {
   const [loading, setLoading] = useState<boolean>(false); // Trạng thái loading khi fetch comments
   const [submitting, setSubmitting] = useState<boolean>(false); // Trạng thái loading khi gửi comment
   const token = useAppInfoSelector((state) => state.profile.accessToken);
+
+  const fetchComments = async () => {
+    setLoading(true); // Bật trạng thái loading
+    try {
+      const res = await fetch(
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/Comment?product_id=${id}&type=comment&sort=-created_at&page=${page}&per_page=8`,
+        {
+          headers: {
+            Authorization: `Bearer ${clientAccessToken.value}`,
+          },
+          // signal
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to fetch comments");
+
+      const payload = await res.json();
+
+      console.log({ payload });
+
+      setComments((prev) => [...payload.comments.data]);
+      setHasMore(payload.comments.data.length > 0);
+    } catch (error) {
+      // if (isMounted) {
+      //   toast({
+      //     title: "Error loading comments",
+      //     variant: "destructive",
+      //   });
+      // }
+    } finally {
+      // if (isMounted) setLoading(false); // Tắt trạng thái loading
+      setLoading(false)
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
 
-    const fetchComments = async () => {
-      setLoading(true); // Bật trạng thái loading
-      try {
-        const res = await fetch(
-          `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/Comment?product_id=${id}&type=comment&sort=-created_at&page=${page}&per_page=8`,
-          {
-            headers: {
-              Authorization: `Bearer ${clientAccessToken.value}`,
-            },
-            signal: controller.signal,
-          }
-        );
 
-        if (!res.ok) throw new Error("Failed to fetch comments");
-
-        const payload = await res.json();
-
-        if (isMounted) {
-          setComments((prev) => [...prev, ...payload.comments.data]);
-          setHasMore(payload.comments.data.length > 0);
-        }
-      } catch (error) {
-        if (isMounted) {
-          toast({
-            title: "Error loading comments",
-            variant: "destructive",
-          });
-        }
-      } finally {
-        if (isMounted) setLoading(false); // Tắt trạng thái loading
-      }
-    };
 
     if (id) {
       fetchComments();
@@ -63,9 +67,13 @@ export default function CommentProductSection({ id }: { id?: number }) {
       controller.abort();
     };
   }, [id, page]);
+
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) return;
+    let isMounted = true;
+    const controller = new AbortController();
 
     setSubmitting(true); // Bật trạng thái submitting
     try {
@@ -89,8 +97,7 @@ export default function CommentProductSection({ id }: { id?: number }) {
       const newComment = await res.json(); // Lấy comment vừa tạo từ API
 
 
-      setComments((prev) => [newComment.data, ...prev]); // Thêm comment mới vào danh sách
-      setComment(''); // Reset input comment
+      await fetchComments()
     } catch (error) {
       toast({
         title: "Error submitting comment",
@@ -98,10 +105,21 @@ export default function CommentProductSection({ id }: { id?: number }) {
       });
     } finally {
       setSubmitting(false); // Tắt trạng thái submitting
+      setLoading(false)
+      setComment('')
     }
   };
 
   const loadMore = () => setPage((prev) => prev + 1);
+
+  const handleUpdateComments = useCallback((replyComment: any, index: number) => {
+    console.log({ replyComment });
+    setComments((prev) => {
+      prev[index].chill.push(replyComment)
+      return [...prev]
+    })
+  }, [comments])
+
 
   return (
     <>
@@ -137,7 +155,7 @@ export default function CommentProductSection({ id }: { id?: number }) {
           <p>Đang tải bình luận...</p> // Hiển thị loading
         ) : (
           comments.map((c, index) => (
-            <Comment key={index} c={c} product_id={id as number} />
+            <Comment key={index} c={c} product_id={id as number} fetchComments={fetchComments} index={index} />
           ))
         )}
       </div>

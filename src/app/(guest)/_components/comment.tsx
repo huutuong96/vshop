@@ -4,15 +4,16 @@ import { timeAgo } from "@/app/(shop)/_components/shop-header";
 import { toast } from "@/components/ui/use-toast";
 import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 
-export default function Comment({ c, product_id }: { c: any, product_id: number }) {
+function Comment({ c, product_id, fetchComments, index }: { c: any, product_id: number, fetchComments: any, index: number }) {
   const [showReplyInput, setShowReplyInput] = useState<boolean>(false);
   const [reply, setReply] = useState("");
-  const [replies, setReplies] = useState<any[]>(c?.chill ? [...c.chill] : []);
+  // const [replies, setReplies] = useState<any[]>(c?.chill ? [...c.chill] : []);
   const [loadingReplies, setLoadingReplies] = useState<boolean>(false);
   const [showReplies, setShowReplies] = useState<boolean>(false);
   // const [childCount, setChillCout] = useState<number>(c?.chill?.length || 0);
+  // const [parentId, setParentId] = useState(c?.id || null);
 
 
   // Fetch replies
@@ -30,8 +31,11 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
 
       if (!res.ok) throw new Error("Failed to fetch replies");
 
-      const data = await res.json();
-      setReplies(data.comments || []);
+      const payload = await res.json();
+      // setComments((prev:any[]) => {
+      //   prev[index].chill.push(payload.data)
+      //   return [...prev];
+      // })
     } catch (error) {
       toast({
         title: "Error loading replies",
@@ -42,9 +46,12 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
     }
   };
 
+
+
   const handleReplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reply.trim()) return;
+
 
     try {
       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/Comments`, {
@@ -64,10 +71,14 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
 
       if (!res.ok) throw new Error("Error submitting reply");
 
-      const newReply = await res.json();
-      setReplies((prev) => [...prev, newReply.data]); // Thêm comment con vào danh sách
+      const payload = await res.json();
+      // setComments((prev: any[]) => {
+      //   prev[index].chill.push(payload.data)
+      //   return [...prev];
+      // })
+      fetchComments()
       setReply("");
-      setShowReplyInput(false);
+      // setShowReplyInput(true);
     } catch (error) {
       toast({
         title: "Error submitting reply",
@@ -75,6 +86,8 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
       });
     }
   };
+
+  console.log({ id: c.id });
 
   const toggleReplies = async () => {
     // if (!showReplies) {
@@ -88,7 +101,6 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
     setReply(`@${username} `); // Gán giá trị mặc định cho textarea
   };
 
-  console.log({ replies });
 
   return (
     <div className="w-full">
@@ -120,12 +132,12 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
           >
             💬 <span>Trả lời</span>
           </button>
-          {replies.length > 0 && (
+          {c.chill.length > 0 && (
             <button
               onClick={toggleReplies}
               className="flex items-center gap-1 cursor-pointer hover:text-gray-700"
             >
-              {showReplies ? "Ẩn" : "Xem"} trả lời ({replies.length})
+              {showReplies ? "Ẩn" : "Xem"} trả lời ({c.chill.length})
             </button>
           )}
         </div>
@@ -143,7 +155,7 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
             <p>Đang tải...</p>
           ) : (
             <div className="w-full flex items-end flex-col">
-              {replies.map((rep) => (
+              {c.chill.map((rep: any) => (
                 <div key={rep.id} className="w-[95%] bg-white mb-2 p-4 rounded-sm">
                   <div className="flex items-start gap-2 mb-2">
                     <img
@@ -204,3 +216,5 @@ export default function Comment({ c, product_id }: { c: any, product_id: number 
 
   );
 }
+
+export default memo(Comment);
