@@ -62,6 +62,10 @@ export default function CartSection() {
   const info = useAppInfoSelector(state => state.profile.info);
 
 
+  console.log({ addresses });
+
+
+
   useEffect(() => {
     const getData = async () => {
       try {

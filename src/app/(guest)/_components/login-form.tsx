@@ -135,9 +135,6 @@ export default function LoginForm() {
           const info = await a.json();
           const historyPath = localStorage.getItem('historyPath') ?? '/'
           window.location.href = historyPath;
-          // const e = await setTimeout(() => {
-
-          // }, 10000)
         } else {
           const resToNextServer = await a.json();
           throw resToNextServer.message;
