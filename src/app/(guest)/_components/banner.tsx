@@ -22,7 +22,9 @@ const BannerHomeGuest = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/banners/client`);
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/banners/client`, {
+          cache: 'default'
+        });
         if (!res.ok) {
           throw 'Error';
         }
@@ -38,16 +40,16 @@ const BannerHomeGuest = () => {
 
   return (
     <div className="banner-home w-full bg-white flex justify-center py-5">
-      <div className='w-content'>
+      <div className='w-content relate'>
         {banners.length > 0 && (
           <Swiper
-            modules={[Autoplay, EffectFade, Pagination]}
+            modules={[EffectFade]}
             spaceBetween={10}
             slidesPerView={2}
             // slidesPerGroup={2}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 1500, disableOnInteraction: false }}
-            loop
+            // pagination={{ clickable: true }}
+            // autoplay={{ delay: 1500, disableOnInteraction: false }}
+            // loop
             className='w-full h-[335px] grid grid-cols-2 grid-rows-1 gap-2'
           >
             {banners.map((banner) => (

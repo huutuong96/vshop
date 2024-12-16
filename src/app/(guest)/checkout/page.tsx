@@ -17,11 +17,59 @@ import {
 import CheckoutSection from "@/app/(guest)/_components/checkout-section";
 import { cookies } from "next/headers";
 import { Metadata } from "next";
+import TestCheckoutSection from "@/app/(guest)/_components/test-checkout-section";
+import { notFound } from "next/navigation";
+import { verifyToken } from "@/lib/jwt";
 
 export const metadata: Metadata = {
   title: "Thanh toán",
 };
 
+
+// const CheckoutPage = async ({ searchParams }: { searchParams: { code?: string } }) => {
+//   // const cookieStore = cookies();
+//   // const stateCheckout = cookieStore.get('stateCheckout')?.value;
+//   const { code } = searchParams;
+
+//   if (!code) {
+//     notFound(); // Gọi notFound() nếu không có code
+//   }
+
+//   try {
+//     const decode = await verifyToken(code);
+
+//     if (!decode) {
+//       notFound(); // Gọi notFound() nếu token không hợp lệ
+//     }
+
+//     const checkoutItems = decode.data as any[];
+
+//     return (
+//       <div className="w-content">
+//         <div className="w-full text-[#888888]">
+//           <Breadcrumb>
+//             <BreadcrumbList>
+//               <BreadcrumbItem>
+//                 <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+//               </BreadcrumbItem>
+//               <BreadcrumbSeparator />
+//               <BreadcrumbItem>
+//                 <BreadcrumbPage>Thanh Toán</BreadcrumbPage>
+//               </BreadcrumbItem>
+//             </BreadcrumbList>
+//           </Breadcrumb>
+//           {/* <CheckoutSection stateCheckout={stateCheckout} /> */}
+//           <TestCheckoutSection checkoutItemsFromParams={checkoutItems} />
+//         </div>
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error(error);
+//     notFound(); // Gọi notFound() nếu có lỗi
+//   }
+
+
+// };
 
 const CheckoutPage = () => {
   const cookieStore = cookies();

@@ -18,6 +18,8 @@ import {
 import LoadingScreen from '@/app/(guest)/_components/loading-screen';
 import { addAccessToken, addCart, addInfo } from '@/redux/slices/profile.slice';
 import envConfig from '@/config';
+import { useNotification } from '@/context-apis/notification-provider';
+import SearchAbx from '@/app/(guest)/_components/search-abx';
 
 
 const tags: { title: string, icon: any }[] = [
@@ -71,6 +73,7 @@ export default function GuestHeader() {
   const dispatch = useAppInfoDispatch();
   const router = useRouter();
   const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
+  const { fetchNotifications, notifications } = useNotification();
 
 
   const handleLogout = async () => {
@@ -93,7 +96,6 @@ export default function GuestHeader() {
       setLoading(false);
     } finally {
       setLoading(false);
-      console.log(2);
     }
   }
 
@@ -106,9 +108,10 @@ export default function GuestHeader() {
         <div className="w-full flex justify-center border-b sticky top-0 bg-white z-50 shadow-sm">
           <div className="w-content bg-white">
             <div className="top-nav w-full flex gap-4 pt-2 text-[13px] text-[#8E8181] font-normal">
-              <Link href={'/shop'}>Kênh người bán</Link>
+              <Link href={'/shop'} target='_blank' rel="noopener noreferrer">Kênh người bán</Link>
               <span>Chăm sóc khách hàng</span>
-              <span>Nhà cung cấp</span>
+              {/* <Link href={'/about'}>About</Link> */}
+
             </div>
             <div className="mid-nav w-full h-[70px] flex items-center ">
               <div className="logo w-40 h-[48px]">
@@ -119,24 +122,29 @@ export default function GuestHeader() {
               <div className="w-[calc(100%-10rem)] h-full flex items-center gap-5 justify-between pl-8">
                 <div className="flex items-center gap-5">
                   <div className="icon-cate size-6 ">
-                    <LayoutGrid />
+                    {/* <LayoutGrid /> */}
                   </div>
-                  <div className="input-nav h-10 flex">
-                    <input type="text" placeholder="Tìm trên VNShop" className="w-[550px] h-full px-5 border rounded-tl-[16px] rounded-bl-[16px] outline-none text-[13px] bg-gray-50" />
-                    <div className="icon-input flex items-center justify-center w-[42px] h-full border-b border-t border-r  rounded-tr-[16px] rounded-br-[16px] bg-gray-50">
-                      <Search size={20} />
-                    </div>
-                  </div>
+                  <SearchAbx />
                 </div>
                 <div className="nav-dangnhap flex items-center justify-end w-[400px] h-full gap-6">
-                  <div className="relative">
-                    <Bell
-                      className="cursor-pointer"
-                      strokeWidth={1.5}
-                      size={20}
+                  {Object.entries(info).length > 0 && (
+                    <div className="relative">
+                      <HoverCard openDelay={200} closeDelay={100}>
+                        <HoverCardTrigger className='w-auto h-auto'>
+                          <div className="">
+                            <div className=' relative cursor-pointer'>
+                              <Bell strokeWidth={1.5} className=" w-6" />
+                              <div className='absolute -top-[14.5px] -right-4 text-[10px] w-6 h-4 p-1 flex items-center justify-center bg-red-500 rounded-xl text-white'>{notifications?.total ? (notifications?.total > 9 ? '9+' : notifications?.total) : 0}</div>
+                            </div>
+                          </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent align='end' className='bg-none p-0 w-80'>
+                          <Notifications />
+                        </HoverCardContent>
+                      </HoverCard>
+                    </div>
+                  )}
 
-                    />
-                  </div>
                   <div className="relative">
                     <ShoppingBag
                       className="cursor-pointer"
@@ -164,7 +172,7 @@ export default function GuestHeader() {
                             <div className="flex gap-1 cursor-pointer items-center">
                               <div className="size-8">
                                 <img
-                                  className="size-full rounded-full border"
+                                  className="size-full rounded-full border object-cover"
                                   src={info.avatar || 'https://images.unsplash.com/photo-1702478553542-3aa3c0148543?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
                                   alt="User avatar"
                                 />
@@ -206,7 +214,6 @@ export default function GuestHeader() {
                         <div className='flex gap-2 items-center text-[14px] text-[#3a3a3a] font-medium hover:text-blue-700 cursor-pointer' onClick={() => {
                           if (pathname !== '/auth/login') {
                             localStorage.setItem('historyPath', pathname);
-                            console.log(pathname);
                             router.push('/auth/login');
                           }
 

@@ -46,7 +46,6 @@ export default function AccountInfo() {
         : [...prev, index]
     );
   };
-
   return (
     <div className="w-full">
       <div className="w-full p-4 py-2 border-b">

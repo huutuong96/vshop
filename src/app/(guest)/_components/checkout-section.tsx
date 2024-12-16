@@ -13,7 +13,7 @@ import { changeCheckoutState } from "@/redux/slices/profile.slice"
 import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store"
 import { Check, CircleAlert, CreditCard, Info, MapPinIcon, MessageCircleMore, Plus, Store, Ticket, TicketCheck } from "lucide-react"
 import { notFound, useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { Cross2Icon } from "@radix-ui/react-icons"
 import AddressSection from "@/app/(guest)/_components/address-section"
 import CheckoutByshopItem from "@/app/(guest)/_components/checkout-byshop-item"
@@ -93,19 +93,21 @@ const ranks = [
 export default function CheckoutSection({ stateCheckout }: { stateCheckout: string | undefined | null }) {
   const dispatch = useAppInfoDispatch();
   const [checkoutItems, setCheckoutItems] = useState<any[]>([]);
-  const stateCheckoutInProfle = useAppInfoSelector(state => state.profile.checkoutState);
   const profile = useAppInfoSelector(state => state.profile.info);
   const [loading, setLoading] = useState<boolean>(true);
   const cart = useAppInfoSelector(state => state.profile.cart?.cartInfo) as any[];
   const selectedItems = useAppInfoSelector(state => state.profile.cart?.selectedItems) as any[];
+  const stateCheckoutInProfle = useAppInfoSelector(state => state.profile.checkoutState);
   const router = useRouter();
   const [mainVouchers, setMainVouchers] = useState<any[]>([]);
   const [mainVoucherSelected, setMainVoucherSelected] = useState<any>(null);
   const [vouchersSelected, setVoucherSelected] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [paymentSelected, setPaymentSelected] = useState(11);
-  const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false)
-  console.log(profile);
+  const [loadingCheckout, setLoadingCheckout] = useState<boolean>(false);
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [address, setAddress] = useState<any>();
+
 
   useEffect(() => {
     const controller = new AbortController(); // Khởi tạo AbortController
@@ -132,7 +134,8 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       const body = a.map(s => ({ shop_id: s.id, items: s.items.map((i: any) => i.id) }));
 
       try {
-        const [calShipFeeRes, vouchersRes, paymentsRes] = await Promise.all([
+        setLoading(true);
+        const [calShipFeeRes, vouchersRes, paymentsRes, addressesRes] = await Promise.all([
           fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/calculate/ship_fee`, {
             method: "POST",
             headers: {
@@ -151,32 +154,51 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
             headers: {
               "Authorization": `Bearer ${clientAccessToken.value}`
             }, signal
+          }),
+          fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
+            headers: {
+              "Authorization": `Bearer ${clientAccessToken.value}`,
+              "Content-Type": "application/json"
+            },
+            signal // Thêm signal để có thể hủy yêu cầu khi cần thiết
           })
         ]);
-        if (!calShipFeeRes.ok || !vouchersRes.ok || !paymentsRes) {
+        if (!calShipFeeRes.ok || !paymentsRes.ok || !addressesRes.ok) {
           throw 'Error'
+        }
+        let checkVoucher = true;
+        if (!vouchersRes.ok && vouchersRes.status === 400) {
+          checkVoucher = false;
         }
         const calShipFeePayload = await calShipFeeRes.json();
         const vouchersPayload = await vouchersRes.json();
         const paymentsPayload = await paymentsRes.json();
+        const addressesPayload = await addressesRes.json();
 
-        setMainVouchers(vouchersPayload.data.filter((v: any) => v.type === 'main'))
+        setAddress((prev: any) => {
+          const defaultAdress = addressesPayload.data.find((a: any) => a.default === 1);
+          return defaultAdress;
+        })
+        setAddresses(addressesPayload.data);
+
+
+        const abxVouchers = checkVoucher ? vouchersPayload.data : []
+
+        setMainVouchers(abxVouchers.filter((v: any) => v.type === 'main'))
 
         setCheckoutItems([...a.map((s, index: number) => (
           {
             ...s,
             ship_fee: calShipFeePayload[index].ship_fee,
-            vouchers: vouchersPayload.data.filter((v: any) => +v.shop_id === s.id),
+            vouchers: abxVouchers.filter((v: any) => +v.shop_id === s.id),
             voucherSelected: null
           }
         ))])
         setPayments(paymentsPayload.data);
-        setLoading(false);
       } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error("Fetch error: ", error); // Xử lý lỗi khác ngoài AbortError
-          toast({ title: "Error", variant: "destructive" })
-        }
+        // setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -188,6 +210,7 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
       controller.abort();
     };
   }, [selectedItems.length]);
+
 
 
   const handleCheckout = async () => {
@@ -213,14 +236,11 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
           "Content-Type": "application/json"
         }
       });
-      const payload = await res.json();
-      console.log(payload);
 
       if (!res.ok) {
-        console.log(payload);
-
         throw 'Error'
       }
+      const payload = await res.json();
       await fetch(`/api/auth/del-cookie`, {
         method: "POST",
       });
@@ -256,22 +276,31 @@ export default function CheckoutSection({ stateCheckout }: { stateCheckout: stri
   }, 0);
   let discountRank = checkoutItems.reduce((acc: number, s: any) => {
     let a = s.items.reduce((acc: number, i: any) => acc + (+i.quantity * (i.product_price ? (+i.product_price) : (+i.variant_price))), 0);
-    console.log({ a: a * (+profile.rank.value) > +profile.rank.limitValue });
     return acc + (a * (+profile.rank.value) > +profile.rank.limitValue ? +profile.rank.limitValue : a * (+profile.rank.value))
   }
     , 0);
-  let totalPrice = price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+  // let totalPrice = price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+  const totalPrice = useMemo(() => {
+    return price + ship_fee - priceWithVoucher - priceWithShopVouchers - discountRank;
+  }, [price, ship_fee, priceWithVoucher, priceWithShopVouchers, discountRank]);
 
 
 
   return (
 
     <>
-      {loading && <CheckoutSekeleton />}
-      {!loading && (
+      {totalPrice === 0 && <CheckoutSekeleton />}
+      {totalPrice > 0 && (
         <div className="w-full flex justify-center">
           <div className="w-full">
-            <AddressSection />
+            <AddressSection
+              setCheckoutItems={setCheckoutItems}
+              address={address} addresses={addresses}
+              setAddresses={setAddresses}
+              setAddress={setAddress}
+              stateCheckout={stateCheckout}
+              selectedItems={selectedItems}
+            />
 
             {checkoutItems.map((s: any, index) => (
               <CheckoutByshopItem key={s.id} s={s} setCheckoutItems={setCheckoutItems} index={index} vouchersSelected={vouchersSelected} setVoucherSelected={setVoucherSelected} />

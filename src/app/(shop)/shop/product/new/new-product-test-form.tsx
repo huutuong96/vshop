@@ -1,4 +1,5 @@
 'use client'
+import './table.css'
 import {
   Table,
   TableBody,
@@ -11,7 +12,7 @@ import {
 import NewProductVariantTableTest from "@/app/(shop)/shop/product/new/new-product-variant-table-test";
 import VariantAttribute from "@/app/(shop)/shop/product/new/variant-attribute";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Asterisk, ImagePlus, Plus } from "lucide-react";
+import { Asterisk, Image, ImagePlus, Plus } from "lucide-react";
 import { nanoid } from "nanoid";
 import React, { useEffect, useRef, useState } from "react";
 import { useFieldArray, UseFieldArrayReturn, useForm, useWatch } from "react-hook-form";
@@ -24,31 +25,34 @@ import { toast } from "@/components/ui/use-toast";
 import { useAppInfoSelector } from "@/redux/stores/profile.store";
 import LoadingScreen from "@/app/(guest)/_components/loading-screen";
 import { Skeleton } from "@/components/ui/skeleton";
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
+import ImagesSection from "@/app/(shop)/shop/product/new/images-section";
+import { arrayMove } from "@dnd-kit/sortable";
+import { closestCenter, DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 
 // let a = `{"name":"","description":"","base_price":0,"variant":{"variantAttributes":[{"attribute":"Màu sắc","values":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","value":"Đỏ","id":"KHEe7uPH2xNn"},{"id":"UvmWW-PShcR7","image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","value":"xanh"}]}],"variantProducts":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"KHEe7uPH2xNn","attribute":"Màu sắc","value":"Đỏ"}]},{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"UvmWW-PShcR7","attribute":"Màu sắc","value":"xanh"}]}]}}`
 
 // Schema cho từng thuộc tính của biến thể (e.g., màu sắc, kích thước)
 const AttributeSchema = z.object({
-  attribute: z.string().min(1, "Attribute name is required"),
+  attribute: z.string().min(1, { message: "Lĩnh vực này là cần thiết" }),
   values: z.array(z.object({
     id: z.string(),
     image: z.string().min(0),
-    value: z.string().min(1)
+    value: z.string().min(1, { message: "Lĩnh vực này là cần thiết" })
   })),
 });
 
 // Schema cho từng biến thể của sản phẩm
 const VariantSchema = z.object({
   image: z.string().min(0),
-  sku: z.string().min(1, "SKU is required"),
-  price: z.number().min(0, "Price must be a non-negative number"),
-  stock: z.number().int().min(0, "Stock must be a non-negative integer"),
+  sku: z.string({ message: "Lĩnh vực này là cần thiết" }).min(1, { message: "Lĩnh vực này là cần thiết" }),
+  price: z.coerce.number({ message: "Lĩnh vực này là cần thiết" }).min(1000, { message: "Giá sản phẩm cần lớn hơn 1000đ" }),
+  stock: z.coerce.number({ message: "Lĩnh vực này là cần thiết" }).int().min(0, { message: "Lĩnh vực này là cần thiết" }),
   attributes: z.array(z.object(
     {
       id: z.string().min(1),
-      attribute: z.string().min(1),
-      value: z.string().min(1)
+      attribute: z.string().min(1, { message: "Lĩnh vực này là cần thiết" }),
+      value: z.string().min(1, { message: "Lĩnh vực này là cần thiết" })
     }
   )),
 
@@ -143,16 +147,23 @@ function generateVariantProducts(attributes: Array<z.infer<typeof AttributeSchem
 
 }
 
+const FromDataSchema = z.object({
+  price: z.number({ message: "Vui long nhap" }).min(1),
+  stock: z.number({ message: "Vui long nhap" }).min(1),
+  sku: z.string().min(1, { message: "Vui long nhap" }),
+});
+
+type FormData = z.infer<typeof FromDataSchema>;
+
 
 
 export default function NewProductTestForm({ id }: { id?: string }) {
+  const [abx, setAbx] = useState<any[]>([]);
   const info = useAppInfoSelector(state => state.profile.info);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [loadingImage, setLoadingImage] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [imageBlobs, setImageBlobs] = useState<string[]>([]);
-
+  const [tag, setTag] = useState<boolean>(false);
+  const router = useRouter();
   const productFormHandle = useForm<Product>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
@@ -167,6 +178,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     // defaultValues: { ...JSON.parse(a), isCreated: true, variantMode: (JSON.parse(a) as any).variant ? true : false } as Product,
     mode: "all"
   });
+
 
   const watchedAttributes = useWatch({
     control: productFormHandle.control,
@@ -188,6 +200,42 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     control: productFormHandle.control,
     name: "variant.variantProducts",
   });
+
+  const variantProductsWatched = useWatch({
+    control: productFormHandle.control,
+    name: 'variant.variantProducts',
+  })
+
+  // -----------------------------------------------------------------------------------------------------------------------
+
+  const dataFormHandle = useForm<FormData>({
+    resolver: zodResolver(FromDataSchema),
+    defaultValues: {
+    },
+    mode: "all"
+  });
+
+  const handleChangeAllValueVariantProduct = () => {
+    if (dataFormHandle.formState.errors.price || dataFormHandle.formState.errors.stock || dataFormHandle.formState.errors.sku) {
+      dataFormHandle.trigger('price');
+      dataFormHandle.trigger('stock');
+      dataFormHandle.trigger('sku');
+      return
+    }
+    const b = variantProductFields.map((p: any) => ({
+      ...p,
+      price: dataFormHandle.getValues('price'),
+      stock: dataFormHandle.getValues('stock'),
+      sku: dataFormHandle.getValues('sku')
+    }));
+    productFormHandle.setValue('variant.variantProducts', [...b]);
+  }
+
+  useEffect(() => {
+    dataFormHandle.reset({ price: 0, stock: 0, sku: "" })
+  }, [variantProductsWatched])
+  // -------------------------------------------------------------------------------------------------------
+
 
   const onSubmit = async (data: Product) => {
     const newData = {
@@ -217,11 +265,13 @@ export default function NewProductTestForm({ id }: { id?: string }) {
       if (!res.ok) {
         throw 'ERror'
       }
-      console.log(payload);
       toast({
         variant: 'success',
         title: "Tao san pham thanh cong!"
       })
+      if (envConfig.NEXT_PUBLIC_MODE === 'test' || envConfig.NEXT_PUBLIC_MODE === 'production') {
+        router.push('/shop/product/list')
+      }
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -276,72 +326,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     }
   }, [watchedAttributes, productFormHandle.formState.errors.variant?.variantAttributes]);
 
-  const handleImageClick = () => {
-    let images = productFormHandle.getValues('images');
-    if (images.length < 9) {
-      fileInputRef.current?.click(); // Trigger sự kiện click của input file
-    }
-  };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      try {
-        setLoadingImage(true);
-
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-          formData.append("images[]", files[i]);
-        }
-
-        // Tạo blob URL cho preview
-        const newBlobs = Array.from(files).map((file) =>
-          URL.createObjectURL(file)
-        );
-        setImageBlobs((prevBlobs) => [...prevBlobs, ...newBlobs]);
-
-        // Gửi request upload ảnh
-        const res = await fetch(
-          `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/product/uploadImage`,
-          {
-            method: "POST",
-            body: formData,
-            headers: {
-              Authorization: `Bearer ${clientAccessToken.value}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Failed to upload images");
-        }
-
-        const payload: { status: boolean; message: string; images: string[] } = await res.json();
-
-        // Cập nhật ảnh vào form
-        const productImages = productFormHandle.getValues("images");
-        productFormHandle.setValue("images", [
-          ...productImages,
-          ...payload.images,
-        ]);
-        productFormHandle.setError("images", { message: undefined });
-
-        // Dọn dẹp blob URLs khi upload thành công
-        setImageBlobs([]);
-      } catch (error) {
-        toast({ title: "Error uploading images", variant: "destructive" });
-      } finally {
-        setLoadingImage(false);
-        event.target.value = ""; // Reset input file
-      }
-    }
-  };
-
-  const handleDeleteImage = (index: number) => {
-    let images = productFormHandle.getValues('images');
-    images.splice(index, 1);
-    productFormHandle.setValue('images', [...images])
-  }
 
   useEffect(() => {
     if (!productFormHandle.getValues('variantMode')) {
@@ -349,11 +334,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
     }
   }, [productFormHandle.getValues('variantMode')])
 
-  useEffect(() => {
-    return () => {
-      imageBlobs.forEach((blobUrl) => URL.revokeObjectURL(blobUrl));
-    };
-  }, [imageBlobs]);
+
 
   return (
     <form className="flex flex-col gap-4" onSubmit={productFormHandle.handleSubmit(onSubmit)}>
@@ -379,77 +360,11 @@ export default function NewProductTestForm({ id }: { id?: string }) {
               {productFormHandle.formState.errors?.name?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.name.message}</p>}
             </div>
             <CategorySection setLoading={setLoading} productFormHandle={productFormHandle} setShowMore={setShowMore} />
-            <div className="my-3">
-              <div className="text-sm mb-2 font-semibold flex items-center gap-1">
-                Ảnh sản phẩm
-              </div>
-              <div className="w-full p-4 bg-[#f5f8fd] rounded flex gap-2">
-                {/* Ảnh đã upload thành công */}
-                {watchedImages.map((img, index) => (
-                  <div key={index} className="border size-20 rounded-sm relative">
-                    <img
-                      src={img}
-                      className="size-full object-cover rounded-sm"
-                      alt={`Uploaded ${index}`}
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => handleDeleteImage(index)}
-                      className="size-4 absolute text-[8px] top-0 right-0"
-                    >
-                      Xóa
-                    </Button>
-                  </div>
-                ))}
 
-                {/* Ảnh đang tải */}
-                {loadingImage &&
-                  imageBlobs.map((blob, index) => (
-                    <div key={index} className="border size-20 rounded-sm relative">
-                      <img
-                        src={blob}
-                        className="size-full object-cover rounded-sm"
-                        alt={`Loading ${index}`}
-                      />
-                      <div className="size-full bg-black opacity-10 rounded-sm absolute top-0 left-0 flex items-center justify-center">
-                        <img
-                          className="size-4 animate-spin"
-                          src="https://www.svgrepo.com/show/199956/loading-loader.svg"
-                          alt="Loading icon"
-                        />
-                      </div>
-                    </div>
-                  ))}
+            {/* ---------------------------------------------------------------------------------------- */}
+            <ImagesSection tag={tag} setTag={setTag} productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
+            {/* ---------------------------------------------------------------------------------------- */}
 
-                {/* Nút thêm ảnh */}
-                {!loadingImage && (
-                  <div onClick={handleImageClick}>
-                    <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-20 rounded flex items-center justify-center hover:border-blue-500">
-                      <Plus
-                        size={32}
-                        strokeWidth={1.5}
-                        className="group-hover:text-blue-500 text-[#858585]"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Input file */}
-              <input
-                ref={fileInputRef}
-                accept=".jpg, .jpeg, .png, .webp"
-                onChange={handleFileChange}
-                type="file"
-                multiple
-                hidden
-              />
-              {productFormHandle.formState.errors?.images?.message && (
-                <p className="text-sm text-red-500 mt-1">
-                  {productFormHandle.formState.errors.images.message}
-                </p>
-              )}
-            </div>
 
             <div className="mt-0">
               <div className="text-sm mb-2 font-semibold flex items-center gap-1">
@@ -482,7 +397,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
       {showMore && (
         <>
-          <div className="w-full bg-white rounded">
+          {/* <div className="w-full bg-white rounded">
             <div className="p-6 w-full">
               <div className="w-full">
                 <div className="text-xl font-semibold">
@@ -491,7 +406,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
               </div>
               <div>Update later</div>
             </div>
-          </div>
+          </div> */}
           <div className="w-full bg-white rounded">
             <div className="p-6">
               <div className="text-xl font-semibold">
@@ -533,7 +448,7 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
               {productFormHandle.getValues('variantMode') && (
                 <NewProductVariantTableTest
-                  variantProductFields={variantProducts}
+                  variantProductFields={variantProductFields}
                   variantFields={productFormHandle.getValues('variant.variantAttributes')}
                   productFormHandle={productFormHandle}
                 />
@@ -724,12 +639,17 @@ export default function NewProductTestForm({ id }: { id?: string }) {
       <div className="w-full bg-white rounded">
         <div className="p-6 w-full flex justify-end items-center">
           <div className="flex gap-4">
-            <Button onClick={() => {
-              console.log(productFormHandle.getValues());
-            }} className=" border p-2" type="button">log data</Button>
-            <Button onClick={() => {
-              console.log(productFormHandle.formState.errors);
-            }} className=" border p-2" type="button">log error</Button>
+            {envConfig.NEXT_PUBLIC_MODE === 'dev' && (
+              <>
+                <Button onClick={() => {
+                  console.log(productFormHandle.getValues());
+                }} className=" border p-2" type="button">log data</Button>
+                <Button onClick={() => {
+                  console.log(productFormHandle.formState.errors);
+                }} className=" border p-2" type="button">log error</Button>
+              </>
+            )}
+
             <Button type="submit">Gửi đi</Button>
           </div>
         </div>
@@ -739,3 +659,5 @@ export default function NewProductTestForm({ id }: { id?: string }) {
 
   )
 }
+
+

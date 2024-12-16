@@ -19,6 +19,7 @@ import { RiFacebookFill, RiGithubFill, RiGoogleFill, RiTwitterXFill } from "@rem
 // Dependencies: pnpm install lucide-react
 
 import { LoaderCircle } from "lucide-react";
+import { handleLoginAction } from '@/app/action';
 function ButtonLoading(
 ) {
   return (
@@ -101,14 +102,6 @@ function InputPassword(
   );
 }
 
-// Dependencies: pnpm install @remixicon/react
-
-
-
-
-
-
-
 export default function LoginForm() {
   const [email, setEmail] = useState<string>('khangnd1806@gmail.com');
   const [password, setPassword] = useState<string>('123456');
@@ -120,49 +113,61 @@ export default function LoginForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const data = { email, password }
-    if (!loading) {
-      try {
-        setLoading(true);
-        const loginRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/users/login`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            "Content-Type": "application/json"
-          },
-          cache: 'no-cache'
-        });
-        if (loginRes.ok) {
-          const res: { message: string, status: boolean, data: { token: string } } = await loginRes.json();
-          const accessToken = res.data.token;
-          const a = await fetch(`/api/auth`, {
-            method: "POST",
-            body: JSON.stringify({ accessToken })
-          });
-          if (a.ok) {
-            const info = await a.json();
-            const historyPath = localStorage.getItem('historyPath') ?? '/'
-            window.location.href = historyPath;
-            // const e = await setTimeout(() => {
-            // }, 500)
-          } else {
-            const resToNextServer = await a.json();
-            throw resToNextServer.message;
-          }
+    try {
+      setLoading(true);
+      const loginRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/users/login`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        cache: 'no-cache'
+      });
 
+      if (loginRes.ok) {
+        const res: { message: string, status: boolean, data: { token: string } } = await loginRes.json();
+        const accessToken = res.data.token;
+        const a = await fetch(`/api/auth`, {
+          method: "POST",
+          body: JSON.stringify({ accessToken })
+        });
+        if (a.ok) {
+          const info = await a.json();
+          const historyPath = localStorage.getItem('historyPath') ?? '/'
+          window.location.href = historyPath;
         } else {
-          const res = await loginRes.json();
-          throw res.error;
+          const resToNextServer = await a.json();
+          throw resToNextServer.message;
         }
-      } catch (error) {
-        setErrorMessage(error as string);
-        // console.log({ error });
-        setLoading(false);
-      } finally {
-        // setLoading(false);
+
+      } else {
+        const res = await loginRes.json();
+        throw res.error;
       }
+    } catch (error) {
+      // console.log('check: ', error);
+      setErrorMessage(error as string);
+      // console.log({ error });
+      setLoading(false);
+    } finally {
+      // setLoading(false);
     }
+    // try {
+    //   const res = await handleLoginAction(data);
+    //   if (!res.success) {
+    //     throw res.errorMessage
+    //   }
+    //   const historyPath = localStorage.getItem('historyPath') ?? '/'
+    //   router.push(historyPath)
+    //   router.refresh();
+    // } catch (error) {
+    //   setErrorMessage(error as string);
+    // }
 
   }
+
+
+
   return (
     <>
       <div className="w-1/2 bg-white p-12 flex flex-col justify-center">
@@ -197,7 +202,9 @@ export default function LoginForm() {
           </div>
           <div className="mt-6">
             <div className="flex flex-col gap-2">
-              <Button variant="outline">
+              <Button type='button' onClick={() => {
+                window.location.href = 'https://vnshop.top/auth/google'
+              }} variant="outline">
                 <RiGoogleFill
                   className="me-3 text-[#DB4437] dark:text-white/60"
                   size={16}
@@ -205,14 +212,22 @@ export default function LoginForm() {
                 />
                 Đăng nhập với tài khoản Google
               </Button>
-              <Button variant="outline">
+              {/* <Button type='button' onClick={handleLoginWithGoogle} variant="outline">
+                <RiGoogleFill
+                  className="me-3 text-[#DB4437] dark:text-white/60"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Đăng nhập với tài khoản Google
+              </Button> */}
+              {/* <Button variant="outline">
                 <RiFacebookFill
                   className="me-3 text-[#1877f2] dark:text-white/60"
                   size={16}
                   aria-hidden="true"
                 />
                 Đăng nhập với tài khoản Facebook
-              </Button>
+              </Button> */}
 
             </div>
           </div>

@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/table"
 import NewProductVariantTableTest from "@/app/(shop)/shop/product/new/new-product-variant-table-test";
 import VariantAttribute from "@/app/(shop)/shop/product/new/variant-attribute";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Asterisk, ImagePlus, Plus } from "lucide-react";
 import { nanoid } from "nanoid";
 import React, { useEffect, useRef, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, UseFieldArrayReturn, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import CategorySection from "@/app/(shop)/shop/product/new/category-section";
@@ -28,18 +28,8 @@ import { notFound } from "next/navigation";
 import ProductDetailShopLoading from "@/app/(shop)/shop/product/list/[id]/loading";
 import CategorySection1 from "@/app/(shop)/shop/product/list/[id]/category-section-1";
 import NewProductVariantTableTest1 from "@/app/(shop)/shop/product/list/[id]/new-product-variant-table-test";
+import ImagesSection from "@/app/(shop)/shop/product/list/[id]/images-section";
 
-// let a = `{"name":"","description":"","base_price":0,"variant":{"variantAttributes":[{"attribute":"Màu sắc","values":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","value":"Đỏ","id":"KHEe7uPH2xNn"},{"id":"UvmWW-PShcR7","image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","value":"xanh"}]}],"variantProducts":[{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997693/fezssmr33wcbcxkmmdjo.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"KHEe7uPH2xNn","attribute":"Màu sắc","value":"Đỏ"}]},{"image":"https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730997701/wifesk9mwan06xbfch9f.jpg","sku":"sku","price":100000,"stock":10,"attributes":[{"id":"UvmWW-PShcR7","attribute":"Màu sắc","value":"xanh"}]}]}}`
-
-// Schema cho từng thuộc tính của biến thể (e.g., màu sắc, kích thước)
-// const AttributeSchema = z.object({
-//   attribute: z.string().min(1, "Attribute name is required"),
-//   values: z.array(z.object({
-//     id: z.string(),
-//     image: z.string(),
-//     value: z.string().min(1)
-//   })),
-// });
 
 // Schema cho từng biến thể của sản phẩm
 const VariantSchema = z.object({
@@ -110,7 +100,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
   const [loadingImage, setLoadingImage] = useState<boolean>(false);
   const [showMore, setShowMore] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(product ? true : false);
-
+  const [tag, setTag] = useState<boolean>(false);
 
 
   const productFormHandle = useForm<Product>({
@@ -125,9 +115,12 @@ export default function ProductDetailShopSection({ product }: { product?: any })
     name: "variant.variantProducts",
   });
 
-  useEffect(() => {
-    console.log(product);
-  }, [])
+
+  const watchedImages = useWatch({
+    control: productFormHandle.control,
+    name: 'images'
+  })
+
 
 
 
@@ -167,48 +160,6 @@ export default function ProductDetailShopSection({ product }: { product?: any })
   }, [])
 
 
-  const handleImageClick = () => {
-    let images = productFormHandle.getValues('images');
-    if (images.length < 9) {
-      fileInputRef.current?.click(); // Trigger sự kiện click của input file
-    }
-  };
-
-
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      try {
-        setLoadingImage(true);
-        let length = productFormHandle.getValues('images').length;
-        const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-          formData.append('images[]', files[i])
-        }
-        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/product/uploadImage`, {
-          method: "POST",
-          body: formData,
-          headers: {
-            "Authorization": `Bearer ${clientAccessToken.value}`
-          }
-        });
-        if (!res.ok) {
-          throw 'Error'
-        }
-        const payload: { status: boolean, message: string, images: string[] } = await res.json();
-        const productImages = productFormHandle.getValues('images')
-        productFormHandle.setValue('images', [...productImages, ...payload.images]);
-        productFormHandle.setError('images', { message: undefined })
-
-      } catch (error) {
-        // setLoading(false);
-        toast({ title: 'Error', variant: 'destructive' })
-      } finally {
-        setLoadingImage(false);
-      }
-    }
-  };
 
 
 
@@ -237,36 +188,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
                 {productFormHandle.formState.errors?.name?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.name.message}</p>}
               </div>
               <CategorySection1 setLoading={setLoading} productFormHandle={productFormHandle} setShowMore={setShowMore} />
-              <div className="my-3">
-                <div className="text-sm mb-2 font-semibold flex items-center gap-1">
-                  Ảnh sản phẩm
-                </div>
-                <div className="w-full p-4 bg-[#f5f8fd] rounded flex gap-2">
-                  {productFormHandle.getValues('images').map((img, index) => (
-                    <div key={index} className="border size-20">
-                      <img src={img} className="size-full object-cover" alt="" />
-                    </div>
-                  ))}
-                  {loadingImage ? (
-                    <div className="">
-                      <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-20 rounded flex items-center justify-center hover:border-blue-500">
-                        <img className="size-4 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
-                      </div>
-                    </div>
-
-                  ) : (
-                    <div onClick={handleImageClick} className="">
-                      <div className="border-dashed bg-white border group border-[#c4c4c4] cursor-pointer size-20 rounded flex items-center justify-center hover:border-blue-500">
-                        <Plus size={32} strokeWidth={1.5} className="group-hover:text-blue-500 text-[#858585]" />
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-                <input ref={fileInputRef} accept=".jpg, .jpeg, .png, .webp" onChange={handleFileChange} type="file" multiple hidden />
-                {productFormHandle.formState.errors?.images?.message && <p className="text-sm text-red-500 mt-1">{productFormHandle.formState.errors.images.message}</p>}
-
-              </div>
+              <ImagesSection tag={tag} setTag={setTag} productFormHandle={productFormHandle} watchedImages={watchedImages} key={'1223'} />
 
               <div className="mt-0">
                 <div className="text-sm mb-2 font-semibold flex items-center gap-1">
@@ -299,7 +221,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
 
         {showMore && (
           <>
-            <div className="w-full bg-white rounded">
+            {/* <div className="w-full bg-white rounded">
               <div className="p-6 w-full">
                 <div className="w-full">
                   <div className="text-xl font-semibold">
@@ -308,7 +230,7 @@ export default function ProductDetailShopSection({ product }: { product?: any })
                 </div>
                 <div>Update later</div>
               </div>
-            </div>
+            </div> */}
             <div className="w-full bg-white rounded">
               <div className="p-6">
                 <div className="text-xl font-semibold">

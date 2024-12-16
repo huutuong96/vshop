@@ -1,6 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button";
-import { Check, ChevronLeft, ChevronRight, Clock, Dot, List, Logs, Play, ShoppingBag, UserRoundCheck } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Clock, Dot, Link, List, Logs, Play, Plus, ShoppingBag, UserRoundCheck } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -27,6 +27,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { useAppInfoSelector } from "@/redux/stores/profile.store";
+import { clientAccessToken } from "@/lib/http";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+import { Navigation, Pagination as PaginationSw } from 'swiper/modules';
 
 const ProductCardSkeleton = () => {
   return (
@@ -97,6 +104,8 @@ const handleChangeSearchParams = (page: string, filter: any, sort: string, categ
   return `${page ? `&page=${page}` : ''}${categoryId !== 0 ? `&category_id=${categoryId}` : ''}${filter ? `&${filter}` : ''}${sort !== 'abx' ? `&sort=${sort}` : ''}`
 }
 
+const mockImg = 'https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730028259/idtck4oah4fakc8oob09.jpg'
+
 export default function ShopDetailSection() {
   const params = useParams();
   const [open, setOpen] = useState(false);
@@ -108,6 +117,7 @@ export default function ShopDetailSection() {
   const [page, setPage] = useState('1');
   const [shopInfo, setShopInfo] = useState<any>();
   const [categoryId, setCategoryId] = useState(0);
+  const info = useAppInfoSelector(state => state.profile.info);
 
   useEffect(() => {
     if (!params.id) {
@@ -124,11 +134,10 @@ export default function ShopDetailSection() {
           setLoading(true);
           const [productsRes, shopInfoRes] = await Promise.all([
             fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/products/filter?limit=12&shop_id=${params.id}${handleChangeSearchParams(page, filter, sort, categoryId)}`),
-            fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shops/${params.id}`)
+            fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/shop_client/${params.id}`)
           ])
           const shopInfoPayload = await shopInfoRes.json();
           const productsPayload = await productsRes.json();
-
 
           if (!shopInfoRes.ok) {
             throw productsPayload
@@ -153,83 +162,189 @@ export default function ShopDetailSection() {
 
     }
     getData()
-  }, [handleChangeSearchParams(page, filter, sort, categoryId)])
+  }, [handleChangeSearchParams(page, filter, sort, categoryId)]);
+
+
+  const handleGetShopVoucher = async (code: string) => {
+    try {
+      if (!clientAccessToken.value) {
+        throw 'Vui lòng đăng nhập để lấy voucher!'
+      }
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/add/voucher`, {
+        headers: {
+          'Authorization': `Bearer ${clientAccessToken.value}`,
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify({ code })
+      });
+      if (!res.ok) {
+        throw 'Error'
+      }
+      toast({
+        title: 'success',
+        variant: 'success'
+      })
+
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        description: error as string,
+        title: 'Error'
+      })
+    }
+  }
 
   return (
     <>
       <div className="w-full -mt-5">
-        <div className="py-5 w-full bg-white flex items-center justify-center">
-          <div className="w-content flex">
-            <div className="flex-1 p-5 border rounded-sm shadow-sm">
-              <div className="flex">
-                <div className="p-1">
-                  <div className="size-[72px] ">
-                    <img className="size-full border rounded-full " src="https://res.cloudinary.com/dg5xvqt5i/image/upload/v1730028259/idtck4oah4fakc8oob09.jpg" alt="" />
+        {loading && (
+          <div className="py-5 w-full bg-white flex items-center justify-center">
+            <div className="w-content flex">
+              {/* Skeleton for Shop Info */}
+              <div className="flex-1 p-5 border rounded-sm shadow-sm bg-slate-200 animate-pulse">
+                <div className="flex">
+                  <div className="p-1">
+                    <div className="w-18 h-18 rounded-full bg-gray-300"></div> {/* Skeleton for Shop Image */}
+                  </div>
+                  <div className="p-1 flex justify-center w-full flex-col">
+                    <div className="w-32 h-4 bg-gray-300 rounded mb-2"></div> {/* Skeleton for Shop Name */}
+                    <div className="w-24 h-4 bg-gray-300 rounded mb-1"></div> {/* Skeleton for Follow Count */}
+                    <div className="w-24 h-4 bg-gray-300 rounded mb-1"></div> {/* Skeleton for Visits */}
+                  </div>
+                  <div className="p-1 flex items-center">
+                    <div className="w-20 h-8 bg-blue-300 rounded-md"></div> {/* Skeleton for Follow Button */}
                   </div>
                 </div>
-                <div className="p-1 flex justify-center w-full flex-col">
-                  <div className="text-xl font-bold">{shopInfo?.shop?.shop_name || 'Tieem cua Khang'}</div>
-                  <div className="text-[12px]">{shopInfo?.shop?.visits || '0'} người theo dõi</div>
-                </div>
-                <div className="p-1 flex items-center">
-                  <Button>+ Theo dõi</Button>
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 p-5">
-              <div className="w-full grid grid-cols-2">
-                <div className="py-[10px] w-full flex items-center">
-                  <div className="mx-[10px]">
-                    <ShoppingBag size={18} color="#575757" strokeWidth={1.25} />
-                  </div>
-                  <div className="text-sm">Sản phẩm: <span className="text-blue-700 font-medium">200</span></div>
-                </div>
-                <div className="py-[10px] w-full flex items-center">
-                  <div className="mx-[10px]">
-                    <UserRoundCheck size={16} color="#575757" strokeWidth={1.25} />
-                  </div>
-                  {shopInfo?.shop?.created_at ? (
-                    <div className="text-sm">Đã tham gia : <span className="text-blue-700 font-medium">{formatTimeDifference(shopInfo.shop.created_at)}</span></div>
-                  ) : ''}
 
-                </div>
-                <div className="py-[10px] w-full flex items-center">
-                  <div className="mx-[10px]">
-                    <Clock size={18} color="#575757" strokeWidth={1.25} />
+              </div>
+
+
+              {/* Skeleton for Product Stats */}
+              <div className="flex-1 p-5 bg-slate-200 animate-pulse">
+                <div className="w-full grid grid-cols-2">
+                  {/* Skeleton for Product Count */}
+                  <div className="py-[10px] w-full flex items-center">
+                    <div className="mx-[10px]">
+                      <div className="w-6 h-6 bg-gray-300 rounded-full"></div> {/* Skeleton for ShoppingBag Icon */}
+                    </div>
+                    <div className="w-24 h-4 bg-gray-300 rounded mb-1"></div> {/* Skeleton for Product Count */}
                   </div>
-                  <div className="text-sm">Thời gian chuẩn bị hàng: <span className="text-blue-700 font-medium">12 giờ</span></div>
+
+                  {/* Skeleton for Created Date */}
+                  <div className="py-[10px] w-full flex items-center">
+                    <div className="mx-[10px]">
+                      <div className="w-6 h-6 bg-gray-300 rounded-full"></div> {/* Skeleton for UserRoundCheck Icon */}
+                    </div>
+                    <div className="w-24 h-4 bg-gray-300 rounded mb-1"></div> {/* Skeleton for Created Date */}
+                  </div>
+
+                  {/* Skeleton for Preparation Time */}
+                  <div className="py-[10px] w-full flex items-center">
+                    <div className="mx-[10px]">
+                      <div className="w-6 h-6 bg-gray-300 rounded-full"></div> {/* Skeleton for Clock Icon */}
+                    </div>
+                    <div className="w-24 h-4 bg-gray-300 rounded mb-1"></div> {/* Skeleton for Preparation Time */}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+
+        )}
+        {!loading && (
+          <div className="py-5 w-full bg-white flex items-center justify-center">
+            <div className="w-content flex">
+              <div className="flex-1 p-5 border rounded-sm shadow-sm" style={{ backgroundImage: `url(https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/shopmicrofe/dc2a8ae5803b2531c9a5.jpg)` }}>
+                <div className="flex">
+                  <div className="p-1">
+                    <div className="size-[72px] ">
+                      <img className="size-full border rounded-full " src={shopInfo?.shop?.image || mockImg} alt="" />
+                    </div>
+                  </div>
+                  <div className="p-1 flex justify-center w-full flex-col">
+                    <div className="text-xl font-bold">{shopInfo?.shop?.shop_name || 'Tieem cua Khang'}</div>
+                    <div className="text-[12px]">{shopInfo?.follow_count || '0'} người theo dõi</div>
+                    <div className="text-[12px]">{shopInfo?.shop?.visits || '0'} Lượt Truy Cập</div>
+                  </div>
+                  <div className="p-1 flex items-center">
+                    <Button>+ Theo dõi</Button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1 p-5">
+                <div className="w-full grid grid-cols-2">
+                  <div className="py-[10px] w-full flex items-center">
+                    <div className="mx-[10px]">
+                      <ShoppingBag size={18} color="#575757" strokeWidth={1.25} />
+                    </div>
+                    <div className="text-sm">Sản phẩm: <span className="text-blue-700 font-medium">200</span></div>
+                  </div>
+                  <div className="py-[10px] w-full flex items-center">
+                    <div className="mx-[10px]">
+                      <UserRoundCheck size={16} color="#575757" strokeWidth={1.25} />
+                    </div>
+                    {shopInfo?.shop?.created_at ? (
+                      <div className="text-sm">Đã tham gia : <span className="text-blue-700 font-medium">{formatTimeDifference(shopInfo.shop.created_at)}</span></div>
+                    ) : ''}
+
+                  </div>
+                  <div className="py-[10px] w-full flex items-center">
+                    <div className="mx-[10px]">
+                      <Clock size={18} color="#575757" strokeWidth={1.25} />
+                    </div>
+                    <div className="text-sm">Thời gian chuẩn bị hàng: <span className="text-blue-700 font-medium">12 giờ</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
       <div className="w-full flex items-center justify-center">
         <div className="w-content pt-5">
           <div className="w-full bg-white px-[30px] py-5 rounded-sm">
-            <div className="w-full ">
+            <div className="w-full">
               <div className="text-xl font-medium mb-[10px]">Voucher</div>
-              <div className="w-full pt-[5px] pb-2 flex gap-3">
+              <Swiper
+                modules={[Navigation, PaginationSw]}
+                navigation
+                pagination={{ clickable: true }}
+                slidesPerView={3.5} // Hiển thị 4 voucher mỗi lần
+                spaceBetween={15} // Khoảng cách giữa các slide
+                className="w-full pt-[5px] pb-2"
+              >
                 {shopInfo?.Vouchers ? (
                   shopInfo.Vouchers.map((v: any) => (
-                    <div key={v.id} className="w-1/3 flex border rounded-sm shadow-sm bg-blue-50">
-                      <div className="w-full pl-[10px] py-2">
-                        <div className="flex items-center">
-                          <div className="w-full">
-                            <div className="text-sm text-blue-700 mb-1 font-medium">Giảm {+v.ratio * 100 + '%'}</div>
-                            <div className="text-[13px] text-blue-700 mb-1 font-medium">Giảm tối đa {formattedPrice(+v.limitValue)} Đơn Tối Thiểu {formattedPrice(+v.min)}</div>
-                            <div className="text-[12px] text-gray-400 mb-1">HSD: 30.11.2024</div>
+                    <SwiperSlide key={v.id} className="flex border rounded-sm shadow-sm bg-blue-50">
+                      <div className="flex">
+                        <div className="w-4/5 pl-[10px] py-2">
+                          <div className="flex items-center">
+                            <div className="w-full">
+                              <div className="text-sm text-blue-700 mb-1 font-medium">
+                                Giảm {+v.ratio * 100 + '%'}
+                              </div>
+                              <div className="text-[13px] text-blue-700 mb-1 font-medium h-[39px]">
+                                Giảm tối đa {formattedPrice(+v.limitValue)} Đơn Tối Thiểu{' '}
+                                {formattedPrice(+v.min)}
+                              </div>
+                              <div className="text-[12px] text-gray-400 mb-1">HSD: 30.11.2024</div>
+                            </div>
                           </div>
                         </div>
+                        <div className="px-3 border-l border-dashed flex items-center justify-center">
+                          <button onClick={() => handleGetShopVoucher(v.code)} className="w-[60px] h-[34px] px-[15px] border text-sm bg-blue-800 text-white rounded-sm">
+                            Lưu
+                          </button>
+                        </div>
                       </div>
-                      <div className="w-[84px] px-2 border-l border-dashed flex items-center justify-center">
-                        <button className="w-[60px] h-[34px] px-[15px] border text-sm bg-blue-700 text-white rounded-sm">Lưu</button>
-                      </div>
-                    </div>
+                    </SwiperSlide>
                   ))
-                ) : ''}
-
-              </div>
+                ) : (
+                  <div>Không có voucher</div>
+                )}
+              </Swiper>
             </div>
           </div>
           <div className="mt-[30px]">
@@ -406,7 +521,6 @@ export default function ShopDetailSection() {
                       </PaginationContent>
                     </Pagination>
                   )}
-
                 </div>
               </div>
             </div>

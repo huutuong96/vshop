@@ -11,12 +11,46 @@ import { clientAccessToken } from "@/lib/http"
 import { formattedPrice } from "@/lib/utils"
 import { addCart } from "@/redux/slices/profile.slice"
 import { useAppDispatch } from "@/redux/store"
-import { Check, Heart, PhoneCall, ShoppingBasket, SquareCheckBig, Star, Store } from "lucide-react"
+import { Check, ChevronLeft, ChevronRight, Heart, PhoneCall, ShoppingBasket, SquareCheckBig, Star, Store } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 import { Label } from "@/components/ui/label";
+import { useAppInfoSelector } from "@/redux/stores/profile.store"
+import { isSet } from "lodash"
+import Link from "next/link"
+import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules"
+import CommentProductSection from "@/app/(guest)/_components/comment-product-section"
+import RateSection from "@/app/(guest)/_components/rate-section"
+import ShopInfoSection from "@/app/(guest)/_components/shop-info-section"
 
+
+export function formatTimeDifference(createdAt: string): string {
+  const createdDate = new Date(createdAt);
+  const now = new Date();
+
+  // Tính khoảng cách thời gian (theo milliseconds)
+  const diffInMs = now.getTime() - createdDate.getTime();
+
+  // Quy đổi milliseconds sang ngày, tháng, năm
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const diffInMonths = diffInDays / 30;
+  const diffInYears = diffInMonths / 12;
+
+  if (diffInMonths < 1) {
+    return '1 Tháng Trước';
+  } else if (diffInMonths < 13) {
+    const months = Math.floor(diffInMonths);
+    return `${months} tháng trước`;
+  } else {
+    const years = Math.floor(diffInYears);
+    return `${years} năm trước`;
+  }
+}
 
 
 export default function ProductDetailSection({ product, variant, test }: { product: any, variant: any, test?: any }) {
@@ -44,6 +78,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
   const router = useRouter();
   const [success, setSuccess] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const info = useAppInfoSelector(state => state.profile.info);
 
   useEffect(() => {
     if (variant) {
@@ -88,7 +123,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       data = { ...data, variant_id: selectedProduct.variant_id };
 
     }
-
     if (selectedProduct.stock <= 0) { return }
     try {
       setLoading(true);
@@ -136,9 +170,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
 
     }
   }
-
-
-
 
 
 
@@ -196,14 +227,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               </div>
               <div className="absolute bottom-0 w-full left-0">
                 <div className="w-full flex gap-3 items-center">
-                  <div className="flex gap-1">
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                    <Star size={16} className="text-yellow-500" />
-                  </div>
-                  <span className="text-[14px] text-blue-500">71 đánh giá</span>
+                  <span className="text-[14px] text-blue-500">{product.countRanting} đánh giá</span>
                   <div className="flex gap-1 items-center">
                     <ShoppingBasket size={16} className="text-gray-400" />
                     <span className="text-[14px] text-gray-400">{selectedProduct.sold_count} lượt mua</span>
@@ -262,7 +286,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                     )
                   }) : ""
                 }
-
               </div>
               <div className="w-full flex mb-6 items-center">
                 <div className="w-[200px] text-gray-500 text-[14px] leading-8">
@@ -271,13 +294,15 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                 {variantSelected.every(v => v.id) && (
                   <div className="flex">
                     <div className="p-[5px]">
-                      <Button className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">-</Button>
+                      <Button onClick={() => {
+                        if (quantity !== 1) setQuantity(prev => prev - 1)
+                      }} className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">-</Button>
                     </div>
                     <div className="p-[5px]">
                       <Input min={1} onChange={(e) => setQuantity(+e.target.value)} className="w-12 text-center h-8 text-[14px]" type="number" value={quantity} />
                     </div>
                     <div className="p-[5px]">
-                      <Button className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">+</Button>
+                      <Button onClick={() => setQuantity(prev => prev + 1)} className="bg-gray-100 size-8 hover:bg-gray-100 text-gray-500">+</Button>
                     </div>
                   </div>
                 )}
@@ -296,21 +321,40 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                 )}
                 <div className="ml-8 w-[200px] text-gray-500 text-[14px] leading-8">{selectedProduct.stock} sản phẩm sẵn có</div>
               </div>
-              {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
-              <div className="w-full flex my-2">
-                <>
-                  <Button disabled={loading || selectedProduct.stock <= 0} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
-                    {loading && (
-                      <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
-                    )}
-                    Thêm vào giỏ
-                  </Button>
-                  <Button className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
-                </>
+              {info?.shop_id && +info.shop_id === +product.shop_id ? '' : (
+                product.shop.status === 2 ?
+                  <>
+                    {errorMessage && (<div className="text-red-600 text-sm">{errorMessage}</div>)}
+                    <div className="w-full flex my-2">
+                      <>
+                        <Button disabled={loading || selectedProduct.stock <= 0} onClick={handleAddToCart} className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
+                          {loading && (
+                            <img className="size-5 animate-spin" src="https://www.svgrepo.com/show/199956/loading-loader.svg" alt="Loading icon" />
+                          )}
+                          Thêm vào giỏ
+                        </Button>
+                        <Button className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
+                      </>
+                    </div>
+                  </>
+                  : (
+                    <div>
+                      <div className="w-full flex my-2">
+                        <>
+                          <Button disabled className={`bg-white h-12 w-60 flex gap-4 font-semibold text-blue-700 border-blue-700 border-2 rounded hover:bg-white mr-4`}>
+                            Thêm vào giỏ
+                          </Button>
+                          <Button disabled className="bg-[#ff424e] h-12 w-60 font-semibold  rounded text-white hover:bg-[#ff424e]">Mua ngay</Button>
+                        </>
+                      </div>
+                      <div className="w-full my-3 text-yellow-500 text-sm">Cửa hàng đang tạm khóa, xin vui lòng quay lại sau!</div>
+                    </div>
+                  )
+              )}
 
-              </div>
+
             </div>
-            <div className="w-full border-t">
+            {/* <div className="w-full border-t">
               <div className="font-bold py-5 text-[16px]">Ưu đãi dành cho bạn</div>
               <div className="w-full flex flex-wrap">
                 <div className="w-1/2 mb-4 flex gap-2">
@@ -326,7 +370,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                   <span className="text-[14px] font-normal">Trả góp Kredivo</span>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="w-full border-t">
               <div className="font-bold py-5 text-[16px]">Quyền lợi khách hàng & Bảo hành</div>
               <div className="flex gap-8">
@@ -345,258 +389,130 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       </div>
 
       <div className="w-full flex mt-6">
-        <div className="w-2/5 pr-4 ">
-          <div className="shadow border p-4 w-full">
+        <ShopInfoSection shop={selectedProduct.shop} shopIdWithProduct={product.shop_id} />
+        {/* <div className="w-2/5 pr-4 ">
+          <div className="shadow bg-white border p-4 w-full">
             <div className="font-bold text-[16px]">Thông tin nhà cung cấp</div>
             <div className="flex mt-4 gap-4">
               <div className="size-16">
-                <div className="size-full border-2 rounded-full">
-                  <img src="https://static-00.iconduck.com/assets.00/nextjs-icon-512x512-y563b8iq.png" alt="" />
+                <div className="size-full ">
+                  <img className="size-full border-2 rounded-full" src={selectedProduct?.shop?.image || 'https://static-00.iconduck.com/assets.00/nextjs-icon-512x512-y563b8iq.png'} alt="" />
                 </div>
               </div>
               <div>
-                <div className="font-bold text-[16px]">NextJS Fashion</div>
+                <div className="font-bold text-[16px]">{selectedProduct.shop.shop_name}</div>
                 <span className="text-[12px] text-gray-400">
-                  Đồng Nai |
+                  {selectedProduct?.shop?.province || 'Đồng Nai'} |
                   <span> 4.7 <span className="text-[#f0ce11] text-[14px]">★</span></span>
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-5 mt-4">
+            <div className="grid grid-cols-2 mt-4">
               <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">1 năm</span>
-                <div className="text-[12px] font-normal">Bán ở VNShop</div>
+                <div className="text-[12px] font-normal">Đã tham gia</div>
+                <span className="text-[16px] font-bold mb-2">{formatTimeDifference(selectedProduct.shop.created_at)}</span>
               </div>
               <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">100</span>
+                <span className="text-[16px] font-bold mb-2">{selectedProduct.shop.countProduct}</span>
                 <div className="text-[12px] font-normal">Sản phẩm</div>
-              </div>
-              <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">1 ngày</span>
-                <div className="text-[12px] font-normal">Chuẩn bị hàng</div>
-              </div>
-              <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">--</span>
-                <div className="text-[12px] font-normal">Tỉ lệ phản hồi</div>
-              </div>
-              <div className="text-center">
-                <span className="text-[16px] font-bold mb-2">--</span>
-                <div className="text-[12px] font-normal">Shop phản hồi</div>
               </div>
             </div>
             <div className="w-full flex gap-2 mt-4">
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
+              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 flex-1 text-black"
+              >
                 <Heart size={20} />
-                <span className="ml-2">Theo dõi shop</span>
+                {info?.followers ? (info.followers.some((c: any) => c.shop_id === product.shop_id) ? (
+                  <span className="ml-2">Đã theo dõi</span>
+                ) : (
+                  <span className="ml-2">Theo dõi</span>
+                )) : <span className="ml-2">Theo dõi</span>}
               </Button>
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[45%] text-black">
-                <Store size={20} />
-                <span className="ml-2">Vào shop</span>
-              </Button>
-              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                <PhoneCall size={20} />
+
+              <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 flex-1 text-black">
+                <Link className="flex items-center" href={`/vendors/${selectedProduct.shop_id}`}>
+                  <Store size={20} />
+                  <span className="ml-2">Vào shop</span>
+                </Link>
               </Button>
             </div>
             <div className="mt-4 border-t">
               <div className="mt-4 text-[14px] font-bold">
                 Gợi ý thêm từ shop
               </div>
-              <div className="mt-4 w-full bg-gradient-to-b from-white to-blue-200">
-                <div className="w-full border overflow-hidden">
-                  <div className="w-[600px] translate-x-2 flex gap-2">
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
-                    <div className="mb-3 w-[120px] shadow-sm bg-white rounded-sm">
-                      <div className="size-[120px]">
-                        <img className="size-full object-cover" src="https://down-vn.img.susercontent.com/file/vn-11134207-7qukw-lk0onee5bmb8cc" alt="" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-[14px] font-normal text-ellipsis">Áo sơ mi nam vải dài tay vải ...</p>
-                        <div className="w-full h-4"></div>
-                        <span className="text-[16px] text-red-500 font-bold">70.000đ</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-4 w-full bg-gradient-to-b p-2 from-white to-blue-200 relative">
+                <button
+                  className="z-50 absolute top-1/2 left-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
+                  id="custom-prev"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <button
+                  className="z-50 absolute top-1/2 right-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
+                  id="custom-next"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+
+                <Swiper
+                  modules={[Autoplay, EffectFade, Pagination, Navigation]}
+                  spaceBetween={10}
+                  slidesPerView={3}
+                  navigation={{
+                    prevEl: '#custom-prev',
+                    nextEl: '#custom-next',
+                  }}
+                  className='w-full '
+                >
+                  {selectedProduct.shop.products.map((product: any, index: number) => {
+                    let length = product.show_price ? (product.show_price as string).split(' - ').length : null;
+                    let show_price = ''
+                    if (length) {
+                      if (length > 1) {
+                        show_price = (product.show_price as string).split(' - ').map((p: any) => formattedPrice(+p)).join(' - ');
+                      } else {
+                        show_price = formattedPrice(+product.show_price)
+                      }
+                    } else {
+                      show_price = formattedPrice(+product.price)
+                    }
+                    return (
+                      <SwiperSlide key={index} className="mb-3 w-[140px] shadow-sm bg-white rounded-sm">
+                        <div className="size-[120px]">
+                          <Link href={`/products/${product.slug}`}>
+                            <img className="size-full object-cover" src={product.image} alt="" />
+                          </Link>
+                        </div>
+                        <div className="p-2">
+                          <p className="text-[14px] font-normal text-ellipsis">
+                            {product.name.length > 20 ? `${product.name.substring(0, 13)}...` : product.name}
+                          </p>
+                          <div className="w-full h-4"></div>
+                          <span className="text-[12px] text-red-500 font-bold">{show_price}</span>
+                        </div>
+                      </SwiperSlide>
+                    )
+                  })}
+
+                </Swiper>
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
+
         <div className="w-3/5">
           <div className="w-full p-4 shadow border mb-4">
             <div className="text-[16px] font-bold mb-4">
               Mô tả sản phẩm
             </div>
             <p className="text-[14px] font-normal mb-4">
-              THÔNG TIN SẢN PHẨM Áo Croptop Len LÊ HUY FASHION*Chất liệu: Thun Gân co dãn. * Sản phẩm có các màu: đen, trắng, hồng* Hàng freesize: từ 38-54kg* Bảng size chỉ mang tính chất tham khảo, tùy thuộc vào số đo cơ thể* Độ dài ngang eo còn tùy thuộc vào...
-            </p>
-            <div className="text-[16px] font-bold mb-4">
-              Thông tin cơ bản
-            </div>
-            <div className="mb-4">
-              <AttributesTable />
-            </div>
-            <div className="text-[16px] font-bold mb-4">
-              Chi tiết sản phẩm
-            </div>
-            <p className="text-[14px] font-normal">
-              Chi tiết sản phẩm
+              {selectedProduct.description}
             </p>
           </div>
-          <div className="w-full p-4 shadow border">
-            <span className="text-[16px] font-bold mb-4">
-              Đánh giá và nhận xét sản phẩm <span className="text-gray-400 font-normal text-[14px] text-">( 71 lượt đánh giá)</span>
-            </span>
-            <div className="flex gap-8">
-              <div className="w-1/2 flex flex-col justify-center">
-                <span>
-                  <span className="font-bold text-black text-[30px]">4.6</span>
-                  <span className="font-bold text-black text-[22px]">/</span>
-                  <span className="font-bold text-red-500 text-[22px]">5</span>
-                  <span className="ml-4 text-[#f0ce11] text-[20px]">★★★★★</span>
-                </span>
-                <span className="italic text-[14px] text-gray-500">
-                  Đây là thông tin người mua đánh giá shop bán sản
-                  phẩm này có đúng mô tả không.
-                </span>
-              </div>
-              <div className="w-1/2 flex flex-col gap-3">
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <div className="flex">
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                    <span className="text-[#f0ce11]">★</span>
-                  </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="w-56 h-3 bg-gray-200 rounded-sm">
-                      <div className="w-40 h-3 bg-red-500 rounded-bl-sm rounded-tl-sm"></div>
-                    </div>
-                    <span className="text-[14px] font-bold">10</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex gap-2">
-              <Button>Tất cả</Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                1 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                2 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                3 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                4 sao
-              </Button>
-              <Button className="bg-gray-100 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                5 sao
-              </Button>
-
-            </div>
-          </div>
+          <RateSection productId={product.id} />
         </div>
       </div>
-      <div className="w-full py-8 flex flex-col gap-6">
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-        <Comment />
-      </div>
+      <CommentProductSection id={product.id} />
     </>
   )
 

@@ -19,34 +19,6 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
   const [tempQuantity, setTempQuantity] = useState(+item.quantity);
 
 
-  // const handleChangeQty = async (quantity: number, index: number, subIndex: number, id: number) => {
-  //   if (quantity) {
-  //     try {
-  //       setLoading(true);
-  //       const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/carts/${id}`, {
-  //         method: "PUT",
-  //         body: JSON.stringify({ quantity }),
-  //         headers: {
-  //           'Authorization': `Bearer ${clientAccessToken.value}`,
-  //           "Content-Type": "application/json"
-  //         }
-  //       })
-  //       const payload = await res.json();
-  //       if (!res.ok) {
-  //         console.log(payload);
-  //         throw 'Error'
-  //       }
-  //       dispatch(changeQuantity({ index, quantity, subIndex }))
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-
-
-  // }
-
 
   const debouncedUpdateQty = useCallback(
     debounce(async (quantity) => {
@@ -79,7 +51,7 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
   );
 
   const handleChangeQty = (type: "increment" | "decrement") => {
-    const newQuantity = type === "increment" ? tempQuantity + 1 : tempQuantity - 1;
+    const newQuantity = type === "increment" ? tempQuantity + 1 : (tempQuantity >= 2 ? tempQuantity - 1 : 1);
 
     // Cập nhật state tạm
     setTempQuantity(newQuantity);
@@ -150,14 +122,15 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
               <img src={item.product_image ? item.product_image : item.variant_image} className='w-full h-full object-cover' alt="" />
             </div>
             <div className='w-[calc(100%-80px-8px)] h-full p-1 px-2'>
-              <Link href={`/products/${item.product_slug}`} className='text-[14px] hover:text-blue-600'>{item.product_name}</Link>
+              <Link href={`/products/${item.product_slug}`} className='text-[14px] hover:text-blue-700'>{item.product_name}</Link>
             </div>
           </div>
           <div className='w-full h-[20px] flex items-center'>
             {item.quantity === 0 ? (
               <span className='text-[12px] text-red-500'>Sản phẩm này đã hết</span>
             ) : (
-              <span className='text-[12px] text-blue-500'>Fash Sale kết thúc lúc 23:59:00</span>
+              // <span className='text-[12px] text-blue-500'>Fash Sale kết thúc lúc 23:59:00</span>
+              ''
             )}
           </div>
         </div>
@@ -181,15 +154,15 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
             <span className="text-sm">0</span>
           ) : loading ? (
             <>
-              <span className='px-1 border w-[30px] text-center text-gray-300'>-</span>
+              <span className='px-1 border rounded-tl-sm rounded-bl-sm w-[30px] text-center text-gray-300'>-</span>
               <span className='text-sm text-gray-300 border-b border-t w-[40px] h-[25.6px] flex items-center justify-center'>{tempQuantity}</span>
-              <span className='px-1 border w-[30px] text-gray-300 text-center'>+</span>
+              <span className='px-1 border w-[30px] rounded-tr-sm rounded-br-sm text-gray-300 text-center'>+</span>
             </>
           ) : (
             <>
               <span
                 onClick={() => handleChangeQty("decrement")}
-                className='px-1 border w-[30px] text-center cursor-pointer'
+                className='px-1 border rounded-tl-sm rounded-bl-sm w-[30px] text-center cursor-pointer'
               >
                 -
               </span>
@@ -202,7 +175,7 @@ export default function CartItem({ item, index, subIndex, itemsLength, checked }
                 onChange={handleInputChange}
               // defaultValue={item.quantity}
               />
-              <span onClick={() => handleChangeQty("increment")} className='px-1 border w-[30px] text-center cursor-pointer'>+</span>
+              <span onClick={() => handleChangeQty("increment")} className='px-1 border rounded-tr-sm rounded-br-sm w-[30px] text-center cursor-pointer'>+</span>
             </>
           )}
           {/* <button disabled={loading || tempQuantity <= 1} onClick={() => handleChangeQty("decrement")}>

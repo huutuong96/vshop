@@ -4,7 +4,7 @@ import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
 import { MailPlus, Store, Truck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -21,13 +21,13 @@ import { Button } from "@/components/ui/button";
 import OrderDetailItem from "@/app/(guest)/account/orders/[id]/order-detail-item";
 
 
-const titles: { id: number, title: string, order_status: number }[] = [
-  { id: 1, title: "Chờ xác nhận", order_status: 0 },
-  { id: 2, title: "Đã xác nhận", order_status: 1 },
-  { id: 3, title: "Chờ giao hàng", order_status: 5 },
-  { id: 4, title: "Hoàn thành", order_status: 8 },
-  { id: 5, title: "Trả hàng/Hoàn tiền", order_status: 9 },
-  { id: 5, title: "Đã hủy", order_status: 10 }
+const titles: { id: number, title: string, order_status: number, valueString: any }[] = [
+  { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#f3ff09] font-medium">Chờ xác nhận</div>) },
+  { id: 2, title: "Đã xác nhận", order_status: 1, valueString: (<div className="text-blue-700 font-medium">Đã xác nhận</div>) },
+  { id: 3, title: "Chờ giao hàng", order_status: 5, valueString: (<div className="text-[#16b9ae] font-medium flex gap-2"><Truck className="text-[#16b9ae]" size={20} strokeWidth={1.25} /> Đang vận chuyển</div>) },
+  { id: 4, title: "Hoàn thành", order_status: 8, valueString: (<div className="text-green-500 font-medium">Hoàn thành</div>) },
+  // { id: 5, title: "Trả hàng/Hoàn tiền", order_status: 9 },
+  { id: 5, title: "Đã hủy", order_status: 10, valueString: (<div className="text-red-500 font-medium">Đã hủy</div>) }
 ]
 
 // export default function OrdersGuestSection() {
@@ -153,14 +153,21 @@ export default function OrdersGuestSection() {
   const [orderStatus, setOrderStatus] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true); // Kiểm tra có thêm dữ liệu không
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+
+  const handleChangeFeedbackOrder = useCallback((index: number) => {
+    setOrders(prev => {
+      prev[index].is_feedbacked = 1
+      return [...prev];
+    })
+  }, [])
 
   const fetchOrders = async (currentPage: number) => {
     try {
       setLoading(true);
       const ordersRes = await fetch(
-        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/order/user?order_status=${orderStatus}&page=${currentPage}`,
+        `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/order/user/client?order_status=${orderStatus}&page=${currentPage}`,
         {
           headers: {
             Authorization: `Bearer ${clientAccessToken.value}`,
@@ -263,8 +270,8 @@ export default function OrdersGuestSection() {
       )}
 
       <div>
-        {orders.map((o: any) => (
-          <OrderDetailItem key={o.id} setOrderStatus={setOrderStatus} o={o} />
+        {orders.map((o: any, index: number) => (
+          <OrderDetailItem key={o.id} setOrderStatus={setOrderStatus} o={o} handleChangeFeedbackOrder={handleChangeFeedbackOrder} index1={index} />
         ))}
         {loading && (
           <>

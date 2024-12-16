@@ -33,6 +33,7 @@ function ButtonLoading(
 const registerSchema = z.object({
   fullname: z.string().min(6, { message: "Tên phải từ 6 ký tự" }),
   email: z.string().email({ message: "Email không hợp lệ" }),
+  phone: z.string(),
   password: z.string().min(6, { message: "Mật khẩu phải từ 6 ký tự" }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -120,6 +121,17 @@ export default function RegisterForm() {
                 {...register('email')}
               />
               <p className="text-[12px] h-[18px] text-red-500 mt-1">{errors.email && errors.email.message}</p>
+            </div>
+            <div className=" mb-1">
+              <Label >
+                Số điện thoại <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                placeholder="Số điện thoại"
+                className='bg-white'
+                {...register('phone')}
+              />
+              <p className="text-[12px] h-[18px] text-red-500 mt-1">{errors?.phone && errors.phone.message}</p>
             </div>
             <div className=" mb-1">
               <Label>

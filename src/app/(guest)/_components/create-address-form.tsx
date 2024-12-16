@@ -27,52 +27,70 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import ghnApiRequest from "@/apiRequest/ghn"
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import envConfig from "@/config"
+import { clientAccessToken } from "@/lib/http"
+import { toast } from "@/components/ui/use-toast"
 
 const schema = z.object({
-  province: z.number(),
-  province_name: z.string(),
-  district: z.number(),
-  district_name: z.string(),
+  province_id: z.number(),
+  province: z.string(),
+  district_id: z.number(),
+  district: z.string(),
+  ward_id: z.string(),
   ward: z.string(),
-  ward_name: z.string(),
-  location: z.string().min(1, 'Vui lòng nhập địa chỉ chi tiết'),
+  address: z.string().min(1, 'Vui lòng nhập địa chỉ chi tiết'),
   name: z.string().min(1),
   phone: z.string().min(1),
+  default: z.number(),
+  type: z.string()
 });
 
 type FormData = z.infer<typeof schema>;
 
 const initialValues: FormData = {
-  district: 0,
-  province: 0,
-  ward: "0",
-  location: '',
+  district_id: 0,
+  province_id: 0,
+  ward_id: '0',
+  district: '',
+  province: "",
+  ward: "",
+  address: '',
   name: '',
   phone: '',
-  district_name: '',
-  province_name: "",
-  ward_name: '',
+  default: 1,
+  type: 'Nhà Riêng'
 }
 
-const typeOfAddress = [{ label: 'Nhà riêng', value: 1 }, { label: 'Văn phòng', value: 2 }]
+const typeOfAddress = [{ label: 'Nhà Riêng' }, { label: 'Văn Phòng' }]
 
-export default function CreateAddressForm({ handleCloseCreateAddressForm }: { handleCloseCreateAddressForm: () => void }) {
-  const { register, handleSubmit, getValues, setValue, setError, formState: { errors } } = useForm<FormData>({
+export default function CreateAddressForm({ handleCloseCreateAddressForm, setAddresses, setCheckoutItems }: { setCheckoutItems: any, setAddresses: any, handleCloseCreateAddressForm: () => void }) {
+  const { control, register, handleSubmit, getValues, setValue, setError, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'all',
     defaultValues: initialValues
   });
+
+  const typeWatched = useWatch({
+    control,
+    name: 'type',
+    defaultValue: 'Nhà Riêng'
+  })
+  const defaultWatched = useWatch({
+    control,
+    name: 'default',
+    defaultValue: 1
+  })
 
   const [provinces, setProvinces] = useState<{ province_id: number, name: string }[]>([]);
   const [districts, setDistricts] = useState<{ district_id: number, name: string }[]>([]);
   const [wards, setWards] = useState<{ ward_id: string, name: string }[]>([]);
   const [tab, setTab] = useState<string>('province');
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedType, setSelectedType] = useState<number>(1)
 
   useEffect(() => {
     const getProvinces = async () => {
@@ -86,7 +104,7 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
   useEffect(() => {
     console.log({ open });
     if (!open) {
-      if (!getValues('district_name') || !getValues('province_name') || !getValues('ward_name')) {
+      if (!getValues('district') || !getValues('province') || !getValues('ward')) {
         setError('root', { message: 'error' });
       }
     } else {
@@ -102,10 +120,10 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
         return districts;
       });
       setTab('district');
-      setValue('province', +v);
-      setValue('province_name', name);
-      setValue('district_name', '');
-      setValue('ward_name', '');
+      setValue('province_id', +v);
+      setValue('province', name);
+      setValue('district', '');
+      setValue('ward', '');
     } else {
       // setError('province', { message: "Vui lòng chọn tỉnh thành" })
       // setValue('province', 0);
@@ -115,29 +133,63 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
     if (+v) {
 
       const b = await ghnApiRequest.ward(+v);
+      console.log({ b });
       setWards((prev) => {
         const wards = (b as any).data.map((w: any) => ({ ward_id: w.WardCode, name: w.WardName }))
         return wards;
       });
       setTab('ward');
-      setValue('district', +v);
-      setValue('district_name', name);
-      setValue('ward_name', '');
+      setValue('district_id', +v);
+      setValue('district', name);
+      setValue('ward', '');
     } else {
     }
   }
 
   const handleChangeWard = (v: string, name: string) => {
     if (v !== '0') {
-      setValue('ward', v);
+      setValue('ward_id', v);
       setOpen(false);
-      setValue('ward_name', name);
+      setValue('ward', name);
     } else {
     }
   }
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
+        headers: {
+          "Authorization": `Bearer ${clientAccessToken.value}`,
+          "Content-Type": "application/json"
+        },
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) {
+        throw 'Error'
+      }
+      const payload = await res.json();
+
+      const addressesRes = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}/api/address`, {
+        headers: {
+          "Authorization": `Bearer ${clientAccessToken.value}`,
+          "Content-Type": "application/json"
+        },
+      });
+      const adressesPayload = await addressesRes.json();
+      toast({
+        title: "Thanh cong",
+        variant: "success"
+      })
+      console.log(adressesPayload.data);
+      setAddresses([...adressesPayload.data]);
+      handleCloseCreateAddressForm();
+    } catch (error) {
+      toast({
+        title: "Error",
+        variant: "destructive"
+      })
+    }
   };
 
   return (
@@ -167,9 +219,9 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
                 <div className={`w-full relative h-10 border  rounded flex ${errors?.root?.message ? 'border-red-500' : 'border-[#bebebe]'}`}>
                   <div className={`absolute px-[3px] top-[-8px]  text-[12px] bg-white left-[10px] ${errors?.root?.message ? 'text-red-500' : 'text-gray-500'}`}>Tỉnh/ Thành phố, Quận/Huyện, Phường/Xã</div>
                   <div className="w-full text-left p-[10px] border-none rounded outline-none text-[14px] font-semibold" >
-                    {getValues('province_name')}
-                    {getValues('district_name') && ', ' + getValues('district_name')}
-                    {getValues('ward_name') && ', ' + getValues('ward_name')}
+                    {getValues('province')}
+                    {getValues('district') && ', ' + getValues('district')}
+                    {getValues('ward') && ', ' + getValues('ward')}
                   </div>
                 </div>
               </DropdownMenuTrigger>
@@ -207,11 +259,11 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
                                   key={index}
                                   onClick={() => handeChangeProvince(p.province_id.toString(), p.name)}
                                   className={`text-sm p-[10px] cursor-pointer hover:bg-gray-100 flex justify-between items-center
-                                    ${getValues('province') === p.province_id ? 'bg-gray-100' : ''}
+                                    ${getValues('province_id') === p.province_id ? 'bg-gray-100' : ''}
                                     `}
                                 >
                                   {p.name}
-                                  {getValues('province') === p.province_id && (
+                                  {getValues('province_id') === p.province_id && (
                                     <Check size={18} color="#1839dc" strokeWidth={1.5} />
                                   )}
                                 </div>
@@ -239,11 +291,11 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
                                   id={d.district_id.toString()}
                                   onClick={() => handleChangeDistrict(d.district_id.toString(), d.name)}
                                   className={`text-sm p-[10px] cursor-pointer hover:bg-gray-100 flex justify-between items-center
-                                  ${getValues('district') === d.district_id ? 'bg-gray-100' : ''}
+                                  ${getValues('district_id') === d.district_id ? 'bg-gray-100' : ''}
                                   `}
                                 >
                                   {d.name}
-                                  {getValues('district') === d.district_id && (
+                                  {getValues('district_id') === d.district_id && (
                                     <Check size={18} color="#1839dc" strokeWidth={1.5} />
                                   )}
                                 </div>
@@ -306,23 +358,32 @@ export default function CreateAddressForm({ handleCloseCreateAddressForm }: { ha
           <div className="mt-[6px] mb-[15px]">
             <div className="w-full relative h-[60px] border border-[#bebebe] rounded flex">
               <div className="absolute px-[3px] top-[-8px] text-gray-500 text-[12px] bg-white left-[10px]">Địa chỉ cụ thể</div>
-              <input {...register('location')} type="text" className="w-full p-[10px] border-none rounded outline-none text-[14px]" />
+              <input {...register('address')} type="text" className="w-full p-[10px] border-none rounded outline-none text-[14px]" />
             </div>
           </div>
         </div>
-        <div>
+        <div className="mb-4">
           <div>Loại địa chỉ</div>
           <div className="flex gap-2 mt-1">
-            {typeOfAddress.map((a) => (
+            {typeOfAddress.map((a, index) => (
               <div
-                onClick={() => { setSelectedType(a.value) }}
-                key={a.value}
-                className={`px-3 flex items-center text-sm h-10 border cursor-pointer ${selectedType === a.value ? 'border-blue-700 text-blue-600' : ''} `}
+                onClick={() => {
+                  setValue('type', a.label)
+                }}
+                key={index}
+                className={`px-3 flex items-center rounded-sm text-sm h-10 border cursor-pointer ${typeWatched === a.label ? 'border-blue-700 text-blue-600' : ''} `}
               >
                 {a.label}
               </div>
             ))}
           </div>
+        </div>
+        <div className="flex gap-4 items-center">
+          <div>Mặc định</div>
+          <Checkbox checked={defaultWatched === 1} onCheckedChange={(c) => {
+            let checked = c as boolean;
+            setValue('default', c ? 1 : 0);
+          }} />
         </div>
         <button className="border" type="button" onClick={() => { console.log(getValues()); }}>log data</button>
         <button className="border" type="button" onClick={() => { console.log(errors); }}>log error</button>

@@ -4,7 +4,7 @@ import envConfig from "@/config";
 import { clientAccessToken, shop_id } from "@/lib/http";
 import { formattedPrice } from "@/lib/utils";
 import { ChevronDown, ChevronUp, Image } from "lucide-react";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +22,9 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
 
-const apiurl = `${envConfig.NEXT_PUBLIC_API_ENDPOINT_1}`;
 
 
-export default function ListProductItem({ p, handleDeleteProduct }: { p: any, handleDeleteProduct: (id: number) => Promise<void> }) {
+function ListProductItem({ p, handleDeleteProduct, onChecked, listIdChecked }: { p: any, listIdChecked: number[], onChecked: (id: number) => void, handleDeleteProduct: (id: number) => Promise<void> }) {
   let length = p.show_price ? (p.show_price as string).split(' - ').length : null;
   let show_price = ''
   if (length) {
@@ -42,10 +41,16 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
 
   return (
     <>
-      <div className="py-4 border-b flex">
+      <div className="py-4 border-b flex hover:bg-blue-100/20">
         <div className="w-full">
           <div className="w-full text-[14px] flex">
-            <Checkbox className="ml-4 mr-2 mt-4" />
+            <Checkbox
+              className="ml-4 mr-2 mt-4"
+              checked={listIdChecked.includes(p.id)}
+              onCheckedChange={(c) => {
+                let checked = c as boolean;
+                onChecked(p.id);
+              }} />
             <div className="flex-[2] p-2 flex items-center gap-4">
               <div className="w-full">
                 <div className="flex items-center gap-4">
@@ -61,7 +66,7 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
               </div>
             </div>
             <div className="flex-1 p-2 text-right">
-              <div className="text-black font-medium">0</div>
+              <div className="text-black font-medium">{p.sold_count}</div>
             </div>
             <div className="flex-1 p-2 text-right">
               <div className="text-black font-medium">{show_price}</div>
@@ -75,9 +80,15 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
                 <DropdownMenuTrigger asChild>
                   <div className="cursor-pointer">Xem thêm</div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-36">
+                <DropdownMenuContent align="end" className="">
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>Ẩn</DropdownMenuItem>
+                    {p.status === 2 && (
+                      <DropdownMenuItem>
+                        <Link target="_blank" href={`/products/${p.slug}`}>
+                          Xem sản phẩm ở website
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={() => {
                       handleDeleteProduct(p.id)
                     }}>Xóa</DropdownMenuItem>
@@ -159,3 +170,4 @@ export default function ListProductItem({ p, handleDeleteProduct }: { p: any, ha
 
   )
 }
+export default memo(ListProductItem);

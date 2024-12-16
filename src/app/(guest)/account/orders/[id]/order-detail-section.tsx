@@ -5,18 +5,18 @@ import envConfig from "@/config"
 import { clientAccessToken } from "@/lib/http"
 import { formattedPrice } from "@/lib/utils"
 import { useAppInfoDispatch, useAppInfoSelector } from "@/redux/stores/profile.store"
-import { ChevronLeft, MailPlus, MapPinIcon, Store } from "lucide-react"
+import { ChevronLeft, MailPlus, MapPinIcon, Store, Truck } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
-const titles: { id: number, title: string, order_status: number }[] = [
-  { id: 1, title: "Chờ xác nhận", order_status: 0 },
-  { id: 2, title: "Đã xác nhận", order_status: 1 },
-  { id: 3, title: "Chờ giao hàng", order_status: 5 },
-  { id: 4, title: "Hoàn thành", order_status: 8 },
-  { id: 5, title: "Trả hàng/Hoàn tiền", order_status: 9 },
-  { id: 5, title: "Đã hủy", order_status: 10 }
+const titles: { id: number, title: string, order_status: number, valueString: any }[] = [
+  { id: 1, title: "Chờ xác nhận", order_status: 0, valueString: (<div className="text-[#d2b510] font-medium">Chờ xác nhận</div>) },
+  { id: 2, title: "Đã xác nhận", order_status: 1, valueString: (<div className="text-blue-700 font-medium">Đã xác nhận</div>) },
+  { id: 3, title: "Chờ giao hàng", order_status: 5, valueString: (<div className="text-[#16b9ae] font-medium flex gap-2"><Truck className="text-[#16b9ae]" size={20} strokeWidth={1.25} /> Đang vận chuyển</div>) },
+  { id: 4, title: "Hoàn thành", order_status: 8, valueString: (<div className="text-green-500 font-medium">Hoàn thành</div>) },
+  // { id: 5, title: "Trả hàng/Hoàn tiền", order_status: 9 },
+  { id: 5, title: "Đã hủy", order_status: 10, valueString: (<div className="text-red-500 font-medium">Đã hủy</div>) }
 ]
 
 function formatDateTime(input: string, timeZone = "Asia/Ho_Chi_Minh") {
@@ -38,6 +38,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
   const [order, setOrder] = useState<any>();
   const profile = useAppInfoSelector(state => state.profile.info);
   const [loading, setLoading] = useState<boolean>(true);
+
 
   useEffect(() => {
     const getData = async () => {
@@ -137,7 +138,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
       )}
       {!loading && order && (
         <div className="w-full">
-          <div className="w-full bg-white h-[56px] py-5 px-4 flex items-center justify-between">
+          <div className="w-full bg-white h-[56px] py-5 px-4 flex items-center justify-between shadow-sm rounded-sm">
             <Link href={'/account/orders'} className="flex gap-2 items-center text-sm">
               <ChevronLeft size={20} strokeWidth={1.25} />
               Trở lại
@@ -161,7 +162,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
           <div className="w-full mt-5">
             {+order.order_status !== 10 && (
               <div className="header w-full bg-white border-b  text-[#000000]">
-                <div style={{
+                <div className="" style={{
                   backgroundImage: 'repeating-linear-gradient(45deg, #6fa6d6, #6fa6d6 33px, transparent 0, transparent 41px, #f18d9b 0, #f18d9b 74px, transparent 0, transparent 82px)',
                   backgroundPositionX: '-30px',
                   backgroundSize: '116px 3px',
@@ -242,7 +243,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
               {+order.order_status !== 10 && (
                 <>
                   <div className="px-6 flex justify-end items-center border-b border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Tổng tiền hàng</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -250,7 +251,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Thuế giá trị gia tăng</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -258,7 +259,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Phí vận chuyển</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -266,7 +267,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   </div>
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Thành viên {profile.rank.title}</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -275,7 +276,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                   </div>
                   {(order.voucher_shop_disscount !== '0') && (
                     <div className="px-6 flex justify-end items-center border-t border-dotted">
-                      <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                      <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                         <span>Voucher từ shop</span>
                       </div>
                       <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -285,7 +286,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                   )}
                   {order.voucher_disscount !== '0' && (
                     <div className="px-6 flex justify-end items-center border-t border-dotted">
-                      <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                      <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                         <span>Voucher từ VNShop</span>
                       </div>
                       <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -294,7 +295,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
                     </div>
                   )}
                   <div className="px-6 flex justify-end items-center border-t border-dotted">
-                    <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                    <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                       <span>Thành tiền</span>
                     </div>
                     <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -305,7 +306,7 @@ export default function OrderDetailSection({ id }: { id: string }) {
               )}
               {+order.order_status === 10 && (
                 <div className="px-6 flex justify-end items-center border-t border-dotted">
-                  <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+                  <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                     <span>Yêu cầu bởi</span>
                   </div>
                   <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
@@ -314,8 +315,8 @@ export default function OrderDetailSection({ id }: { id: string }) {
                 </div>
               )}
 
-              <div className="px-6 flex justify-end items-center border-t border-dotted">
-                <div className="px-[10px] py-[13px] text-[12px] text-gray-500">
+              <div className="px-6 flex justify-end items-center border-t border-dotted rounded-bl-sm rounded-br-sm">
+                <div className="px-[10px] py-[13px] text-[12px] text-gray-600">
                   <span>Phương thức thanh toán</span>
                 </div>
                 <div className="py-[13px] pl-[10px] border-l text-sm w-[240px] text-end">
