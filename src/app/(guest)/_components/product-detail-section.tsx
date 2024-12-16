@@ -26,7 +26,10 @@ import Link from "next/link"
 import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules"
 import CommentProductSection from "@/app/(guest)/_components/comment-product-section"
 import RateSection from "@/app/(guest)/_components/rate-section"
-function formatTimeDifference(createdAt: string): string {
+import ShopInfoSection from "@/app/(guest)/_components/shop-info-section"
+
+
+export function formatTimeDifference(createdAt: string): string {
   const createdDate = new Date(createdAt);
   const now = new Date();
 
@@ -168,7 +171,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
     }
   }
 
-  console.log(product);
 
 
   return (
@@ -387,7 +389,8 @@ export default function ProductDetailSection({ product, variant, test }: { produ
       </div>
 
       <div className="w-full flex mt-6">
-        <div className="w-2/5 pr-4 ">
+        <ShopInfoSection shop={selectedProduct.shop} shopIdWithProduct={product.shop_id} />
+        {/* <div className="w-2/5 pr-4 ">
           <div className="shadow bg-white border p-4 w-full">
             <div className="font-bold text-[16px]">Thông tin nhà cung cấp</div>
             <div className="flex mt-4 gap-4">
@@ -431,9 +434,6 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                   <span className="ml-2">Vào shop</span>
                 </Link>
               </Button>
-              {/* <Button className="bg-gray-100 h-10 p-2 rounded-none hover:bg-gray-100 w-[10%] text-black">
-                <PhoneCall size={20} />
-              </Button> */}
             </div>
             <div className="mt-4 border-t">
               <div className="mt-4 text-[14px] font-bold">
@@ -441,15 +441,14 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               </div>
               <div className="mt-4 w-full bg-gradient-to-b p-2 from-white to-blue-200 relative">
                 <button
-                  className="absolute top-1/2 left-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
+                  className="z-50 absolute top-1/2 left-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
                   id="custom-prev"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
 
-                {/* Nút điều hướng phải */}
                 <button
-                  className="absolute top-1/2 right-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
+                  className="z-50 absolute top-1/2 right-2 -translate-y-1/2 bg-gray-800 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-gray-700 transition"
                   id="custom-next"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -459,13 +458,9 @@ export default function ProductDetailSection({ product, variant, test }: { produ
                   modules={[Autoplay, EffectFade, Pagination, Navigation]}
                   spaceBetween={10}
                   slidesPerView={3}
-                  // slidesPerGroup={2}
-                  // pagination={{ clickable: true }}
-                  // autoplay={{ delay: 1500, disableOnInteraction: false }}
-                  loop
                   navigation={{
-                    prevEl: '.custom-prev',
-                    nextEl: '.custom-next',
+                    prevEl: '#custom-prev',
+                    nextEl: '#custom-next',
                   }}
                   className='w-full '
                 >
@@ -503,7 +498,7 @@ export default function ProductDetailSection({ product, variant, test }: { produ
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="w-3/5">
           <div className="w-full p-4 shadow border mb-4">

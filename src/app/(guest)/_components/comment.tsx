@@ -6,14 +6,15 @@ import envConfig from "@/config";
 import { clientAccessToken } from "@/lib/http";
 import { useState, useEffect, memo } from "react";
 
-function Comment({ c, product_id, fetchComments, index }: { c: any, product_id: number, fetchComments: any, index: number }) {
+function Comment({ c, product_id, handleUpdateComments, index }: { c: any, product_id: number, handleUpdateComments: any, index: number }) {
   const [showReplyInput, setShowReplyInput] = useState<boolean>(false);
   const [reply, setReply] = useState("");
-  // const [replies, setReplies] = useState<any[]>(c?.chill ? [...c.chill] : []);
+  const [replies, setReplies] = useState<any[]>(c?.chill ? [...c.chill] : []);
   const [loadingReplies, setLoadingReplies] = useState<boolean>(false);
   const [showReplies, setShowReplies] = useState<boolean>(false);
   // const [childCount, setChillCout] = useState<number>(c?.chill?.length || 0);
   // const [parentId, setParentId] = useState(c?.id || null);
+
 
 
   // Fetch replies
@@ -76,7 +77,9 @@ function Comment({ c, product_id, fetchComments, index }: { c: any, product_id: 
       //   prev[index].chill.push(payload.data)
       //   return [...prev];
       // })
-      fetchComments()
+      // handleUpdateComments(payload.data, index)
+
+      setReplies((prev) => [...prev, payload.data]);
       setReply("");
       // setShowReplyInput(true);
     } catch (error) {
@@ -151,40 +154,37 @@ function Comment({ c, product_id, fetchComments, index }: { c: any, product_id: 
       {/* Replies */}
       {showReplies && (
         <div className="mt-4 border-t border-gray-200 pt-2">
-          {loadingReplies ? (
-            <p>Đang tải...</p>
-          ) : (
-            <div className="w-full flex items-end flex-col">
-              {c.chill.map((rep: any) => (
-                <div key={rep.id} className="w-[95%] bg-white mb-2 p-4 rounded-sm">
-                  <div className="flex items-start gap-2 mb-2">
-                    <img
-                      src={rep.user?.avatar || "https://via.placeholder.com/30"} // Avatar reply
-                      alt="avatar"
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="font-bold text-sm text-gray-800">{rep.user?.fullname || "Unknown"}</p>
-                      <p className="text-sm text-gray-500">{timeAgo(rep.created_at)}</p>
-                      <p className="text-sm text-gray-800">{rep.content}</p>
-                    </div>
+          <div className="w-full flex items-end flex-col">
+            {replies.map((rep: any) => (
+              <div key={rep.id} className="w-[95%] bg-white mb-2 p-4 rounded-sm">
+                <div className="flex items-start gap-2 mb-2">
+                  <img
+                    src={rep.user?.avatar || "https://via.placeholder.com/30"} // Avatar reply
+                    alt="avatar"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold text-sm text-gray-800">{rep.user?.fullname || "Unknown"}</p>
+                    <p className="text-sm text-gray-500">{timeAgo(rep.created_at)}</p>
+                    <p className="text-sm text-gray-800">{rep.content}</p>
+                  </div>
 
-                  </div>
-                  <div className="flex items-center gap-6 text-gray-500 text-sm">
-                    <button
-                      onClick={() => handleReplyClick(rep.user.fullname)}
-                      className="flex items-center gap-1 cursor-pointer hover:text-gray-700"
-                    >
-                      💬 <span>Trả lời</span>
-                    </button>
-                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="flex items-center gap-6 text-gray-500 text-sm">
+                  <button
+                    onClick={() => handleReplyClick(rep.user.fullname)}
+                    className="flex items-center gap-1 cursor-pointer hover:text-gray-700"
+                  >
+                    💬 <span>Trả lời</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
 
-          )}
         </div>
       )}
+
       {/* Reply Input */}
       {showReplyInput && (
         <form onSubmit={handleReplySubmit} className="mt-4">

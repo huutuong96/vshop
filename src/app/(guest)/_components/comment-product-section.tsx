@@ -35,7 +35,6 @@ export default function CommentProductSection({ id }: { id?: number }) {
 
       const payload = await res.json();
 
-      console.log({ payload });
 
       setComments((prev) => [...payload.comments.data]);
       setHasMore(payload.comments.data.length > 0);
@@ -95,9 +94,8 @@ export default function CommentProductSection({ id }: { id?: number }) {
       if (!res.ok) throw new Error("Error submitting comment");
 
       const newComment = await res.json(); // Lấy comment vừa tạo từ API
+      setComments((prev) => [{ ...newComment.data, chill: [] }, ...prev])
 
-
-      await fetchComments()
     } catch (error) {
       toast({
         title: "Error submitting comment",
@@ -115,10 +113,13 @@ export default function CommentProductSection({ id }: { id?: number }) {
   const handleUpdateComments = useCallback((replyComment: any, index: number) => {
     console.log({ replyComment });
     setComments((prev) => {
-      prev[index].chill.push(replyComment)
+
+      prev[index].chill = [...prev[index].chill, replyComment]
       return [...prev]
     })
-  }, [comments])
+  }, [])
+
+  console.log('comments: ', comments);
 
 
   return (
@@ -155,7 +156,7 @@ export default function CommentProductSection({ id }: { id?: number }) {
           <p>Đang tải bình luận...</p> // Hiển thị loading
         ) : (
           comments.map((c, index) => (
-            <Comment key={index} c={c} product_id={id as number} fetchComments={fetchComments} index={index} />
+            <Comment key={index} c={c} product_id={id as number} handleUpdateComments={handleUpdateComments} index={index} />
           ))
         )}
       </div>

@@ -87,7 +87,7 @@ export default function RateSection({ productId }: { productId: number }) {
   return (
     <div className="w-full p-4 shadow border bg-white">
       <span className="text-[16px] font-bold mb-4">
-        Đánh giá và nhận xét sản phẩm <span className="text-gray-400 font-normal text-[14px] text-">( 71 lượt đánh giá)</span>
+        Đánh giá và nhận xét sản phẩm <span className="text-gray-400 font-normal text-[14px] text-">( {ratings.reduce((acc, curr, index) => acc + curr / (index + 1), 0)} lượt đánh giá)</span>
       </span>
       <div className="flex gap-8">
         <div className="w-1/2 flex flex-col justify-center">

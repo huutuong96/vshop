@@ -40,7 +40,7 @@ const BannerHomeGuest = () => {
 
   return (
     <div className="banner-home w-full bg-white flex justify-center py-5">
-      <div className='w-content'>
+      <div className='w-content relate'>
         {banners.length > 0 && (
           <Swiper
             modules={[EffectFade]}
